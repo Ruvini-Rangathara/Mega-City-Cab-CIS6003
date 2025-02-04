@@ -1,56 +1,70 @@
--- Sample Users
-INSERT INTO users (id, username, password_hash, role)
-VALUES (UUID(), 'admin_user', 'hashed_password_1', 'admin'),
-       (UUID(), 'customer_user_1', 'hashed_password_2', 'user'),
-       (UUID(), 'customer_user_2', 'hashed_password_3', 'user'),
-       (UUID(), 'driver_user_1', 'hashed_password_4', 'user'),
-       (UUID(), 'driver_user_2', 'hashed_password_5', 'user');
+INSERT INTO users (id, email, password_hash, role)
+VALUES (UUID(), 'admin@megacitycab.com', SHA2('admin123', 256), 'admin'), -- Admin user
+       (UUID(), 'john.doe@example.com', SHA2('john123', 256), 'user'),    -- Regular user
+       (UUID(), 'jane.smith@example.com', SHA2('jane123', 256), 'user'); -- Regular user
 
--- Sample Customers
-INSERT INTO customers (id, name, address, nic, dob, mobileNo)
-VALUES (UUID(), 'John Doe', '123 Main St, Cityville', '1234567890', '1985-12-15', '123-456-7890'),
-       (UUID(), 'Jane Smith', '456 Oak St, Townsville', '2345678901', '1990-03-20', '234-567-8901');
--- Sample Drivers
-INSERT INTO drivers (id, name, licenseNumber, mobile, status, experience)
-VALUES (UUID(), 'Alice Driver', 'DL12345', '987-654-3210', 'available', 5),
-       (UUID(), 'Bob Driver', 'DL67890', '876-543-2109', 'unavailable', 3),
-       (UUID(), 'Charlie Driver', 'DL54321', '765-432-1098', 'available', 7),
-       (UUID(), 'David Driver', 'DL11223', '654-321-0987', 'available', 6);
 
--- Sample Cars
-INSERT INTO cars (id, licensePlate, model, brand, capacity, color, status)
-VALUES (UUID(), 'XYZ123', 'ModelX', 'BrandX', 4.5, 'Red', 'available'),
-       (UUID(), 'ABC456', 'ModelY', 'BrandY', 4.0, 'Blue', 'unavailable'),
-       (UUID(), 'DEF789', 'ModelZ', 'BrandZ', 5.0, 'Green', 'available'),
-       (UUID(), 'GHI012', 'ModelA', 'BrandA', 4.0, 'Black', 'available');
-SELECT id
-FROM users
-WHERE username = 'admin_user';
+INSERT INTO customers (id, name, address, nic, dob, mobileNo, email)
+VALUES (UUID(), 'John Doe', '123 Main St, Colombo', '123456789V', '1990-05-15', '0771234567', 'john.doe@example.com'),
+       (UUID(), 'Jane Smith', '456 Park Ave, Kandy', '987654321V', '1985-10-20', '0777654321',
+        'jane.smith@example.com'),
+       (UUID(), 'Alice Johnson', '789 Galle Rd, Galle', '456789123V', '1995-03-25', '0779876543',
+        'alice.johnson@example.com');
 
--- Sample Bookings
-INSERT INTO bookings (id, customerId, bookingDate, pickupLocation, destination, pickupTime, driverID, carID, status,
+INSERT INTO drivers (id, name, licenseNumber, mobileNo, status, experience, email)
+VALUES (UUID(), 'Robert Brown', 'D1234567', '0771111111', 'available', 5, 'robert.brown@example.com'),
+       (UUID(), 'Michael Green', 'D7654321', '0772222222', 'available', 3, 'michael.green@example.com'),
+       (UUID(), 'David White', 'D9876543', '0773333333', 'unavailable', 7, 'david.white@example.com');
+
+INSERT INTO vehicles (id, licensePlate, model, brand, capacity, color, status)
+VALUES (UUID(), 'CAB-1234', 'Corolla', 'Toyota', 4.0, 'White', 'available'),
+       (UUID(), 'CAB-5678', 'Civic', 'Honda', 4.0, 'Black', 'available'),
+       (UUID(), 'CAB-9101', 'Sunny', 'Nissan', 4.0, 'Blue', 'unavailable');
+
+-- Get IDs for customers, drivers, vehicles, and users
+SET @customerId1 = (SELECT id
+                    FROM customers
+                    WHERE email = 'john.doe@example.com');
+SET @customerId2 = (SELECT id
+                    FROM customers
+                    WHERE email = 'jane.smith@example.com');
+SET @driverId1 = (SELECT id
+                  FROM drivers
+                  WHERE email = 'robert.brown@example.com');
+SET @driverId2 = (SELECT id
+                  FROM drivers
+                  WHERE email = 'michael.green@example.com');
+SET @vehicleId1 = (SELECT id
+                   FROM vehicles
+                   WHERE licensePlate = 'CAB-1234');
+SET @vehicleId2 = (SELECT id
+                   FROM vehicles
+                   WHERE licensePlate = 'CAB-5678');
+SET @userId1 = (SELECT id
+                FROM users
+                WHERE email = 'john.doe@example.com');
+SET @userId2 = (SELECT id
+                FROM users
+                WHERE email = 'jane.smith@example.com');
+
+-- Insert bookings
+INSERT INTO bookings (id, customerId, bookingDate, pickupLocation, destination, pickupTime, driverID, vehicleID, status,
                       distance, fare, discount, tax, userId)
-VALUES (UUID(), (SELECT id FROM customers WHERE name = 'John Doe'), NOW(), 'Location A', 'Location B', '12:30:00',
-        (SELECT id FROM drivers WHERE name = 'Alice Driver'), (SELECT id FROM cars WHERE licensePlate = 'XYZ123'),
-        'confirmed', 10.5, 100.0, 10.0, 5.0, (SELECT id FROM users WHERE username = 'admin_user')),
-       (UUID(), (SELECT id FROM customers WHERE name = 'Jane Smith'), NOW(), 'Location C', 'Location D', '13:00:00',
-        (SELECT id FROM drivers WHERE name = 'Bob Driver'), (SELECT id FROM cars WHERE licensePlate = 'ABC456'),
-        'pending', 8.0, 80.0, 5.0, 4.0, (SELECT id FROM users WHERE username = 'admin_user')),
-       (UUID(), (SELECT id FROM customers WHERE name = 'John Doe'), NOW(), 'Location E', 'Location F', '15:00:00',
-        (SELECT id FROM drivers WHERE name = 'Charlie Driver'), (SELECT id FROM cars WHERE licensePlate = 'DEF789'),
-        'cancelled', 0.0, 0.0, 0.0, 0.0, (SELECT id FROM users WHERE username = 'admin_user'));
+VALUES (UUID(), @customerId1, NOW(), 'Colombo Fort', 'Kandy', '10:00:00', @driverId1, @vehicleId1, 'confirmed', 120.5,
+        2500.00, 100.00, 200.00, @userId1),
+       (UUID(), @customerId2, NOW(), 'Galle Face', 'Negombo', '12:30:00', @driverId2, @vehicleId2, 'pending', 30.0,
+        800.00, 50.00, 80.00, @userId2);
 
 
--- Sample Bills
-INSERT INTO bills (id, bookingId, fare, tax, discount, totalAmount, paymentStatus, userId)
-VALUES (UUID(), (SELECT id
-                 FROM bookings
-                 WHERE customerId = (SELECT id FROM customers WHERE name = 'John Doe') LIMIT 1), 100.0, 5.0, 10.0, 95.0, 'completed',
-       (SELECT id FROM users WHERE username = 'admin_user')),
-       (UUID(),
-        (SELECT id FROM bookings WHERE customerId = (SELECT id FROM customers WHERE name = 'Jane Smith') LIMIT 1), 80.0,
-        4.0, 5.0, 79.0, 'pending', (SELECT id FROM users WHERE username = 'admin_user')),
-       (UUID(), (SELECT id FROM bookings WHERE customerId = (SELECT id FROM customers WHERE name = 'John Doe') LIMIT 1),
-        0.0, 0.0, 0.0, 0.0, 'failed', (SELECT id FROM users WHERE username = 'admin_user'));
+-- Get IDs for bookings and users
+SET @bookingId1 = (SELECT id
+                   FROM bookings
+                   WHERE customerId = @customerId1);
+SET @bookingId2 = (SELECT id
+                   FROM bookings
+                   WHERE customerId = @customerId2);
 
-
+-- Insert bills
+INSERT INTO bills (id, bookingId, fare, tax, discount, totalAmount, status, userId)
+VALUES (UUID(), @bookingId1, 2500.00, 200.00, 100.00, 2600.00, 'completed', @userId1),
+       (UUID(), @bookingId2, 800.00, 80.00, 50.00, 830.00, 'pending', @userId2);

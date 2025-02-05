@@ -1,8 +1,8 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.dto.customer;
 
 import java.util.Date;
 
-public class Customer {
+public class CustomerDTO {
     private String id;
     private String registrationNo;
     private String name;
@@ -15,10 +15,10 @@ public class Customer {
     private String updatedAt;
     private String deletedAt;
 
-    public Customer() {
+    public CustomerDTO() {
     }
 
-    public Customer(String id, String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email, String createdAt, String updatedAt, String deletedAt) {
+    public CustomerDTO(String id, String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email, String createdAt, String updatedAt, String deletedAt) {
         this.id = id;
         this.registrationNo = registrationNo;
         this.name = name;

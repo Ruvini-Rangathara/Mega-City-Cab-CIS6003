@@ -23,6 +23,7 @@ CREATE TABLE users
 CREATE TABLE customers
 (
     id        CHAR(36)     NOT NULL PRIMARY KEY, -- UUID for customer ID
+    registrationNo VARCHAR(255) NOT NULL UNIQUE,
     name      VARCHAR(255) NOT NULL,
     address   VARCHAR(255) NOT NULL,
     nic       VARCHAR(20)  NOT NULL UNIQUE,

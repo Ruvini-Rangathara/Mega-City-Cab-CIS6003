@@ -4,11 +4,11 @@ VALUES (UUID(), 'admin@megacitycab.com', SHA2('admin123', 256), 'admin'), -- Adm
        (UUID(), 'jane.smith@example.com', SHA2('jane123', 256), 'user'); -- Regular user
 
 
-INSERT INTO customers (id, name, address, nic, dob, mobileNo, email)
-VALUES (UUID(), 'John Doe', '123 Main St, Colombo', '123456789V', '1990-05-15', '0771234567', 'john.doe@example.com'),
-       (UUID(), 'Jane Smith', '456 Park Ave, Kandy', '987654321V', '1985-10-20', '0777654321',
+INSERT INTO customers (id,registrationNo, name, address, nic, dob, mobileNo, email)
+VALUES (UUID(), 'C-001','John Doe', '123 Main St, Colombo', '123456789V', '1990-05-15', '0771234567', 'john.doe@example.com'),
+       (UUID(), 'C-002','Jane Smith', '456 Park Ave, Kandy', '987654321V', '1985-10-20', '0777654321',
         'jane.smith@example.com'),
-       (UUID(), 'Alice Johnson', '789 Galle Rd, Galle', '456789123V', '1995-03-25', '0779876543',
+       (UUID(), 'C-003', 'Alice Johnson', '789 Galle Rd, Galle', '456789123V', '1995-03-25', '0779876543',
         'alice.johnson@example.com');
 
 INSERT INTO drivers (id, name, licenseNumber, mobileNo, status, experience, email)

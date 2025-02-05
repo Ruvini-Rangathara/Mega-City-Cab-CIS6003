@@ -1,31 +1,28 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.dto.driver;
+import com.project.megacitycab.constant.DriverStatus;
 
-import java.util.Date;
-
-public class Customer {
+public class DriverDTO {
     private String id;
-    private String registrationNo;
     private String name;
-    private String address;
-    private String nic;
-    private Date dob;
+    private String licenseNo;
     private String mobileNo;
+    private DriverStatus status;
+    private int experience;
     private String email;
     private String createdAt;
     private String updatedAt;
     private String deletedAt;
 
-    public Customer() {
+    public DriverDTO() {
     }
 
-    public Customer(String id, String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email, String createdAt, String updatedAt, String deletedAt) {
+    public DriverDTO(String id, String name, String licenseNo, String mobileNo, DriverStatus status, int experience, String email, String createdAt, String updatedAt, String deletedAt) {
         this.id = id;
-        this.registrationNo = registrationNo;
         this.name = name;
-        this.address = address;
-        this.nic = nic;
-        this.dob = dob;
+        this.licenseNo = licenseNo;
         this.mobileNo = mobileNo;
+        this.status = status;
+        this.experience = experience;
         this.email = email;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -40,14 +37,6 @@ public class Customer {
         this.id = id;
     }
 
-    public String getRegistrationNo() {
-        return registrationNo;
-    }
-
-    public void setRegistrationNo(String registrationNo) {
-        this.registrationNo = registrationNo;
-    }
-
     public String getName() {
         return name;
     }
@@ -56,28 +45,12 @@ public class Customer {
         this.name = name;
     }
 
-    public String getAddress() {
-        return address;
+    public String getLicenseNo() {
+        return licenseNo;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getNic() {
-        return nic;
-    }
-
-    public void setNic(String nic) {
-        this.nic = nic;
-    }
-
-    public Date getDob() {
-        return dob;
-    }
-
-    public void setDob(Date dob) {
-        this.dob = dob;
+    public void setLicenseNo(String licenseNo) {
+        this.licenseNo = licenseNo;
     }
 
     public String getMobileNo() {
@@ -86,6 +59,22 @@ public class Customer {
 
     public void setMobileNo(String mobileNo) {
         this.mobileNo = mobileNo;
+    }
+
+    public DriverStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DriverStatus status) {
+        this.status = status;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public void setExperience(int experience) {
+        this.experience = experience;
     }
 
     public String getEmail() {
@@ -122,13 +111,13 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "registrationNo='" + registrationNo + '\'' +
+        return "Driver{" +
+                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", address='" + address + '\'' +
-                ", nic='" + nic + '\'' +
-                ", dob=" + dob +
+                ", licenseNo='" + licenseNo + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
+                ", status=" + status +
+                ", experience=" + experience +
                 ", email='" + email + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +

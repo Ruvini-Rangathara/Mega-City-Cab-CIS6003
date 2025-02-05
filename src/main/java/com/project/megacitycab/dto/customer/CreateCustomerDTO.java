@@ -1,9 +1,8 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.dto.customer;
 
 import java.util.Date;
 
-public class Customer {
-    private String id;
+public class CreateCustomerDTO {
     private String registrationNo;
     private String name;
     private String address;
@@ -11,15 +10,11 @@ public class Customer {
     private Date dob;
     private String mobileNo;
     private String email;
-    private String createdAt;
-    private String updatedAt;
-    private String deletedAt;
 
-    public Customer() {
+    public CreateCustomerDTO() {
     }
 
-    public Customer(String id, String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email, String createdAt, String updatedAt, String deletedAt) {
-        this.id = id;
+    public CreateCustomerDTO(String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email) {
         this.registrationNo = registrationNo;
         this.name = name;
         this.address = address;
@@ -27,17 +22,6 @@ public class Customer {
         this.dob = dob;
         this.mobileNo = mobileNo;
         this.email = email;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getRegistrationNo() {
@@ -96,33 +80,9 @@ public class Customer {
         this.email = email;
     }
 
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(String deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
     @Override
     public String toString() {
-        return "Customer{" +
+        return "CreateCustomerDTO{" +
                 "registrationNo='" + registrationNo + '\'' +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
@@ -130,9 +90,6 @@ public class Customer {
                 ", dob=" + dob +
                 ", mobileNo='" + mobileNo + '\'' +
                 ", email='" + email + '\'' +
-                ", createdAt='" + createdAt + '\'' +
-                ", updatedAt='" + updatedAt + '\'' +
-                ", deletedAt='" + deletedAt + '\'' +
                 '}';
     }
 }

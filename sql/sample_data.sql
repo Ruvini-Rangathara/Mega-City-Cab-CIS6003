@@ -63,8 +63,3 @@ SET @bookingId1 = (SELECT id
 SET @bookingId2 = (SELECT id
                    FROM bookings
                    WHERE customerId = @customerId2);
-
--- Insert bills
-INSERT INTO bills (id, bookingId, fare, tax, discount, totalAmount, status, userId)
-VALUES (UUID(), @bookingId1, 2500.00, 200.00, 100.00, 2600.00, 'completed', @userId1),
-       (UUID(), @bookingId2, 800.00, 80.00, 50.00, 830.00, 'pending', @userId2);

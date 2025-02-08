@@ -92,21 +92,3 @@ CREATE TABLE bookings
     FOREIGN KEY (vehicleID) REFERENCES vehicles (id) ON DELETE CASCADE,
     FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
 );
-
-
-
-CREATE TABLE bills
-(
-    id          CHAR(36)       NOT NULL PRIMARY KEY,                                                         -- UUID for bill ID
-    bookingId   CHAR(36)       NOT NULL,                                                                     -- Reference to Booking
-    fare        DECIMAL(10, 2) NOT NULL,                                                                     -- Fare for the ride
-    tax         DECIMAL(10, 2) NOT NULL,                                                                     -- Tax amount
-    discount    DECIMAL(10, 2) NOT NULL,                                                                     -- Discount applied
-    totalAmount DECIMAL(10, 2) NOT NULL,                                                                     -- Total amount after adjustments
-    status      ENUM ('pending', 'completed', 'failed', 'refunded', 'cancelled') NOT NULL DEFAULT 'pending', -- Payment status
-    userId      CHAR(36)       NOT NULL,                                                                     -- Reference to User
-    createdAt   DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updatedAt   DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (bookingId) REFERENCES bookings (id) ON DELETE CASCADE,
-    FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
-);

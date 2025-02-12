@@ -1,10 +1,11 @@
 package com.project.megacitycab.dto.user;
 
 import com.project.megacitycab.constant.Role;
+import com.project.megacitycab.dto.SuperDTO;
 
 import java.util.Date;
 
-public class UserDTO {
+public class UserDTO implements SuperDTO {
     private String id;
     private String email;
     private String password;

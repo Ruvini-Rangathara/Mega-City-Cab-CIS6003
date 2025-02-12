@@ -1,8 +1,9 @@
 package com.project.megacitycab.dto.vehicle;
 
+import com.project.megacitycab.dto.SuperDTO;
 import com.project.megacitycab.util.Pagination;
 
-public class GetAllVehiclesDTO extends Pagination {
+public class GetAllVehiclesDTO extends Pagination implements SuperDTO {
 
     public GetAllVehiclesDTO() {
         super();

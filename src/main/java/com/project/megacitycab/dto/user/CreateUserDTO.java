@@ -1,8 +1,9 @@
 package com.project.megacitycab.dto.user;
 
 import com.project.megacitycab.constant.Role;
+import com.project.megacitycab.dto.SuperDTO;
 
-public class CreateUserDTO {
+public class CreateUserDTO implements SuperDTO {
     private String email;
     private String password;
     private Role role;

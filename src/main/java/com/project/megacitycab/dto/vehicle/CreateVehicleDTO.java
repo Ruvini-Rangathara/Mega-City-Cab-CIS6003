@@ -1,8 +1,9 @@
 package com.project.megacitycab.dto.vehicle;
 
 import com.project.megacitycab.constant.VehicleStatus;
+import com.project.megacitycab.dto.SuperDTO;
 
-public class CreateVehicleDTO {
+public class CreateVehicleDTO implements SuperDTO {
     private String licensePlate;
     private String model;
     private String brand;

@@ -1,8 +1,9 @@
 package com.project.megacitycab.dto.driver;
 
 import com.project.megacitycab.constant.DriverStatus;
+import com.project.megacitycab.dto.SuperDTO;
 
-public class CreateDriverDTO {
+public class CreateDriverDTO implements SuperDTO {
     private String name;
     private String licenseNo;
     private String mobileNo;

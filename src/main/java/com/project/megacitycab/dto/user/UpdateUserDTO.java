@@ -1,8 +1,9 @@
 package com.project.megacitycab.dto.user;
 
 import com.project.megacitycab.constant.Role;
+import com.project.megacitycab.dto.SuperDTO;
 
-public class UpdateUserDTO extends CreateUserDTO {
+public class UpdateUserDTO extends CreateUserDTO implements SuperDTO {
     private String id;
 
     public UpdateUserDTO() {

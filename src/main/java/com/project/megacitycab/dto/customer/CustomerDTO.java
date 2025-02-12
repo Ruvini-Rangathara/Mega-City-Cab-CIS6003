@@ -1,8 +1,10 @@
 package com.project.megacitycab.dto.customer;
 
+import com.project.megacitycab.dto.SuperDTO;
+
 import java.util.Date;
 
-public class CustomerDTO {
+public class CustomerDTO implements SuperDTO {
     private String id;
     private String registrationNo;
     private String name;

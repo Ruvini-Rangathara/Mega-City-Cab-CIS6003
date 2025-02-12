@@ -1,10 +1,11 @@
 package com.project.megacitycab.dto.booking;
 
 import com.project.megacitycab.constant.BookingStatus;
+import com.project.megacitycab.dto.SuperDTO;
 
 import java.util.Date;
 
-public class UpdateBookingDTO extends CreateBookingDTO {
+public class UpdateBookingDTO extends CreateBookingDTO implements SuperDTO {
     private String id;
 
     public UpdateBookingDTO() {

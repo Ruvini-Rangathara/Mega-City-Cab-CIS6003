@@ -1,8 +1,9 @@
 package com.project.megacitycab.dto.user;
 
+import com.project.megacitycab.dto.SuperDTO;
 import com.project.megacitycab.util.Pagination;
 
-public class GetAllUsersDTO extends Pagination {
+public class GetAllUsersDTO extends Pagination implements SuperDTO {
 
     public GetAllUsersDTO() {
         super();

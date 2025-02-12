@@ -1,8 +1,9 @@
 package com.project.megacitycab.dto.vehicle;
 
 import com.project.megacitycab.constant.VehicleStatus;
+import com.project.megacitycab.dto.SuperDTO;
 
-public class UpdateVehicleDTO extends CreateVehicleDTO {
+public class UpdateVehicleDTO extends CreateVehicleDTO implements SuperDTO {
     private String id;
 
     public UpdateVehicleDTO() {

@@ -1,7 +1,7 @@
 package com.project.megacitycab.util.converter;
 
 import com.project.megacitycab.dto.driver.DriverDTO;
-import com.project.megacitycab.model.Driver;
+import com.project.megacitycab.entity.Driver;
 
 public class DriverConverter {
 

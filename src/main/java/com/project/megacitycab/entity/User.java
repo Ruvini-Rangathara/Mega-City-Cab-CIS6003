@@ -1,10 +1,10 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.entity;
 
 import com.project.megacitycab.constant.Role;
 
 import java.util.Date;
 
-public class User {
+public class User implements SuperEntity{
     private String id;
     private String email;
     private String password;

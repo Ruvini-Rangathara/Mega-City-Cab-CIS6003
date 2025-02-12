@@ -1,8 +1,8 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.entity;
 
 import com.project.megacitycab.constant.VehicleStatus;
 
-public class Vehicle {
+public class Vehicle implements SuperEntity{
     private String id;
     private String licensePlate;
     private String model;

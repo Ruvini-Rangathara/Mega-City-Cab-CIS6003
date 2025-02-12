@@ -1,10 +1,10 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.entity;
 
 import com.project.megacitycab.constant.BookingStatus;
 
 import java.util.Date;
 
-public class Booking {
+public class Booking implements SuperEntity {
     private String id;
     private String customerId;
     private Date bookingDate;

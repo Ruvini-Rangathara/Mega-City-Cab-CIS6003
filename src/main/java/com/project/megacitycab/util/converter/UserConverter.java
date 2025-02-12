@@ -1,7 +1,7 @@
 package com.project.megacitycab.util.converter;
 
 import com.project.megacitycab.dto.user.UserDTO;
-import com.project.megacitycab.model.User;
+import com.project.megacitycab.entity.User;
 
 public class UserConverter {
 

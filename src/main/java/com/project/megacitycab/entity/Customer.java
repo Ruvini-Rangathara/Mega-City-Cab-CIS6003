@@ -1,8 +1,8 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.entity;
 
 import java.util.Date;
 
-public class Customer {
+public class Customer implements SuperEntity{
     private String id;
     private String registrationNo;
     private String name;

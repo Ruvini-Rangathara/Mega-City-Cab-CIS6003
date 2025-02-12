@@ -1,8 +1,8 @@
-package com.project.megacitycab.model;
+package com.project.megacitycab.entity;
 
 import com.project.megacitycab.constant.DriverStatus;
 
-public class Driver {
+public class Driver implements SuperEntity{
     private String id;
     private String name;
     private String licenseNo;

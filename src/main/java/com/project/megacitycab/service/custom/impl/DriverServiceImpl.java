@@ -8,27 +8,27 @@ import java.util.List;
 
 public class DriverServiceImpl implements DriverService {
     @Override
-    public boolean add(SuperDTO entity) throws SQLException, ClassNotFoundException {
+    public boolean add(SuperDTO entity) {
         return false;
     }
 
     @Override
-    public boolean update(SuperDTO entity) throws SQLException, ClassNotFoundException {
+    public boolean update(SuperDTO entity)  {
         return false;
     }
 
     @Override
-    public boolean delete(Object... args) throws SQLException, ClassNotFoundException {
+    public boolean delete(Object... args)  {
         return false;
     }
 
     @Override
-    public SuperDTO searchById(Object... args) throws SQLException, ClassNotFoundException {
+    public SuperDTO searchById(Object... args)  {
         return null;
     }
 
     @Override
-    public List getAll() throws SQLException, ClassNotFoundException {
+    public List getAll()  {
         return List.of();
     }
 

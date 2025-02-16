@@ -9,10 +9,10 @@ USE
 
 CREATE TABLE users
 (
-    id            CHAR(36)     NOT NULL PRIMARY KEY,              -- UUID for user ID
+    id            CHAR(36)     NOT NULL PRIMARY KEY DEFAULT (UUID()),
     email         VARCHAR(255) NOT NULL,
-    password_hash VARCHAR(255) NOT NULL,                          -- Hashed password
-    role          ENUM ('admin', 'user') NOT NULL DEFAULT 'user', -- User role
+    passwordHash VARCHAR(255) NOT NULL,                          -- Hashed password
+    role          ENUM ('ADMIN', 'USER') NOT NULL DEFAULT 'USER', -- User role
     createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt     DATETIME NULL
@@ -22,7 +22,7 @@ CREATE TABLE users
 
 CREATE TABLE customers
 (
-    id        CHAR(36)     NOT NULL PRIMARY KEY, -- UUID for customer ID
+    id        CHAR(36)     NOT NULL PRIMARY KEY DEFAULT (UUID()),
     registrationNo VARCHAR(255) NOT NULL UNIQUE,
     name      VARCHAR(255) NOT NULL,
     address   VARCHAR(255) NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE customers
 
 CREATE TABLE drivers
 (
-    id            CHAR(36)     NOT NULL PRIMARY KEY, -- UUID for driver ID
+    id            CHAR(36)     NOT NULL PRIMARY KEY DEFAULT (UUID()),
     name          VARCHAR(255) NOT NULL,
     licenseNumber VARCHAR(255) NOT NULL UNIQUE,
     mobileNo      VARCHAR(15)  NOT NULL UNIQUE,
@@ -55,7 +55,7 @@ CREATE TABLE drivers
 
 CREATE TABLE vehicles
 (
-    id           CHAR(36)       NOT NULL PRIMARY KEY, -- UUID for car ID
+    id           CHAR(36)       NOT NULL PRIMARY KEY DEFAULT (UUID()),
     licensePlate VARCHAR(15)    NOT NULL UNIQUE,
     model        VARCHAR(255)   NOT NULL,
     brand        VARCHAR(255)   NOT NULL,
@@ -71,20 +71,20 @@ CREATE TABLE vehicles
 
 CREATE TABLE bookings
 (
-    id             CHAR(36)       NOT NULL PRIMARY KEY,                                                          -- UUID for booking ID
-    customerId     CHAR(36)       NOT NULL,                                                                      -- Reference to Customer
-    bookingDate    DATETIME       NOT NULL,                                                                      -- Date and time of booking
-    pickupLocation VARCHAR(255)   NOT NULL,                                                                      -- Pickup location
-    destination    VARCHAR(255)   NOT NULL,                                                                      -- Destination
-    pickupTime     TIME           NOT NULL,                                                                      -- Pickup time
-    driverID       CHAR(36)       NOT NULL,                                                                      -- Reference to Driver
-    vehicleID      CHAR(36)       NOT NULL,                                                                      -- Reference to Car
-    status         ENUM ('pending', 'confirmed', 'cancelled', 'completed', 'failed') NOT NULL DEFAULT 'pending', -- Booking status
-    distance       DECIMAL(10, 2) NOT NULL,                                                                      -- Distance
-    fare           DECIMAL(10, 2) NOT NULL,                                                                      -- Fare for the ride
-    discount       DECIMAL(10, 2) NOT NULL,                                                                      -- Discount
-    tax            DECIMAL(10, 2) NOT NULL,                                                                      -- Tax
-    userId         CHAR(36)       NOT NULL,                                                                      -- Reference to User
+    id             CHAR(36)       NOT NULL PRIMARY KEY DEFAULT (UUID()),
+    customerId     CHAR(36)       NOT NULL,
+    bookingDate    DATETIME       NOT NULL,
+    pickupLocation VARCHAR(255)   NOT NULL,
+    destination    VARCHAR(255)   NOT NULL,
+    pickupTime     TIME           NOT NULL,
+    driverID       CHAR(36)       NOT NULL,
+    vehicleID      CHAR(36)       NOT NULL,
+    status         ENUM ('pending', 'confirmed', 'cancelled', 'completed', 'failed') NOT NULL DEFAULT 'pending',
+    distance       DECIMAL(10, 2) NOT NULL,
+    fare           DECIMAL(10, 2) NOT NULL,
+    discount       DECIMAL(10, 2) NOT NULL,
+    tax            DECIMAL(10, 2) NOT NULL,
+    userId         CHAR(36)       NOT NULL,
     createdAt      DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (customerId) REFERENCES customers (id) ON DELETE CASCADE,

@@ -1,14 +1,14 @@
 package com.project.megacitycab.util.exception;
 
 public class MegaCityCabException extends RuntimeException {
-    private final int errorCode;
+    private final MegaCityCabExceptionType exceptionType;
 
     public MegaCityCabException(MegaCityCabExceptionType exceptionType) {
-        super(exceptionType.getMessage());
-        this.errorCode = exceptionType.getCode();
+        super(exceptionType.name()); // Use the enum name as the exception message
+        this.exceptionType = exceptionType;
     }
 
-    public int getErrorCode() {
-        return errorCode;
+    public String getExceptionType() {
+        return String.valueOf(exceptionType);
     }
 }

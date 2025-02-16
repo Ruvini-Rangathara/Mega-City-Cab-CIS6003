@@ -3,6 +3,9 @@ package com.project.megacitycab.util.converter;
 import com.project.megacitycab.dto.user.UserDTO;
 import com.project.megacitycab.entity.User;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class UserConverter {
 
     // Convert User (Entity) to UserDTO (DTO)
@@ -38,4 +41,10 @@ public class UserConverter {
         user.setDeletedAt(userDTO.getDeletedAt());
         return user;
     }
+
+//    To DtoList
+    public static List<UserDTO> toDTOList(List<User> users) {
+        return users.stream().map(UserConverter::toDTO).collect(Collectors.toList());
+    }
 }
+

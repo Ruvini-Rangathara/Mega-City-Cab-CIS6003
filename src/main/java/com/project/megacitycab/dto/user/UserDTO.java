@@ -9,6 +9,7 @@ public class UserDTO implements SuperDTO {
     private String id;
     private String email;
     private String password;
+    private String salt;
     private Role role;
     private Date createdAt;
     private Date updatedAt;
@@ -17,16 +18,24 @@ public class UserDTO implements SuperDTO {
     public UserDTO() {
     }
 
-    public UserDTO(String id, String email, String password, Role role, Date createdAt, Date updatedAt, Date deletedAt) {
+    public UserDTO(String email, String password, Role role) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    public UserDTO(String id, String email, String password, String salt, Role role, Date createdAt, Date updatedAt, Date deletedAt) {
         this.id = id;
         this.email = email;
         this.password = password;
+        this.salt = salt;
         this.role = role;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deletedAt = deletedAt;
     }
 
+    // Getters and setters for all fields
     public String getId() {
         return id;
     }
@@ -49,6 +58,14 @@ public class UserDTO implements SuperDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public Role getRole() {
@@ -89,6 +106,7 @@ public class UserDTO implements SuperDTO {
                 "id='" + id + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
                 ", role=" + role +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +

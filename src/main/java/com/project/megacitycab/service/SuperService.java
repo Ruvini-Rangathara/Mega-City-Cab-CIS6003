@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface SuperService <T extends SuperDTO> extends Serializable {
+public interface SuperService<T extends SuperDTO> extends Serializable {
     boolean add(T entity) throws SQLException, ClassNotFoundException;
 
     boolean update(T entity) throws SQLException, ClassNotFoundException;
@@ -17,5 +17,5 @@ public interface SuperService <T extends SuperDTO> extends Serializable {
 
     List getAll() throws SQLException, ClassNotFoundException;
 
-    boolean existByPk(Object... args);
+    boolean existByPk(Object... args) throws SQLException, ClassNotFoundException;
 }

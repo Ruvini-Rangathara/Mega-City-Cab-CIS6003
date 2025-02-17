@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CustomerDaoImpl implements CustomerDAO {
+
     @Override
     public boolean add(Customer entity) throws SQLException, ClassNotFoundException {
         return false;

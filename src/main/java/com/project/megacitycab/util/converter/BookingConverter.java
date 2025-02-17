@@ -1,6 +1,6 @@
 package com.project.megacitycab.util.converter;
 
-import com.project.megacitycab.dto.booking.BookingDTO;
+import com.project.megacitycab.dto.BookingDTO;
 import com.project.megacitycab.entity.Booking;
 
 public class BookingConverter {

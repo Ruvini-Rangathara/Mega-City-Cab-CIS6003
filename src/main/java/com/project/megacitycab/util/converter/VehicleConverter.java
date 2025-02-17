@@ -1,6 +1,6 @@
 package com.project.megacitycab.util.converter;
 
-import com.project.megacitycab.dto.vehicle.VehicleDTO;
+import com.project.megacitycab.dto.VehicleDTO;
 import com.project.megacitycab.entity.Vehicle;
 
 public class VehicleConverter {

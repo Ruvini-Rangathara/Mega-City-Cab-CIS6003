@@ -1,7 +1,6 @@
-package com.project.megacitycab.dto.user;
+package com.project.megacitycab.dto;
 
 import com.project.megacitycab.constant.Role;
-import com.project.megacitycab.dto.SuperDTO;
 
 import java.util.Date;
 

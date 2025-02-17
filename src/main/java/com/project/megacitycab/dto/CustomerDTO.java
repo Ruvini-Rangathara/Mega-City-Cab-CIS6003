@@ -1,10 +1,9 @@
-package com.project.megacitycab.dto.customer;
-
-import com.project.megacitycab.dto.SuperDTO;
+package com.project.megacitycab.dto;
 
 import java.util.Date;
 
-public class CreateCustomerDTO implements SuperDTO {
+public class CustomerDTO implements SuperDTO {
+    private String id;
     private String registrationNo;
     private String name;
     private String address;
@@ -12,11 +11,15 @@ public class CreateCustomerDTO implements SuperDTO {
     private Date dob;
     private String mobileNo;
     private String email;
+    private String createdAt;
+    private String updatedAt;
+    private String deletedAt;
 
-    public CreateCustomerDTO() {
+    public CustomerDTO() {
     }
 
-    public CreateCustomerDTO(String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email) {
+    public CustomerDTO(String id, String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email, String createdAt, String updatedAt, String deletedAt) {
+        this.id = id;
         this.registrationNo = registrationNo;
         this.name = name;
         this.address = address;
@@ -24,6 +27,17 @@ public class CreateCustomerDTO implements SuperDTO {
         this.dob = dob;
         this.mobileNo = mobileNo;
         this.email = email;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getRegistrationNo() {
@@ -82,9 +96,33 @@ public class CreateCustomerDTO implements SuperDTO {
         this.email = email;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(String deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
     @Override
     public String toString() {
-        return "CreateCustomerDTO{" +
+        return "Customer{" +
                 "registrationNo='" + registrationNo + '\'' +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
@@ -92,6 +130,9 @@ public class CreateCustomerDTO implements SuperDTO {
                 ", dob=" + dob +
                 ", mobileNo='" + mobileNo + '\'' +
                 ", email='" + email + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", deletedAt='" + deletedAt + '\'' +
                 '}';
     }
 }

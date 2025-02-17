@@ -1,11 +1,11 @@
-package com.project.megacitycab.dto.booking;
+package com.project.megacitycab.dto;
 
 import com.project.megacitycab.constant.BookingStatus;
-import com.project.megacitycab.dto.SuperDTO;
 
 import java.util.Date;
 
-public class CreateBookingDTO implements SuperDTO {
+public class BookingDTO implements SuperDTO {
+    private String id;
     private String customerId;
     private Date bookingDate;
     private String pickupLocation;
@@ -19,11 +19,14 @@ public class CreateBookingDTO implements SuperDTO {
     private double discount;
     private double tax;
     private String userId;
+    private Date createdAt;
+    private Date updatedAt;
 
-    public CreateBookingDTO() {
+    public BookingDTO() {
     }
 
-    public CreateBookingDTO(String customerId, Date bookingDate, String pickupLocation, String destination, String pickupTime, String driverId, String vehicleId, BookingStatus status, double distance, double fare, double discount, double tax, String userId) {
+    public BookingDTO(String id, String customerId, Date bookingDate, String pickupLocation, String destination, String pickupTime, String driverId, String vehicleId, BookingStatus status, double distance, double fare, double discount, double tax, String userId, Date createdAt, Date updatedAt) {
+        this.id = id;
         this.customerId = customerId;
         this.bookingDate = bookingDate;
         this.pickupLocation = pickupLocation;
@@ -37,6 +40,16 @@ public class CreateBookingDTO implements SuperDTO {
         this.discount = discount;
         this.tax = tax;
         this.userId = userId;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getCustomerId() {
@@ -143,10 +156,27 @@ public class CreateBookingDTO implements SuperDTO {
         this.userId = userId;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public String toString() {
-        return "CreateBookingDTO{" +
-                "customerId='" + customerId + '\'' +
+        return "Booking{" +
+                "id='" + id + '\'' +
+                ", customerId='" + customerId + '\'' +
                 ", bookingDate=" + bookingDate +
                 ", pickupLocation='" + pickupLocation + '\'' +
                 ", destination='" + destination + '\'' +
@@ -159,6 +189,8 @@ public class CreateBookingDTO implements SuperDTO {
                 ", discount=" + discount +
                 ", tax=" + tax +
                 ", userId='" + userId + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
                 '}';
     }
 }

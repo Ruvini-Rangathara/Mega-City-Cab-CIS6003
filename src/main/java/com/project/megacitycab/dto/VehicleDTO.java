@@ -1,26 +1,41 @@
-package com.project.megacitycab.dto.vehicle;
+package com.project.megacitycab.dto;
 
 import com.project.megacitycab.constant.VehicleStatus;
-import com.project.megacitycab.dto.SuperDTO;
 
-public class CreateVehicleDTO implements SuperDTO {
+public class VehicleDTO implements SuperDTO {
+    private String id;
     private String licensePlate;
     private String model;
     private String brand;
     private double capacity;
     private String color;
     private VehicleStatus status;
+    private String createdAt;
+    private String updatedAt;
+    private String deletedAt;
 
-    public CreateVehicleDTO() {
+    public VehicleDTO() {
     }
 
-    public CreateVehicleDTO(String licensePlate, String model, String brand, double capacity, String color, VehicleStatus status) {
+    public VehicleDTO(String id, String licensePlate, String model, String brand, double capacity, String color, VehicleStatus status, String createdAt, String updatedAt, String deletedAt) {
+        this.id = id;
         this.licensePlate = licensePlate;
         this.model = model;
         this.brand = brand;
         this.capacity = capacity;
         this.color = color;
         this.status = status;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.deletedAt = deletedAt;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getLicensePlate() {
@@ -71,15 +86,43 @@ public class CreateVehicleDTO implements SuperDTO {
         this.status = status;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public String getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(String deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
     @Override
     public String toString() {
-        return "CreateVehicleDTO{" +
-                "licensePlate='" + licensePlate + '\'' +
+        return "Car{" +
+                "id='" + id + '\'' +
+                ", licensePlate='" + licensePlate + '\'' +
                 ", model='" + model + '\'' +
                 ", brand='" + brand + '\'' +
                 ", capacity=" + capacity +
                 ", color='" + color + '\'' +
                 ", status=" + status +
+                ", createdAt='" + createdAt + '\'' +
+                ", updatedAt='" + updatedAt + '\'' +
+                ", deletedAt='" + deletedAt + '\'' +
                 '}';
     }
 }

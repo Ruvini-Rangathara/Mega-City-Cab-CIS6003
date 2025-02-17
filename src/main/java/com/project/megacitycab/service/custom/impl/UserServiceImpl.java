@@ -3,7 +3,7 @@ package com.project.megacitycab.service.custom.impl;
 import com.project.megacitycab.dao.DaoFactory;
 import com.project.megacitycab.dao.DaoTypes;
 import com.project.megacitycab.dao.custom.UserDAO;
-import com.project.megacitycab.dto.user.UserDTO;
+import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.service.custom.UserService;
 import com.project.megacitycab.util.converter.UserConverter;
 import com.project.megacitycab.util.exception.MegaCityCabException;

@@ -1,7 +1,7 @@
 package com.project.megacitycab.servlet;
 
 import com.project.megacitycab.constant.Role;
-import com.project.megacitycab.dto.user.UserDTO;
+import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.service.custom.UserService;
 import com.project.megacitycab.service.custom.impl.UserServiceImpl;
 import com.project.megacitycab.util.exception.MegaCityCabException;

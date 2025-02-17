@@ -14,6 +14,7 @@ public class VehicleConverter {
         VehicleDTO vehicleDTO = new VehicleDTO();
         vehicleDTO.setId(vehicle.getId());
         vehicleDTO.setLicensePlate(vehicle.getLicensePlate());
+        vehicleDTO.setDriverId(vehicle.getDriverId());
         vehicleDTO.setModel(vehicle.getModel());
         vehicleDTO.setBrand(vehicle.getBrand());
         vehicleDTO.setCapacity(vehicle.getCapacity());
@@ -35,6 +36,7 @@ public class VehicleConverter {
         Vehicle vehicle = new Vehicle();
         vehicle.setId(vehicleDTO.getId());
         vehicle.setLicensePlate(vehicleDTO.getLicensePlate());
+        vehicle.setDriverId(vehicleDTO.getDriverId());
         vehicle.setModel(vehicleDTO.getModel());
         vehicle.setBrand(vehicleDTO.getBrand());
         vehicle.setCapacity(vehicleDTO.getCapacity());

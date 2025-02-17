@@ -18,7 +18,6 @@ public class BookingConverter {
         bookingDTO.setPickupLocation(booking.getPickupLocation());
         bookingDTO.setDestination(booking.getDestination());
         bookingDTO.setPickupTime(booking.getPickupTime());
-        bookingDTO.setDriverId(booking.getDriverId());
         bookingDTO.setVehicleId(booking.getVehicleId());
         bookingDTO.setStatus(booking.getStatus());
         bookingDTO.setDistance(booking.getDistance());
@@ -45,7 +44,6 @@ public class BookingConverter {
         booking.setPickupLocation(bookingDTO.getPickupLocation());
         booking.setDestination(bookingDTO.getDestination());
         booking.setPickupTime(bookingDTO.getPickupTime());
-        booking.setDriverId(bookingDTO.getDriverId());
         booking.setVehicleId(bookingDTO.getVehicleId());
         booking.setStatus(bookingDTO.getStatus());
         booking.setDistance(bookingDTO.getDistance());

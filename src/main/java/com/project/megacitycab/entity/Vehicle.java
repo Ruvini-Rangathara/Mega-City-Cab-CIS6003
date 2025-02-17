@@ -5,6 +5,7 @@ import com.project.megacitycab.constant.VehicleStatus;
 public class Vehicle implements SuperEntity{
     private String id;
     private String licensePlate;
+    private String driverId;
     private String model;
     private String brand;
     private double capacity;
@@ -17,9 +18,10 @@ public class Vehicle implements SuperEntity{
     public Vehicle() {
     }
 
-    public Vehicle(String id, String licensePlate, String model, String brand, double capacity, String color, VehicleStatus status, String createdAt, String updatedAt, String deletedAt) {
+    public Vehicle(String id, String licensePlate,String driverId, String model, String brand, double capacity, String color, VehicleStatus status, String createdAt, String updatedAt, String deletedAt) {
         this.id = id;
         this.licensePlate = licensePlate;
+        this.driverId = driverId;
         this.model = model;
         this.brand = brand;
         this.capacity = capacity;
@@ -44,6 +46,14 @@ public class Vehicle implements SuperEntity{
 
     public void setLicensePlate(String licensePlate) {
         this.licensePlate = licensePlate;
+    }
+
+    public  String getDriverId() {
+        return driverId;
+    }
+
+    public void setDriverId(String driverId) {
+        this.driverId = driverId;
     }
 
     public String getModel() {
@@ -110,11 +120,13 @@ public class Vehicle implements SuperEntity{
         this.deletedAt = deletedAt;
     }
 
+
     @Override
     public String toString() {
-        return "Car{" +
+        return "Vehicle{" +
                 "id='" + id + '\'' +
                 ", licensePlate='" + licensePlate + '\'' +
+                ", driverId='" + driverId + '\'' +
                 ", model='" + model + '\'' +
                 ", brand='" + brand + '\'' +
                 ", capacity=" + capacity +

@@ -11,7 +11,6 @@ public class BookingDTO implements SuperDTO {
     private String pickupLocation;
     private String destination;
     private String pickupTime;
-    private String driverId;
     private String vehicleId;
     private BookingStatus status;
     private double distance;
@@ -25,14 +24,13 @@ public class BookingDTO implements SuperDTO {
     public BookingDTO() {
     }
 
-    public BookingDTO(String id, String customerId, Date bookingDate, String pickupLocation, String destination, String pickupTime, String driverId, String vehicleId, BookingStatus status, double distance, double fare, double discount, double tax, String userId, Date createdAt, Date updatedAt) {
+    public BookingDTO(String id, String customerId, Date bookingDate, String pickupLocation, String destination, String pickupTime, String vehicleId, BookingStatus status, double distance, double fare, double discount, double tax, String userId, Date createdAt, Date updatedAt) {
         this.id = id;
         this.customerId = customerId;
         this.bookingDate = bookingDate;
         this.pickupLocation = pickupLocation;
         this.destination = destination;
         this.pickupTime = pickupTime;
-        this.driverId = driverId;
         this.vehicleId = vehicleId;
         this.status = status;
         this.distance = distance;
@@ -90,14 +88,6 @@ public class BookingDTO implements SuperDTO {
 
     public void setPickupTime(String pickupTime) {
         this.pickupTime = pickupTime;
-    }
-
-    public String getDriverId() {
-        return driverId;
-    }
-
-    public void setDriverId(String driverId) {
-        this.driverId = driverId;
     }
 
     public String getVehicleId() {
@@ -181,7 +171,6 @@ public class BookingDTO implements SuperDTO {
                 ", pickupLocation='" + pickupLocation + '\'' +
                 ", destination='" + destination + '\'' +
                 ", pickupTime='" + pickupTime + '\'' +
-                ", driverId='" + driverId + '\'' +
                 ", vehicleId='" + vehicleId + '\'' +
                 ", status=" + status +
                 ", distance=" + distance +

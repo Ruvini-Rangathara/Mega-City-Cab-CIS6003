@@ -57,6 +57,7 @@ CREATE TABLE vehicles
 (
     id           CHAR(36)       NOT NULL PRIMARY KEY DEFAULT (UUID()),
     licensePlate VARCHAR(15)    NOT NULL UNIQUE,
+    driverId    CHAR(36)       NOT NULL,
     model        VARCHAR(255)   NOT NULL,
     brand        VARCHAR(255)   NOT NULL,
     capacity     DECIMAL(10, 2) NOT NULL,
@@ -64,7 +65,8 @@ CREATE TABLE vehicles
     status       ENUM ('available', 'unavailable') NOT NULL DEFAULT 'available',
     createdAt    DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt    DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    deletedAt    DATETIME NULL
+    deletedAt    DATETIME NULL,
+    FOREIGN KEY (driverID) REFERENCES drivers (id) ON DELETE CASCADE
 );
 
 
@@ -77,7 +79,6 @@ CREATE TABLE bookings
     pickupLocation VARCHAR(255)   NOT NULL,
     destination    VARCHAR(255)   NOT NULL,
     pickupTime     TIME           NOT NULL,
-    driverID       CHAR(36)       NOT NULL,
     vehicleID      CHAR(36)       NOT NULL,
     status         ENUM ('pending', 'confirmed', 'cancelled', 'completed', 'failed') NOT NULL DEFAULT 'pending',
     distance       DECIMAL(10, 2) NOT NULL,
@@ -88,7 +89,7 @@ CREATE TABLE bookings
     createdAt      DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt      DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (customerId) REFERENCES customers (id) ON DELETE CASCADE,
-    FOREIGN KEY (driverID) REFERENCES drivers (id) ON DELETE CASCADE,
     FOREIGN KEY (vehicleID) REFERENCES vehicles (id) ON DELETE CASCADE,
     FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
 );
+

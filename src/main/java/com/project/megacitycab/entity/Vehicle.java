@@ -2,7 +2,7 @@ package com.project.megacitycab.entity;
 
 import com.project.megacitycab.constant.VehicleStatus;
 
-public class Vehicle implements SuperEntity{
+public class Vehicle implements SuperEntity {
     private String id;
     private String licensePlate;
     private String driverId;
@@ -15,111 +15,92 @@ public class Vehicle implements SuperEntity{
     private String updatedAt;
     private String deletedAt;
 
-    public Vehicle() {
+    private Vehicle(VehicleBuilder builder) {
+        this.id = builder.id;
+        this.licensePlate = builder.licensePlate;
+        this.driverId = builder.driverId;
+        this.model = builder.model;
+        this.brand = builder.brand;
+        this.capacity = builder.capacity;
+        this.color = builder.color;
+        this.status = builder.status;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
+        this.deletedAt = builder.deletedAt;
     }
 
-    public Vehicle(String id, String licensePlate,String driverId, String model, String brand, double capacity, String color, VehicleStatus status, String createdAt, String updatedAt, String deletedAt) {
-        this.id = id;
-        this.licensePlate = licensePlate;
-        this.driverId = driverId;
-        this.model = model;
-        this.brand = brand;
-        this.capacity = capacity;
-        this.color = color;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
+    public static class VehicleBuilder {
+        private String id;
+        private String licensePlate;
+        private String driverId;
+        private String model;
+        private String brand;
+        private double capacity;
+        private String color;
+        private VehicleStatus status;
+        private String createdAt;
+        private String updatedAt;
+        private String deletedAt;
 
-    public String getId() {
-        return id;
-    }
+        public VehicleBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+        public VehicleBuilder licensePlate(String licensePlate) {
+            this.licensePlate = licensePlate;
+            return this;
+        }
 
-    public String getLicensePlate() {
-        return licensePlate;
-    }
+        public VehicleBuilder driverId(String driverId) {
+            this.driverId = driverId;
+            return this;
+        }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
-    }
+        public VehicleBuilder model(String model) {
+            this.model = model;
+            return this;
+        }
 
-    public  String getDriverId() {
-        return driverId;
-    }
+        public VehicleBuilder brand(String brand) {
+            this.brand = brand;
+            return this;
+        }
 
-    public void setDriverId(String driverId) {
-        this.driverId = driverId;
-    }
+        public VehicleBuilder capacity(double capacity) {
+            this.capacity = capacity;
+            return this;
+        }
 
-    public String getModel() {
-        return model;
-    }
+        public VehicleBuilder color(String color) {
+            this.color = color;
+            return this;
+        }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
+        public VehicleBuilder status(VehicleStatus status) {
+            this.status = status;
+            return this;
+        }
 
-    public String getBrand() {
-        return brand;
-    }
+        public VehicleBuilder createdAt(String createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
+        public VehicleBuilder updatedAt(String updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
 
-    public double getCapacity() {
-        return capacity;
-    }
+        public VehicleBuilder deletedAt(String deletedAt) {
+            this.deletedAt = deletedAt;
+            return this;
+        }
 
-    public void setCapacity(double capacity) {
-        this.capacity = capacity;
+        public Vehicle build() {
+            return new Vehicle(this);
+        }
     }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public VehicleStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(VehicleStatus status) {
-        this.status = status;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(String deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
 
     @Override
     public String toString() {
@@ -136,5 +117,49 @@ public class Vehicle implements SuperEntity{
                 ", updatedAt='" + updatedAt + '\'' +
                 ", deletedAt='" + deletedAt + '\'' +
                 '}';
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public String getDriverId() {
+        return driverId;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public double getCapacity() {
+        return capacity;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public VehicleStatus getStatus() {
+        return status;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getDeletedAt() {
+        return deletedAt;
     }
 }

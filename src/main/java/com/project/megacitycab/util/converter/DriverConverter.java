@@ -11,19 +11,18 @@ public class DriverConverter {
             return null;
         }
 
-        DriverDTO driverDTO = new DriverDTO();
-        driverDTO.setId(driver.getId());
-        driverDTO.setName(driver.getName());
-        driverDTO.setLicenseNo(driver.getLicenseNo());
-        driverDTO.setMobileNo(driver.getMobileNo());
-        driverDTO.setStatus(driver.getStatus());
-        driverDTO.setExperience(driver.getExperience());
-        driverDTO.setEmail(driver.getEmail());
-        driverDTO.setCreatedAt(driver.getCreatedAt());
-        driverDTO.setUpdatedAt(driver.getUpdatedAt());
-        driverDTO.setDeletedAt(driver.getDeletedAt());
-
-        return driverDTO;
+        return new DriverDTO.DriverDTOBuilder()
+                .id(driver.getId())
+                .name(driver.getName())
+                .licenseNo(driver.getLicenseNo())
+                .mobileNo(driver.getMobileNo())
+                .status(driver.getStatus())
+                .experience(driver.getExperience())
+                .email(driver.getEmail())
+                .createdAt(driver.getCreatedAt())
+                .updatedAt(driver.getUpdatedAt())
+                .deletedAt(driver.getDeletedAt())
+                .build();
     }
 
     // Convert DriverDTO (DTO) to Driver (Entity)
@@ -32,18 +31,17 @@ public class DriverConverter {
             return null;
         }
 
-        Driver driver = new Driver();
-        driver.setId(driverDTO.getId());
-        driver.setName(driverDTO.getName());
-        driver.setLicenseNo(driverDTO.getLicenseNo());
-        driver.setMobileNo(driverDTO.getMobileNo());
-        driver.setStatus(driverDTO.getStatus());
-        driver.setExperience(driverDTO.getExperience());
-        driver.setEmail(driverDTO.getEmail());
-        driver.setCreatedAt(driverDTO.getCreatedAt());
-        driver.setUpdatedAt(driverDTO.getUpdatedAt());
-        driver.setDeletedAt(driverDTO.getDeletedAt());
-
-        return driver;
+        return new Driver.DriverBuilder()
+                .id(driverDTO.getId())
+                .name(driverDTO.getName())
+                .licenseNo(driverDTO.getLicenseNo())
+                .mobileNo(driverDTO.getMobileNo())
+                .status(driverDTO.getStatus())
+                .experience(driverDTO.getExperience())
+                .email(driverDTO.getEmail())
+                .createdAt(driverDTO.getCreatedAt())
+                .updatedAt(driverDTO.getUpdatedAt())
+                .deletedAt(driverDTO.getDeletedAt())
+                .build();
     }
 }

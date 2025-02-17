@@ -15,116 +15,99 @@ public class VehicleDTO implements SuperDTO {
     private String updatedAt;
     private String deletedAt;
 
-    public VehicleDTO() {
+    private VehicleDTO(VehicleDTOBuilder builder) {
+        this.id = builder.id;
+        this.licensePlate = builder.licensePlate;
+        this.driverId = builder.driverId;
+        this.model = builder.model;
+        this.brand = builder.brand;
+        this.capacity = builder.capacity;
+        this.color = builder.color;
+        this.status = builder.status;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
+        this.deletedAt = builder.deletedAt;
     }
 
-    public VehicleDTO(String id, String licensePlate,String driverId, String model, String brand, double capacity, String color, VehicleStatus status, String createdAt, String updatedAt, String deletedAt) {
-        this.id = id;
-        this.licensePlate = licensePlate;
-        this.driverId = driverId;
-        this.model = model;
-        this.brand = brand;
-        this.capacity = capacity;
-        this.color = color;
-        this.status = status;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
+    public static class VehicleDTOBuilder {
+        private String id;
+        private String licensePlate;
+        private String driverId;
+        private String model;
+        private String brand;
+        private double capacity;
+        private String color;
+        private VehicleStatus status;
+        private String createdAt;
+        private String updatedAt;
+        private String deletedAt;
 
-    public String getId() {
-        return id;
-    }
+        public VehicleDTOBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+        public VehicleDTOBuilder licensePlate(String licensePlate) {
+            this.licensePlate = licensePlate;
+            return this;
+        }
 
-    public String getLicensePlate() {
-        return licensePlate;
-    }
+        public VehicleDTOBuilder driverId(String driverId) {
+            this.driverId = driverId;
+            return this;
+        }
 
-    public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
-    }
+        public VehicleDTOBuilder model(String model) {
+            this.model = model;
+            return this;
+        }
 
-    public  String getDriverId() {
-        return driverId;
-    }
+        public VehicleDTOBuilder brand(String brand) {
+            this.brand = brand;
+            return this;
+        }
 
-    public void setDriverId(String driverId) {
-        this.driverId = driverId;
-    }
+        public VehicleDTOBuilder capacity(double capacity) {
+            this.capacity = capacity;
+            return this;
+        }
 
-    public String getModel() {
-        return model;
-    }
+        public VehicleDTOBuilder color(String color) {
+            this.color = color;
+            return this;
+        }
 
-    public void setModel(String model) {
-        this.model = model;
-    }
+        public VehicleDTOBuilder status(VehicleStatus status) {
+            this.status = status;
+            return this;
+        }
 
-    public String getBrand() {
-        return brand;
-    }
+        public VehicleDTOBuilder createdAt(String createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
+        public VehicleDTOBuilder updatedAt(String updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
 
-    public double getCapacity() {
-        return capacity;
-    }
+        public VehicleDTOBuilder deletedAt(String deletedAt) {
+            this.deletedAt = deletedAt;
+            return this;
+        }
 
-    public void setCapacity(double capacity) {
-        this.capacity = capacity;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public VehicleStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(VehicleStatus status) {
-        this.status = status;
-    }
-
-    public String getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public String getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public String getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(String deletedAt) {
-        this.deletedAt = deletedAt;
+        public VehicleDTO build() {
+            return new VehicleDTO(this);
+        }
     }
 
     @Override
     public String toString() {
-        return "Car{" +
+        return "VehicleDTO{" +
                 "id='" + id + '\'' +
                 ", licensePlate='" + licensePlate + '\'' +
+                ", driverId='" + driverId + '\'' +
                 ", model='" + model + '\'' +
                 ", brand='" + brand + '\'' +
                 ", capacity=" + capacity +
@@ -134,5 +117,49 @@ public class VehicleDTO implements SuperDTO {
                 ", updatedAt='" + updatedAt + '\'' +
                 ", deletedAt='" + deletedAt + '\'' +
                 '}';
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLicensePlate() {
+        return licensePlate;
+    }
+
+    public String getDriverId() {
+        return driverId;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public double getCapacity() {
+        return capacity;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public VehicleStatus getStatus() {
+        return status;
+    }
+
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public String getDeletedAt() {
+        return deletedAt;
     }
 }

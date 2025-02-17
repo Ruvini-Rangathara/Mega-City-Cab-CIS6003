@@ -1,4 +1,6 @@
 package com.project.megacitycab.dto;
 
-public interface SuperDTO {
+import java.io.Serializable;
+
+public interface SuperDTO extends Serializable {
 }

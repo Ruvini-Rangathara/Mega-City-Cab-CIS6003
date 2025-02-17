@@ -2,6 +2,8 @@ package com.project.megacitycab.util.converter;
 
 import com.project.megacitycab.dto.BookingDTO;
 import com.project.megacitycab.entity.Booking;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class BookingConverter {
 
@@ -11,49 +13,67 @@ public class BookingConverter {
             return null;
         }
 
-        BookingDTO bookingDTO = new BookingDTO();
-        bookingDTO.setId(booking.getId());
-        bookingDTO.setCustomerId(booking.getCustomerId());
-        bookingDTO.setBookingDate(booking.getBookingDate());
-        bookingDTO.setPickupLocation(booking.getPickupLocation());
-        bookingDTO.setDestination(booking.getDestination());
-        bookingDTO.setPickupTime(booking.getPickupTime());
-        bookingDTO.setVehicleId(booking.getVehicleId());
-        bookingDTO.setStatus(booking.getStatus());
-        bookingDTO.setDistance(booking.getDistance());
-        bookingDTO.setFare(booking.getFare());
-        bookingDTO.setDiscount(booking.getDiscount());
-        bookingDTO.setTax(booking.getTax());
-        bookingDTO.setUserId(booking.getUserId());
-        bookingDTO.setCreatedAt(booking.getCreatedAt());
-        bookingDTO.setUpdatedAt(booking.getUpdatedAt());
-
-        return bookingDTO;
+        return new BookingDTO.BookingDTOBuilder()
+                .id(booking.getId())
+                .customerId(booking.getCustomerId())
+                .bookingDate(booking.getBookingDate())
+                .pickupLocation(booking.getPickupLocation())
+                .destination(booking.getDestination())
+                .pickupTime(booking.getPickupTime())
+                .vehicleId(booking.getVehicleId())
+                .status(booking.getStatus())
+                .distance(booking.getDistance())
+                .fare(booking.getFare())
+                .discount(booking.getDiscount())
+                .tax(booking.getTax())
+                .userId(booking.getUserId())
+                .createdAt(booking.getCreatedAt())
+                .updatedAt(booking.getUpdatedAt())
+                .build();
     }
 
     // Convert BookingDTO (DTO) to Booking (Entity)
-    public static Booking toEntity(BookingDTO bookingDTO) {
-        if (bookingDTO == null) {
+    public static Booking toEntity(BookingDTO dto) {
+        if (dto == null) {
             return null;
         }
 
-        Booking booking = new Booking();
-        booking.setId(bookingDTO.getId());
-        booking.setCustomerId(bookingDTO.getCustomerId());
-        booking.setBookingDate(bookingDTO.getBookingDate());
-        booking.setPickupLocation(bookingDTO.getPickupLocation());
-        booking.setDestination(bookingDTO.getDestination());
-        booking.setPickupTime(bookingDTO.getPickupTime());
-        booking.setVehicleId(bookingDTO.getVehicleId());
-        booking.setStatus(bookingDTO.getStatus());
-        booking.setDistance(bookingDTO.getDistance());
-        booking.setFare(bookingDTO.getFare());
-        booking.setDiscount(bookingDTO.getDiscount());
-        booking.setTax(bookingDTO.getTax());
-        booking.setUserId(bookingDTO.getUserId());
-        booking.setCreatedAt(bookingDTO.getCreatedAt());
-        booking.setUpdatedAt(bookingDTO.getUpdatedAt());
+        return new Booking.BookingBuilder()
+                .id(dto.getId())
+                .customerId(dto.getCustomerId())
+                .bookingDate(dto.getBookingDate())
+                .pickupLocation(dto.getPickupLocation())
+                .destination(dto.getDestination())
+                .pickupTime(dto.getPickupTime())
+                .vehicleId(dto.getVehicleId())
+                .status(dto.getStatus())
+                .distance(dto.getDistance())
+                .fare(dto.getFare())
+                .discount(dto.getDiscount())
+                .tax(dto.getTax())
+                .userId(dto.getUserId())
+                .createdAt(dto.getCreatedAt())
+                .updatedAt(dto.getUpdatedAt())
+                .build();
+    }
 
-        return booking;
+    // Convert List of Booking entities to List of BookingDTOs
+    public static List<BookingDTO> toDTOList(List<Booking> bookings) {
+        if (bookings == null) {
+            return null;
+        }
+        return bookings.stream()
+                .map(BookingConverter::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Convert List of BookingDTOs to List of Booking entities
+    public static List<Booking> toEntityList(List<BookingDTO> dtos) {
+        if (dtos == null) {
+            return null;
+        }
+        return dtos.stream()
+                .map(BookingConverter::toEntity)
+                .collect(Collectors.toList());
     }
 }

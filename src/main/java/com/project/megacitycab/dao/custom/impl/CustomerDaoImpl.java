@@ -29,9 +29,23 @@ public class CustomerDaoImpl implements CustomerDAO {
     @Override
     public Customer searchById(Object... args) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?", args[0]);
+
         if (result.next()) {
-            return new Customer(result.getString("id"), result.getString("registrationNo"), result.getString("name"), result.getString("address"), result.getString("nic"), result.getDate("dob"), result.getString("mobileNo"), result.getString("email"), result.getString("createdAt"), result.getString("updatedAt"), result.getString("deletedAt"));
+            return new Customer.CustomerBuilder()
+                    .id(result.getString("id"))
+                    .registrationNo(result.getString("registrationNo"))
+                    .name(result.getString("name"))
+                    .address(result.getString("address"))
+                    .nic(result.getString("nic"))
+                    .dob(result.getDate("dob"))
+                    .mobileNo(result.getString("mobileNo"))
+                    .email(result.getString("email"))
+                    .createdAt(result.getString("createdAt"))
+                    .updatedAt(result.getString("updatedAt"))
+                    .deletedAt(result.getString("deletedAt"))
+                    .build();
         }
+
         return null;
     }
 
@@ -41,11 +55,26 @@ public class CustomerDaoImpl implements CustomerDAO {
         List<Customer> list = new ArrayList<>();
 
         while (result.next()) {
-            Customer customer = new Customer(result.getString("id"), result.getString("registrationNo"), result.getString("name"), result.getString("address"), result.getString("nic"), result.getDate("dob"), result.getString("mobileNo"), result.getString("email"), result.getString("createdAt"), result.getString("updatedAt"), result.getString("deletedAt"));
+            Customer customer = new Customer.CustomerBuilder()
+                    .id(result.getString("id"))
+                    .registrationNo(result.getString("registrationNo"))
+                    .name(result.getString("name"))
+                    .address(result.getString("address"))
+                    .nic(result.getString("nic"))
+                    .dob(result.getDate("dob"))
+                    .mobileNo(result.getString("mobileNo"))
+                    .email(result.getString("email"))
+                    .createdAt(result.getString("createdAt"))
+                    .updatedAt(result.getString("updatedAt"))
+                    .deletedAt(result.getString("deletedAt"))
+                    .build();
+
             list.add(customer);
         }
+
         return list;
     }
+
 
     @Override
     public boolean existByPk(Object... args) throws SQLException, ClassNotFoundException {

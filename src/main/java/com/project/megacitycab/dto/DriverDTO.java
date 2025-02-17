@@ -1,117 +1,75 @@
 package com.project.megacitycab.dto;
+
 import com.project.megacitycab.constant.DriverStatus;
 
 public class DriverDTO implements SuperDTO {
-    private String id;
-    private String name;
-    private String licenseNo;
-    private String mobileNo;
-    private DriverStatus status;
-    private int experience;
-    private String email;
-    private String createdAt;
-    private String updatedAt;
-    private String deletedAt;
+    private final String id;
+    private final String name;
+    private final String licenseNo;
+    private final String mobileNo;
+    private final DriverStatus status;
+    private final int experience;
+    private final String email;
+    private final String createdAt;
+    private final String updatedAt;
+    private final String deletedAt;
 
-    public DriverDTO() {
-    }
-
-    public DriverDTO(String id, String name, String licenseNo, String mobileNo, DriverStatus status, int experience, String email, String createdAt, String updatedAt, String deletedAt) {
-        this.id = id;
-        this.name = name;
-        this.licenseNo = licenseNo;
-        this.mobileNo = mobileNo;
-        this.status = status;
-        this.experience = experience;
-        this.email = email;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
+    private DriverDTO(DriverDTOBuilder builder) {
+        this.id = builder.id;
+        this.name = builder.name;
+        this.licenseNo = builder.licenseNo;
+        this.mobileNo = builder.mobileNo;
+        this.status = builder.status;
+        this.experience = builder.experience;
+        this.email = builder.email;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
+        this.deletedAt = builder.deletedAt;
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getLicenseNo() {
         return licenseNo;
     }
 
-    public void setLicenseNo(String licenseNo) {
-        this.licenseNo = licenseNo;
-    }
-
     public String getMobileNo() {
         return mobileNo;
-    }
-
-    public void setMobileNo(String mobileNo) {
-        this.mobileNo = mobileNo;
     }
 
     public DriverStatus getStatus() {
         return status;
     }
 
-    public void setStatus(DriverStatus status) {
-        this.status = status;
-    }
-
     public int getExperience() {
         return experience;
-    }
-
-    public void setExperience(int experience) {
-        this.experience = experience;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public String getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(String deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
     @Override
     public String toString() {
-        return "Driver{" +
+        return "DriverDTO{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", licenseNo='" + licenseNo + '\'' +
@@ -123,5 +81,76 @@ public class DriverDTO implements SuperDTO {
                 ", updatedAt='" + updatedAt + '\'' +
                 ", deletedAt='" + deletedAt + '\'' +
                 '}';
+    }
+
+    // Builder class for DriverDTO
+    public static class DriverDTOBuilder {
+        private String id;
+        private String name;
+        private String licenseNo;
+        private String mobileNo;
+        private DriverStatus status;
+        private int experience;
+        private String email;
+        private String createdAt;
+        private String updatedAt;
+        private String deletedAt;
+
+        public DriverDTOBuilder() {
+        }
+
+        public DriverDTOBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public DriverDTOBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public DriverDTOBuilder licenseNo(String licenseNo) {
+            this.licenseNo = licenseNo;
+            return this;
+        }
+
+        public DriverDTOBuilder mobileNo(String mobileNo) {
+            this.mobileNo = mobileNo;
+            return this;
+        }
+
+        public DriverDTOBuilder status(DriverStatus status) {
+            this.status = status;
+            return this;
+        }
+
+        public DriverDTOBuilder experience(int experience) {
+            this.experience = experience;
+            return this;
+        }
+
+        public DriverDTOBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public DriverDTOBuilder createdAt(String createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public DriverDTOBuilder updatedAt(String updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
+        public DriverDTOBuilder deletedAt(String deletedAt) {
+            this.deletedAt = deletedAt;
+            return this;
+        }
+
+        public DriverDTO build() {
+            return new DriverDTO(this);
+        }
     }
 }

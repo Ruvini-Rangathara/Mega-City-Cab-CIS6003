@@ -2,7 +2,6 @@ package com.project.megacitycab.util.converter;
 
 import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.entity.User;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,15 +13,15 @@ public class UserConverter {
             return null;
         }
 
-        UserDTO userDTO = new UserDTO();
-        userDTO.setId(user.getId());
-        userDTO.setEmail(user.getEmail());
-        userDTO.setPassword(user.getPassword());
-        userDTO.setRole(user.getRole());
-        userDTO.setCreatedAt(user.getCreatedAt());
-        userDTO.setUpdatedAt(user.getUpdatedAt());
-        userDTO.setDeletedAt(user.getDeletedAt());
-        return userDTO;
+        return new UserDTO.UserDTOBuilder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .role(user.getRole())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
+                .deletedAt(user.getDeletedAt())
+                .build();
     }
 
     // Convert UserDTO (DTO) to User (Entity)
@@ -31,20 +30,34 @@ public class UserConverter {
             return null;
         }
 
-        User user = new User();
-        user.setId(userDTO.getId());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
-        user.setRole(userDTO.getRole());
-        user.setCreatedAt(userDTO.getCreatedAt());
-        user.setUpdatedAt(userDTO.getUpdatedAt());
-        user.setDeletedAt(userDTO.getDeletedAt());
-        return user;
+        return new User.UserBuilder()
+                .id(userDTO.getId())
+                .email(userDTO.getEmail())
+                .password(userDTO.getPassword())
+                .role(userDTO.getRole())
+                .createdAt(userDTO.getCreatedAt())
+                .updatedAt(userDTO.getUpdatedAt())
+                .deletedAt(userDTO.getDeletedAt())
+                .build();
     }
 
-//    To DtoList
+    // Convert List of User entities to List of UserDTOs
     public static List<UserDTO> toDTOList(List<User> users) {
-        return users.stream().map(UserConverter::toDTO).collect(Collectors.toList());
+        if (users == null) {
+            return null;
+        }
+        return users.stream()
+                .map(UserConverter::toDTO)
+                .collect(Collectors.toList());
+    }
+
+    // Added convenience method to convert List of DTOs to List of Entities
+    public static List<User> toEntityList(List<UserDTO> userDTOs) {
+        if (userDTOs == null) {
+            return null;
+        }
+        return userDTOs.stream()
+                .map(UserConverter::toEntity)
+                .collect(Collectors.toList());
     }
 }
-

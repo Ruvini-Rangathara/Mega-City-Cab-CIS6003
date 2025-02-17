@@ -2,122 +2,76 @@ package com.project.megacitycab.entity;
 
 import java.util.Date;
 
-public class Customer implements SuperEntity{
-    private String id;
-    private String registrationNo;
-    private String name;
-    private String address;
-    private String nic;
-    private Date dob;
-    private String mobileNo;
-    private String email;
-    private String createdAt;
-    private String updatedAt;
-    private String deletedAt;
+public class Customer implements SuperEntity {
+    private final String id;
+    private final String registrationNo;
+    private final String name;
+    private final String address;
+    private final String nic;
+    private final Date dob;
+    private final String mobileNo;
+    private final String email;
+    private final String createdAt;
+    private final String updatedAt;
+    private final String deletedAt;
 
-    public Customer() {
+    private Customer(CustomerBuilder builder) {
+        this.id = builder.id;
+        this.registrationNo = builder.registrationNo;
+        this.name = builder.name;
+        this.address = builder.address;
+        this.nic = builder.nic;
+        this.dob = builder.dob;
+        this.mobileNo = builder.mobileNo;
+        this.email = builder.email;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
+        this.deletedAt = builder.deletedAt;
     }
 
-    public Customer(String id, String registrationNo, String name, String address, String nic, Date dob, String mobileNo, String email, String createdAt, String updatedAt, String deletedAt) {
-        this.id = id;
-        this.registrationNo = registrationNo;
-        this.name = name;
-        this.address = address;
-        this.nic = nic;
-        this.dob = dob;
-        this.mobileNo = mobileNo;
-        this.email = email;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
-
+    // Only getters to keep the object immutable
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getRegistrationNo() {
         return registrationNo;
     }
 
-    public void setRegistrationNo(String registrationNo) {
-        this.registrationNo = registrationNo;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
     public String getNic() {
         return nic;
-    }
-
-    public void setNic(String nic) {
-        this.nic = nic;
     }
 
     public Date getDob() {
         return dob;
     }
 
-    public void setDob(Date dob) {
-        this.dob = dob;
-    }
-
     public String getMobileNo() {
         return mobileNo;
-    }
-
-    public void setMobileNo(String mobileNo) {
-        this.mobileNo = mobileNo;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(String createdAt) {
-        this.createdAt = createdAt;
     }
 
     public String getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(String updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
     public String getDeletedAt() {
         return deletedAt;
-    }
-
-    public void setDeletedAt(String deletedAt) {
-        this.deletedAt = deletedAt;
     }
 
     @Override
@@ -135,5 +89,82 @@ public class Customer implements SuperEntity{
                 ", updatedAt='" + updatedAt + '\'' +
                 ", deletedAt='" + deletedAt + '\'' +
                 '}';
+    }
+
+    // Static Builder class
+    public static class CustomerBuilder {
+        private String id;
+        private String registrationNo;
+        private String name;
+        private String address;
+        private String nic;
+        private Date dob;
+        private String mobileNo;
+        private String email;
+        private String createdAt;
+        private String updatedAt;
+        private String deletedAt;
+
+        public CustomerBuilder() {
+        }
+
+        public CustomerBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public CustomerBuilder registrationNo(String registrationNo) {
+            this.registrationNo = registrationNo;
+            return this;
+        }
+
+        public CustomerBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public CustomerBuilder address(String address) {
+            this.address = address;
+            return this;
+        }
+
+        public CustomerBuilder nic(String nic) {
+            this.nic = nic;
+            return this;
+        }
+
+        public CustomerBuilder dob(Date dob) {
+            this.dob = dob;
+            return this;
+        }
+
+        public CustomerBuilder mobileNo(String mobileNo) {
+            this.mobileNo = mobileNo;
+            return this;
+        }
+
+        public CustomerBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public CustomerBuilder createdAt(String createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public CustomerBuilder updatedAt(String updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
+        public CustomerBuilder deletedAt(String deletedAt) {
+            this.deletedAt = deletedAt;
+            return this;
+        }
+
+        public Customer build() {
+            return new Customer(this);
+        }
     }
 }

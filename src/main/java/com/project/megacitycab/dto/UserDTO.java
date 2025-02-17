@@ -1,107 +1,65 @@
 package com.project.megacitycab.dto;
 
 import com.project.megacitycab.constant.Role;
-
 import java.util.Date;
 
 public class UserDTO implements SuperDTO {
-    private String id;
-    private String email;
-    private String password;
-    private String salt;
-    private Role role;
-    private Date createdAt;
-    private Date updatedAt;
-    private Date deletedAt;
+    private final String id;
+    private final String email;
+    private final String password;
+    private final String salt;
+    private final Role role;
+    private final Date createdAt;
+    private final Date updatedAt;
+    private final Date deletedAt;
 
-    public UserDTO() {
+    private UserDTO(UserDTOBuilder builder) {
+        this.id = builder.id;
+        this.email = builder.email;
+        this.password = builder.password;
+        this.salt = builder.salt;
+        this.role = builder.role;
+        this.createdAt = builder.createdAt;
+        this.updatedAt = builder.updatedAt;
+        this.deletedAt = builder.deletedAt;
     }
 
-    public UserDTO(String email, String password, Role role) {
-        this.email = email;
-        this.password = password;
-        this.role = role;
-    }
-
-    public UserDTO(String id, String email, String password, String salt, Role role, Date createdAt, Date updatedAt, Date deletedAt) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.salt = salt;
-        this.role = role;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.deletedAt = deletedAt;
-    }
-
-    // Getters and setters for all fields
+    // Only getters since we're using immutable pattern
     public String getId() {
         return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public String getPassword() {
         return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getSalt() {
         return salt;
     }
 
-    public void setSalt(String salt) {
-        this.salt = salt;
-    }
-
     public Role getRole() {
         return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Date createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    public void setUpdatedAt(Date updatedAt) {
-        this.updatedAt = updatedAt;
     }
 
     public Date getDeletedAt() {
         return deletedAt;
     }
 
-    public void setDeletedAt(Date deletedAt) {
-        this.deletedAt = deletedAt;
-    }
-
     @Override
     public String toString() {
-        return "User{" +
+        return "UserDTO{" +
                 "id='" + id + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
@@ -111,5 +69,74 @@ public class UserDTO implements SuperDTO {
                 ", updatedAt=" + updatedAt +
                 ", deletedAt=" + deletedAt +
                 '}';
+    }
+
+    // Static Builder class
+    public static class UserDTOBuilder {
+        private String id;
+        private String email;
+        private String password;
+        private String salt;
+        private Role role;
+        private Date createdAt;
+        private Date updatedAt;
+        private Date deletedAt;
+
+        public UserDTOBuilder() {
+        }
+
+        // Builder methods for each field
+        public UserDTOBuilder id(String id) {
+            this.id = id;
+            return this;
+        }
+
+        public UserDTOBuilder email(String email) {
+            this.email = email;
+            return this;
+        }
+
+        public UserDTOBuilder password(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public UserDTOBuilder salt(String salt) {
+            this.salt = salt;
+            return this;
+        }
+
+        public UserDTOBuilder role(Role role) {
+            this.role = role;
+            return this;
+        }
+
+        public UserDTOBuilder createdAt(Date createdAt) {
+            this.createdAt = createdAt;
+            return this;
+        }
+
+        public UserDTOBuilder updatedAt(Date updatedAt) {
+            this.updatedAt = updatedAt;
+            return this;
+        }
+
+        public UserDTOBuilder deletedAt(Date deletedAt) {
+            this.deletedAt = deletedAt;
+            return this;
+        }
+
+        // Convenience method to set both created and updated dates to now
+        public UserDTOBuilder setTimestampsToNow() {
+            Date now = new Date();
+            this.createdAt = now;
+            this.updatedAt = now;
+            return this;
+        }
+
+        // Build method to create the UserDTO instance
+        public UserDTO build() {
+            return new UserDTO(this);
+        }
     }
 }

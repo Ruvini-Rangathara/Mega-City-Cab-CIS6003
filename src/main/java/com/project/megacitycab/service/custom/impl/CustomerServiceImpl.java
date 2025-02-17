@@ -82,8 +82,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public boolean delete(Object... args) throws SQLException, ClassNotFoundException {
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(args[0].toString());
+        CustomerDTO customerDTO = new CustomerDTO.CustomerDTOBuilder()
+                .id(args[0].toString())
+                .build();
 
         if (!customerExistsByPk(customerDTO)) {
             throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NOT_FOUND);

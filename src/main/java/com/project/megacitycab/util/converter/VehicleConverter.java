@@ -11,20 +11,19 @@ public class VehicleConverter {
             return null;
         }
 
-        VehicleDTO vehicleDTO = new VehicleDTO();
-        vehicleDTO.setId(vehicle.getId());
-        vehicleDTO.setLicensePlate(vehicle.getLicensePlate());
-        vehicleDTO.setDriverId(vehicle.getDriverId());
-        vehicleDTO.setModel(vehicle.getModel());
-        vehicleDTO.setBrand(vehicle.getBrand());
-        vehicleDTO.setCapacity(vehicle.getCapacity());
-        vehicleDTO.setColor(vehicle.getColor());
-        vehicleDTO.setStatus(vehicle.getStatus());
-        vehicleDTO.setCreatedAt(vehicle.getCreatedAt());
-        vehicleDTO.setUpdatedAt(vehicle.getUpdatedAt());
-        vehicleDTO.setDeletedAt(vehicle.getDeletedAt());
-
-        return vehicleDTO;
+        return new VehicleDTO.VehicleDTOBuilder()
+                .id(vehicle.getId())
+                .licensePlate(vehicle.getLicensePlate())
+                .driverId(vehicle.getDriverId())
+                .model(vehicle.getModel())
+                .brand(vehicle.getBrand())
+                .capacity(vehicle.getCapacity())
+                .color(vehicle.getColor())
+                .status(vehicle.getStatus())
+                .createdAt(vehicle.getCreatedAt())
+                .updatedAt(vehicle.getUpdatedAt())
+                .deletedAt(vehicle.getDeletedAt())
+                .build();
     }
 
     // Convert VehicleDTO (DTO) to Vehicle (Entity)
@@ -33,19 +32,18 @@ public class VehicleConverter {
             return null;
         }
 
-        Vehicle vehicle = new Vehicle();
-        vehicle.setId(vehicleDTO.getId());
-        vehicle.setLicensePlate(vehicleDTO.getLicensePlate());
-        vehicle.setDriverId(vehicleDTO.getDriverId());
-        vehicle.setModel(vehicleDTO.getModel());
-        vehicle.setBrand(vehicleDTO.getBrand());
-        vehicle.setCapacity(vehicleDTO.getCapacity());
-        vehicle.setColor(vehicleDTO.getColor());
-        vehicle.setStatus(vehicleDTO.getStatus());
-        vehicle.setCreatedAt(vehicleDTO.getCreatedAt());
-        vehicle.setUpdatedAt(vehicleDTO.getUpdatedAt());
-        vehicle.setDeletedAt(vehicleDTO.getDeletedAt());
-
-        return vehicle;
+        return new Vehicle.VehicleBuilder()
+                .id(vehicleDTO.getId())
+                .licensePlate(vehicleDTO.getLicensePlate())
+                .driverId(vehicleDTO.getDriverId())
+                .model(vehicleDTO.getModel())
+                .brand(vehicleDTO.getBrand())
+                .capacity(vehicleDTO.getCapacity())
+                .color(vehicleDTO.getColor())
+                .status(vehicleDTO.getStatus())
+                .createdAt(vehicleDTO.getCreatedAt())
+                .updatedAt(vehicleDTO.getUpdatedAt())
+                .deletedAt(vehicleDTO.getDeletedAt())
+                .build();
     }
 }

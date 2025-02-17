@@ -25,7 +25,7 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws  IOException {
         String action = request.getParameter("action");
 
         if (action == null) {
@@ -55,7 +55,7 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
 
         if (action == null) {
@@ -88,10 +88,13 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            UserDTO userDTO = new UserDTO();
-            userDTO.setEmail(request.getParameter("email"));
-            userDTO.setPassword(request.getParameter("password"));
-            userDTO.setRole(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.USER);
+            UserDTO userDTO = new UserDTO.UserDTOBuilder()
+                    .email(request.getParameter("email"))
+                    .password(request.getParameter("password"))
+                    .role(request.getParameter("role") != null ?
+                            Role.valueOf(request.getParameter("role")) :
+                            Role.USER)
+                    .build();
 
             boolean isAdded = userService.add(userDTO);
             if (isAdded) {
@@ -111,11 +114,14 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            UserDTO userDTO = new UserDTO();
-            userDTO.setId(request.getParameter("id"));
-            userDTO.setEmail(request.getParameter("email"));
-            userDTO.setPassword(request.getParameter("password"));
-            userDTO.setRole(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.USER);
+            UserDTO userDTO = new UserDTO.UserDTOBuilder()
+                    .id(request.getParameter("id"))
+                    .email(request.getParameter("email"))
+                    .password(request.getParameter("password"))
+                    .role(request.getParameter("role") != null ?
+                            Role.valueOf(request.getParameter("role")) :
+                            Role.USER)
+                    .build();
 
             boolean isUpdated = userService.update(userDTO);
 

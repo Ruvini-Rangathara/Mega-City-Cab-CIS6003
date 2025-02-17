@@ -8,54 +8,55 @@ import java.util.List;
 
 public class CustomerConverter {
 
-    // Convert Customer (Entity) to CustomerDTO (DTO)
+    // Convert Customer (Entity) to CustomerDTO (DTO) using Builder
     public static CustomerDTO toDTO(Customer customer) {
         if (customer == null) {
             return null;
         }
 
-        CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setId(customer.getId());
-        customerDTO.setRegistrationNo(customer.getRegistrationNo());
-        customerDTO.setName(customer.getName());
-        customerDTO.setAddress(customer.getAddress());
-        customerDTO.setNic(customer.getNic());
-        customerDTO.setDob(customer.getDob());
-        customerDTO.setMobileNo(customer.getMobileNo());
-        customerDTO.setEmail(customer.getEmail());
-        customerDTO.setCreatedAt(customer.getCreatedAt());
-        customerDTO.setUpdatedAt(customer.getUpdatedAt());
-        customerDTO.setDeletedAt(customer.getDeletedAt());
-
-        return customerDTO;
+        return new CustomerDTO.CustomerDTOBuilder()
+                .id(customer.getId())
+                .registrationNo(customer.getRegistrationNo())
+                .name(customer.getName())
+                .address(customer.getAddress())
+                .nic(customer.getNic())
+                .dob(customer.getDob())
+                .mobileNo(customer.getMobileNo())
+                .email(customer.getEmail())
+                .createdAt(customer.getCreatedAt())
+                .updatedAt(customer.getUpdatedAt())
+                .deletedAt(customer.getDeletedAt())
+                .build();
     }
 
-    // Convert CustomerDTO (DTO) to Customer (Entity)
+    // Convert CustomerDTO (DTO) to Customer (Entity) using Builder
     public static Customer toEntity(CustomerDTO customerDTO) {
         if (customerDTO == null) {
             return null;
         }
 
-        Customer customer = new Customer();
-        customer.setId(customerDTO.getId());
-        customer.setRegistrationNo(customerDTO.getRegistrationNo());
-        customer.setName(customerDTO.getName());
-        customer.setAddress(customerDTO.getAddress());
-        customer.setNic(customerDTO.getNic());
-        customer.setDob(customerDTO.getDob());
-        customer.setMobileNo(customerDTO.getMobileNo());
-        customer.setEmail(customerDTO.getEmail());
-        customer.setCreatedAt(customerDTO.getCreatedAt());
-        customer.setUpdatedAt(customerDTO.getUpdatedAt());
-        customer.setDeletedAt(customerDTO.getDeletedAt());
-
-        return customer;
+        return new Customer.CustomerBuilder()
+                .id(customerDTO.getId())
+                .registrationNo(customerDTO.getRegistrationNo())
+                .name(customerDTO.getName())
+                .address(customerDTO.getAddress())
+                .nic(customerDTO.getNic())
+                .dob(customerDTO.getDob())
+                .mobileNo(customerDTO.getMobileNo())
+                .email(customerDTO.getEmail())
+                .createdAt(customerDTO.getCreatedAt())
+                .updatedAt(customerDTO.getUpdatedAt())
+                .deletedAt(customerDTO.getDeletedAt())
+                .build();
     }
 
+    // Convert a list of Customer entities to a list of CustomerDTOs
     public static List<CustomerDTO> toDTOList(List<Customer> customers) {
         List<CustomerDTO> customerDTOs = new ArrayList<>();
-        for (Customer customer : customers) {
-            customerDTOs.add(toDTO(customer));
+        if (customers != null) {
+            for (Customer customer : customers) {
+                customerDTOs.add(toDTO(customer));
+            }
         }
         return customerDTOs;
     }

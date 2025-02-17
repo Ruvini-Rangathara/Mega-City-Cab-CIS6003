@@ -31,10 +31,19 @@ public class UserDaoImpl implements UserDAO {
     public User searchById(Object... args) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute("SELECT * FROM users WHERE id=?", args[0]);
         if (result.next()) {
-            return new User(result.getString("id"), result.getString("email"), null, Role.valueOf(result.getString("role")), result.getDate("createdAt"), result.getDate("updatedAt"), result.getDate("deletedAt"));
+            return new User.UserBuilder()
+                    .id(result.getString("id"))
+                    .email(result.getString("email"))
+                    .password(null) // Assuming password is not retrieved for security reasons
+                    .role(Role.valueOf(result.getString("role")))
+                    .createdAt(result.getDate("createdAt"))
+                    .updatedAt(result.getDate("updatedAt"))
+                    .deletedAt(result.getDate("deletedAt"))
+                    .build();
         }
         return null;
     }
+
 
     @Override
     public List<User> getAll() throws SQLException, ClassNotFoundException {
@@ -42,12 +51,22 @@ public class UserDaoImpl implements UserDAO {
         List<User> list = new ArrayList<>();
 
         while (result.next()) {
-            User user = new User(result.getString("id"), result.getString("email"), null, Role.valueOf(result.getString("role")), result.getDate("createdAt"), result.getDate("updatedAt"), result.getDate("deletedAt"));
+            User user = new User.UserBuilder()
+                    .id(result.getString("id"))
+                    .email(result.getString("email"))
+                    .password(null) // Password is not retrieved for security reasons
+                    .role(Role.valueOf(result.getString("role")))
+                    .createdAt(result.getDate("createdAt"))
+                    .updatedAt(result.getDate("updatedAt"))
+                    .deletedAt(result.getDate("deletedAt"))
+                    .build();
+
             list.add(user);
         }
 
         return list;
     }
+
 
 
     @Override

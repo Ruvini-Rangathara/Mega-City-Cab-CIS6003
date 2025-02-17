@@ -84,34 +84,42 @@ public class CustomerServlet extends HttpServlet {
 
     private void addCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            // Validate all fields as required
-            if (request.getParameter("name") == null || request.getParameter("email") == null || request.getParameter("registrationNo") == null || request.getParameter("address") == null || request.getParameter("nic") == null || request.getParameter("mobileNo") == null || request.getParameter("dob") == null) {
+            // Validate all required fields
+            if (request.getParameter("name") == null ||
+                    request.getParameter("email") == null ||
+                    request.getParameter("registrationNo") == null ||
+                    request.getParameter("address") == null ||
+                    request.getParameter("nic") == null ||
+                    request.getParameter("mobileNo") == null ||
+                    request.getParameter("dob") == null) {
+
                 SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Fill the required Fields");
                 return;
             }
 
-            CustomerDTO customerDTO = new CustomerDTO();
-            customerDTO.setRegistrationNo(request.getParameter("registrationNo"));
-            customerDTO.setName(request.getParameter("name"));
-            customerDTO.setAddress(request.getParameter("address"));
-            customerDTO.setNic(request.getParameter("nic"));
-
-            // Parse date of birth if provided (expecting the format yyyy-MM-dd)
+            // Parse date of birth (expected format: yyyy-MM-dd)
+            Date dob = null;
             String dobStr = request.getParameter("dob");
             if (dobStr != null && !dobStr.isEmpty()) {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date dob = sdf.parse(dobStr);
-                    customerDTO.setDob(dob);
+                    dob = sdf.parse(dobStr);
                 } catch (ParseException e) {
                     SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid date format for dob. Expected yyyy-MM-dd");
                     return;
                 }
             }
 
-            customerDTO.setMobileNo(request.getParameter("mobileNo"));
-            customerDTO.setEmail(request.getParameter("email"));
-            // Optionally, you can set createdAt or other audit fields if needed
+            // Build the CustomerDTO using the builder pattern
+            CustomerDTO customerDTO = new CustomerDTO.CustomerDTOBuilder()
+                    .registrationNo(request.getParameter("registrationNo"))
+                    .name(request.getParameter("name"))
+                    .address(request.getParameter("address"))
+                    .nic(request.getParameter("nic"))
+                    .dob(dob)
+                    .mobileNo(request.getParameter("mobileNo"))
+                    .email(request.getParameter("email"))
+                    .build();
 
             boolean isAdded = customerService.add(customerDTO);
             if (isAdded) {
@@ -128,34 +136,45 @@ public class CustomerServlet extends HttpServlet {
 
     private void updateCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            if (request.getParameter("name") == null || request.getParameter("email") == null || request.getParameter("registrationNo") == null || request.getParameter("address") == null || request.getParameter("nic") == null || request.getParameter("mobileNo") == null || request.getParameter("dob") == null) {
+            // Validate that all required parameters are provided
+            if (request.getParameter("name") == null ||
+                    request.getParameter("email") == null ||
+                    request.getParameter("registrationNo") == null ||
+                    request.getParameter("address") == null ||
+                    request.getParameter("nic") == null ||
+                    request.getParameter("mobileNo") == null ||
+                    request.getParameter("dob") == null) {
+
                 SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Fill the required Fields");
                 return;
             }
 
-            CustomerDTO customerDTO = new CustomerDTO();
-            customerDTO.setId(request.getParameter("id"));
-            customerDTO.setRegistrationNo(request.getParameter("registrationNo"));
-            customerDTO.setName(request.getParameter("name"));
-            customerDTO.setAddress(request.getParameter("address"));
-            customerDTO.setNic(request.getParameter("nic"));
-
+            // Parse the date of birth (expected format: yyyy-MM-dd)
+            Date dob = null;
             String dobStr = request.getParameter("dob");
             if (dobStr != null && !dobStr.isEmpty()) {
                 try {
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    Date dob = sdf.parse(dobStr);
-                    customerDTO.setDob(dob);
+                    dob = sdf.parse(dobStr);
                 } catch (ParseException e) {
                     SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid date format for dob. Expected yyyy-MM-dd");
                     return;
                 }
             }
 
-            customerDTO.setMobileNo(request.getParameter("mobileNo"));
-            customerDTO.setEmail(request.getParameter("email"));
-            // Optionally, update audit fields like updatedAt if needed
+            // Build the CustomerDTO using the builder pattern
+            CustomerDTO customerDTO = new CustomerDTO.CustomerDTOBuilder()
+                    .id(request.getParameter("id"))
+                    .registrationNo(request.getParameter("registrationNo"))
+                    .name(request.getParameter("name"))
+                    .address(request.getParameter("address"))
+                    .nic(request.getParameter("nic"))
+                    .dob(dob)
+                    .mobileNo(request.getParameter("mobileNo"))
+                    .email(request.getParameter("email"))
+                    .build();
 
+            // Update the customer
             boolean isUpdated = customerService.update(customerDTO);
             if (isUpdated) {
                 SendResponse.send(response, HttpServletResponse.SC_OK, "Customer updated successfully");

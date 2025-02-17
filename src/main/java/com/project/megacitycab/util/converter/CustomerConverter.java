@@ -3,6 +3,9 @@ package com.project.megacitycab.util.converter;
 import com.project.megacitycab.dto.CustomerDTO;
 import com.project.megacitycab.entity.Customer;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CustomerConverter {
 
     // Convert Customer (Entity) to CustomerDTO (DTO)
@@ -47,5 +50,13 @@ public class CustomerConverter {
         customer.setDeletedAt(customerDTO.getDeletedAt());
 
         return customer;
+    }
+
+    public static List<CustomerDTO> toDTOList(List<Customer> customers) {
+        List<CustomerDTO> customerDTOs = new ArrayList<>();
+        for (Customer customer : customers) {
+            customerDTOs.add(toDTO(customer));
+        }
+        return customerDTOs;
     }
 }

@@ -4,6 +4,7 @@ import com.project.megacitycab.constant.Role;
 import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.service.custom.UserService;
 import com.project.megacitycab.service.custom.impl.UserServiceImpl;
+import com.project.megacitycab.util.SendResponse;
 import com.project.megacitycab.util.exception.MegaCityCabException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -28,7 +29,7 @@ public class UserServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
-            sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
             return;
         }
 
@@ -44,12 +45,12 @@ public class UserServlet extends HttpServlet {
                     deleteUser(request, response);
                     break;
                 default:
-                    sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+                    SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
             }
         } catch (MegaCityCabException e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getExceptionType());
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getExceptionType());
         } catch (Exception e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }
 
@@ -58,7 +59,7 @@ public class UserServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         if (action == null) {
-            sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
             return;
         }
 
@@ -71,19 +72,19 @@ public class UserServlet extends HttpServlet {
                     getAllUsers(request, response);
                     break;
                 default:
-                    sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+                    SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
             }
         } catch (MegaCityCabException e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getExceptionType());
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getExceptionType());
         } catch (Exception e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }
 
     private void addUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             if (request.getParameter("email") == null || request.getParameter("password") == null) {
-                sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Email and password are required");
+                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Email and password are required");
                 return;
             }
 
@@ -94,19 +95,19 @@ public class UserServlet extends HttpServlet {
 
             boolean isAdded = userService.add(userDTO);
             if (isAdded) {
-                sendResponse(response, HttpServletResponse.SC_CREATED, "User added successfully");
+                SendResponse.send(response, HttpServletResponse.SC_CREATED, "User added successfully");
             }
         } catch (MegaCityCabException e) {
-            sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
+            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
         } catch (Exception e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }
 
     private void updateUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
             if (request.getParameter("email") == null || request.getParameter("password") == null) {
-                sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Email and password are required");
+                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Email and password are required");
                 return;
             }
 
@@ -119,39 +120,39 @@ public class UserServlet extends HttpServlet {
             boolean isUpdated = userService.update(userDTO);
 
             if (isUpdated) {
-                sendResponse(response, HttpServletResponse.SC_OK, "User updated successfully");
+                SendResponse.send(response, HttpServletResponse.SC_OK, "User updated successfully");
                 return;  // Stop execution after successful update
             }
 
             // Only reach this if update failed
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update user");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update user");
 
         } catch (MegaCityCabException e) {
-            sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
+            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
         } catch (Exception e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }
 
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            String email = request.getParameter("id");
+            String id = request.getParameter("id");
 
-            if (email == null) {
-                sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "User ID is required");
+            if (id == null) {
+                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "User ID is required");
                 return;
             }
 
-            boolean isDeleted = userService.delete(email);
+            boolean isDeleted = userService.delete(id);
             if (isDeleted) {
-                sendResponse(response, HttpServletResponse.SC_OK, "User deleted successfully");
+                SendResponse.send(response, HttpServletResponse.SC_OK, "User deleted successfully");
             } else {
-                sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete user");
+                SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to delete user");
             }
         } catch (MegaCityCabException e) {
-            sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
+            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
         } catch (Exception e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }
 
@@ -159,14 +160,14 @@ public class UserServlet extends HttpServlet {
         try {
             UserDTO userDTO = userService.searchById(request.getParameter("id"));
             if (userDTO != null) {
-                sendResponse(response, HttpServletResponse.SC_OK, "" + userDTO);
+                SendResponse.send(response, HttpServletResponse.SC_OK, "" + userDTO);
             } else {
-                sendResponse(response, HttpServletResponse.SC_NOT_FOUND, "User not found");
+                SendResponse.send(response, HttpServletResponse.SC_NOT_FOUND, "User not found");
             }
         } catch (MegaCityCabException e) {
-            sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
+            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
         } catch (Exception e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
     }
 
@@ -175,26 +176,14 @@ public class UserServlet extends HttpServlet {
             List<UserDTO> users = userService.getAll();
 
             if (!users.isEmpty()) {
-                sendResponse(response, HttpServletResponse.SC_OK, "" + users);
+                SendResponse.send(response, HttpServletResponse.SC_OK, "" + users);
             } else {
-                sendResponse(response, HttpServletResponse.SC_NOT_FOUND, "No users found");
+                SendResponse.send(response, HttpServletResponse.SC_NOT_FOUND, "No users found");
             }
         } catch (MegaCityCabException e) {
-            sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
+            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
         } catch (Exception e) {
-            sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
         }
-    }
-
-    private void sendResponse(HttpServletResponse response, int code, String message) throws IOException {
-        response.setStatus(code);
-        response.setContentType("application/json");
-
-        // Manually construct JSON error response
-        String jsonResponse = String.format("{\"status\": %d, \"message\": \"%s\"}", code, message);
-
-        PrintWriter writer = response.getWriter();
-        writer.write(jsonResponse);
-        writer.flush();
     }
 }

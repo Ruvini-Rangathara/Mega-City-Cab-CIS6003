@@ -122,8 +122,9 @@ public class CustomerDTO implements SuperDTO {
 
     @Override
     public String toString() {
-        return "Customer{" +
-                "registrationNo='" + registrationNo + '\'' +
+        return "CustomerDTO{" +
+                "id='" + id + '\'' +
+                ", registrationNo='" + registrationNo + '\'' +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", nic='" + nic + '\'' +

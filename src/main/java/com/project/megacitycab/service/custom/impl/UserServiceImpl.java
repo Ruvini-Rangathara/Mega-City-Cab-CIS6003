@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
         }
 
         UserDTO userDTO = UserConverter.toDTO(userDAO.searchById(entity.getId()));
-        if(!Objects.equals(userDTO.getEmail(), entity.getEmail())){
+        if (!Objects.equals(userDTO.getEmail(), entity.getEmail())) {
             throw new MegaCityCabException(MegaCityCabExceptionType.CANNOT_CHANGE_EMAIL);
         }
 
@@ -73,42 +73,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean delete(Object... args) {
-        try {
-            if (!userExistsByPk(UserConverter.toDTO(userDAO.searchById(args[0])))) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.USER_NOT_FOUND);
-            }
-            return userDAO.delete(args);
-        } catch (Exception e) {
-            if (e instanceof SQLException) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.SQL_EXCEPTION);
-            }
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+    public boolean delete(Object... args) throws SQLException, ClassNotFoundException {
+        if (!userExistsByPk(UserConverter.toDTO(userDAO.searchById(args[0])))) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.USER_NOT_FOUND);
         }
+        return userDAO.delete(args);
     }
 
     @Override
-    public UserDTO searchById(Object... args) {
-        try {
-            return UserConverter.toDTO(userDAO.searchById(args));
-        } catch (Exception e) {
-            if (e instanceof SQLException) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.SQL_EXCEPTION);
-            }
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        }
+    public UserDTO searchById(Object... args) throws SQLException, ClassNotFoundException {
+        return UserConverter.toDTO(userDAO.searchById(args));
     }
 
     @Override
-    public List getAll() {
-        try {
-            return UserConverter.toDTOList(userDAO.getAll());
-        } catch (Exception e) {
-            if (e instanceof SQLException) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.SQL_EXCEPTION);
-            }
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        }
+    public List getAll() throws SQLException, ClassNotFoundException {
+        return UserConverter.toDTOList(userDAO.getAll());
+
     }
 
     @Override

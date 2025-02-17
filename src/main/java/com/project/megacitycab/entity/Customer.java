@@ -123,7 +123,8 @@ public class Customer implements SuperEntity{
     @Override
     public String toString() {
         return "Customer{" +
-                "registrationNo='" + registrationNo + '\'' +
+                "id='" + id + '\'' +
+                ", registrationNo='" + registrationNo + '\'' +
                 ", name='" + name + '\'' +
                 ", address='" + address + '\'' +
                 ", nic='" + nic + '\'' +

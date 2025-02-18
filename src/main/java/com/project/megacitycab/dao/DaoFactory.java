@@ -19,7 +19,6 @@ public class DaoFactory {
             case BOOKING_DAO_IMPL -> (T) new BookingDaoImpl();
             case VEHICLE_DAO_IMPL -> (T) new VehicleDaoImpl();
             case USER_DAO_IMPL -> (T) new UserDaoImpl();
-            default -> null;
         };
     }
 }

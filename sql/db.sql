@@ -10,8 +10,10 @@ USE
 CREATE TABLE users
 (
     id            CHAR(36)     NOT NULL PRIMARY KEY DEFAULT (UUID()),
+    name         VARCHAR(255) NOT NULL,
     email         VARCHAR(255) NOT NULL,
-    passwordHash VARCHAR(255) NOT NULL,                          -- Hashed password
+    passwordHash VARCHAR(255) NOT NULL,
+    salt          VARCHAR(255) NOT NULL,
     role          ENUM ('ADMIN', 'USER') NOT NULL DEFAULT 'USER', -- User role
     createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

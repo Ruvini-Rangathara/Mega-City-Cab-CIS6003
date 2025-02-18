@@ -15,8 +15,10 @@ public class UserConverter {
 
         return new UserDTO.UserDTOBuilder()
                 .id(user.getId())
+                .name(user.getName())
                 .email(user.getEmail())
                 .password(user.getPassword())
+                .salt(user.getSalt())
                 .role(user.getRole())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
@@ -32,8 +34,10 @@ public class UserConverter {
 
         return new User.UserBuilder()
                 .id(userDTO.getId())
+                .name(userDTO.getName())
                 .email(userDTO.getEmail())
                 .password(userDTO.getPassword())
+                .salt(userDTO.getSalt())
                 .role(userDTO.getRole())
                 .createdAt(userDTO.getCreatedAt())
                 .updatedAt(userDTO.getUpdatedAt())

@@ -1,15 +1,17 @@
 -- Users table data
-INSERT INTO users (email, passwordHash, role)
-VALUES ('admin@megacitycab.com', SHA2('admin123', 256), 'ADMIN'),
-       ('user1@megacitycab.com', SHA2('user1123', 256), 'USER'),
-       ('user2@megacitycab.com', SHA2('user2123', 256), 'USER'),
-       ('user3@megacitycab.com', SHA2('user3123', 256), 'USER'),
-       ('user4@megacitycab.com', SHA2('user4123', 256), 'USER'),
-       ('user5@megacitycab.com', SHA2('user5123', 256), 'USER'),
-       ('user6@megacitycab.com', SHA2('user6123', 256), 'USER'),
-       ('user7@megacitycab.com', SHA2('user7123', 256), 'USER'),
-       ('user8@megacitycab.com', SHA2('user8123', 256), 'USER'),
-       ('user9@megacitycab.com', SHA2('user9123', 256), 'USER');
+INSERT INTO users (name, email, passwordHash, salt, role)
+VALUES
+    ('John Doe', 'johndoe@megacitycab.com', SHA2(CONCAT('admin123', 'randomSalt1'), 256), 'randomSalt1', 'ADMIN'),
+    ('Alice Johnson', 'alice.johnson@megacitycab.com', SHA2(CONCAT('user1123', 'randomSalt2'), 256), 'randomSalt2', 'USER'),
+    ('Bob Smith', 'bob.smith@megacitycab.com', SHA2(CONCAT('user2123', 'randomSalt3'), 256), 'randomSalt3', 'USER'),
+    ('Charlie Brown', 'charlie.brown@megacitycab.com', SHA2(CONCAT('user3123', 'randomSalt4'), 256), 'randomSalt4', 'USER'),
+    ('David Lee', 'david.lee@megacitycab.com', SHA2(CONCAT('user4123', 'randomSalt5'), 256), 'randomSalt5', 'USER'),
+    ('Emma Williams', 'emma.williams@megacitycab.com', SHA2(CONCAT('user5123', 'randomSalt6'), 256), 'randomSalt6', 'USER'),
+    ('Frank Miller', 'frank.miller@megacitycab.com', SHA2(CONCAT('user6123', 'randomSalt7'), 256), 'randomSalt7', 'USER'),
+    ('Grace Davis', 'grace.davis@megacitycab.com', SHA2(CONCAT('user7123', 'randomSalt8'), 256), 'randomSalt8', 'USER'),
+    ('Hannah Wilson', 'hannah.wilson@megacitycab.com', SHA2(CONCAT('user8123', 'randomSalt9'), 256), 'randomSalt9', 'USER'),
+    ('Isaac Moore', 'isaac.moore@megacitycab.com', SHA2(CONCAT('user9123', 'randomSalt10'), 256), 'randomSalt10', 'USER');
+
 
 -- Customers table data
 INSERT INTO customers (registrationNo, name, address, nic, dob, mobileNo, email)
@@ -117,19 +119,19 @@ SET @vehicle5 = (SELECT id
 
 SET @user1 = (SELECT id
               FROM users
-              WHERE email = 'user1@megacitycab.com');
+              WHERE email = 'alice.johnson@megacitycab.com');
 SET @user2 = (SELECT id
               FROM users
-              WHERE email = 'user2@megacitycab.com');
+              WHERE email = 'bob.smith@megacitycab.com');
 SET @user3 = (SELECT id
               FROM users
-              WHERE email = 'user3@megacitycab.com');
+              WHERE email = 'charlie.brown@megacitycab.com');
 SET @user4 = (SELECT id
               FROM users
-              WHERE email = 'user4@megacitycab.com');
+              WHERE email = 'david.lee@megacitycab.com');
 SET @user5 = (SELECT id
               FROM users
-              WHERE email = 'user5@megacitycab.com');
+              WHERE email = 'emma.williams@megacitycab.com');
 
 -- Bookings table data
 INSERT INTO bookings (customerId, bookingDate, pickupLocation, destination, pickupTime, vehicleID, status, distance,

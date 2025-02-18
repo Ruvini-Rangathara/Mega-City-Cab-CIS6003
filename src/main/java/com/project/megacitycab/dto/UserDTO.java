@@ -5,6 +5,7 @@ import java.util.Date;
 
 public class UserDTO implements SuperDTO {
     private final String id;
+    private final String name;
     private final String email;
     private final String password;
     private final String salt;
@@ -15,6 +16,7 @@ public class UserDTO implements SuperDTO {
 
     private UserDTO(UserDTOBuilder builder) {
         this.id = builder.id;
+        this.name = builder.name;
         this.email = builder.email;
         this.password = builder.password;
         this.salt = builder.salt;
@@ -27,6 +29,10 @@ public class UserDTO implements SuperDTO {
     // Only getters since we're using immutable pattern
     public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getEmail() {
@@ -61,6 +67,7 @@ public class UserDTO implements SuperDTO {
     public String toString() {
         return "UserDTO{" +
                 "id='" + id + '\'' +
+                "name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", salt='" + salt + '\'' +
@@ -74,6 +81,7 @@ public class UserDTO implements SuperDTO {
     // Static Builder class
     public static class UserDTOBuilder {
         private String id;
+        private String name;
         private String email;
         private String password;
         private String salt;
@@ -88,6 +96,11 @@ public class UserDTO implements SuperDTO {
         // Builder methods for each field
         public UserDTOBuilder id(String id) {
             this.id = id;
+            return this;
+        }
+
+        public UserDTOBuilder name(String name) {
+            this.name = name;
             return this;
         }
 

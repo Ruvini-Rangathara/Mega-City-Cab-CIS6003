@@ -3,23 +3,29 @@ package com.project.megacitycab.service;
 import com.project.megacitycab.service.custom.impl.*;
 
 public class ServiceFactory {
-    private static ServiceFactory serviceFactory;
+    private static ServiceFactory instance;
 
     private ServiceFactory() {
     }
 
     public static ServiceFactory getInstance() {
-        return serviceFactory == null ? serviceFactory = new ServiceFactory() : serviceFactory;
+        if (instance == null) {
+            instance = new ServiceFactory();
+        }
+        return instance;
     }
 
-    public <T extends SuperService>T getService(ServiceType type) {
-        return switch (type) {
-            case CUSTOMER_SERVICE_IMPL -> (T) new CustomerServiceImpl();
-            case DRIVER_SERVICE_IMPL -> (T) new DriverServiceImpl();
-            case BOOKING_SERVICE_IMPL -> (T) new BookingServiceImpl();
-            case USER_SERVICE_IMPL -> (T) new UserServiceImpl();
-            case VEHICLE_SERVICE_IMPL -> (T) new VehicleServiceImpl();
-            default -> null;
+    public <T extends SuperService> T getService(ServiceType type) {
+
+        SuperService service = switch (type) {
+            case AUTH_SERVICE_IMPL -> new AuthServiceImpl();
+            case BOOKING_SERVICE_IMPL -> new BookingServiceImpl();
+            case CUSTOMER_SERVICE_IMPL -> new CustomerServiceImpl();
+            case DRIVER_SERVICE_IMPL -> new DriverServiceImpl();
+            case USER_SERVICE_IMPL -> new UserServiceImpl();
+            case VEHICLE_SERVICE_IMPL -> new VehicleServiceImpl();
         };
+        return (T) service;
     }
 }
+

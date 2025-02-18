@@ -8,4 +8,5 @@ import java.sql.SQLException;
 public interface UserDAO extends CrudDAO<User> {
     boolean existByEmail(Object... args) throws SQLException, ClassNotFoundException;
 
+    User findByEmail(Object... args) throws SQLException, ClassNotFoundException;
 }

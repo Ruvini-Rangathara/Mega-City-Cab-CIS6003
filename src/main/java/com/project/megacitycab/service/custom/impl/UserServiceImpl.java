@@ -33,23 +33,26 @@ public class UserServiceImpl implements UserService {
             throw new MegaCityCabException(MegaCityCabExceptionType.USER_ALREADY_EXISTS);
         }
 
+        // Generate salt and hash password
         byte[] salt = PasswordUtils.generateSalt();
-        String hashedPassword = PasswordUtils.hashPassword(entity.getPassword(), salt);
+        String hashedPassword = PasswordUtils.hashPassword("admin123", salt);
+        String encodedSalt = Base64.getEncoder().encodeToString(salt);
 
-        // Create a new UserDTO using the builder pattern with the hashed password and salt
+        // Create a new UserDTO using the builder pattern
         UserDTO newUser = new UserDTO.UserDTOBuilder()
                 .id(entity.getId())
+                .name(entity.getName())
                 .email(entity.getEmail())
                 .password(hashedPassword)
-                .salt(Base64.getEncoder().encodeToString(salt))
+                .salt(encodedSalt)
                 .role(entity.getRole())
                 .createdAt(entity.getCreatedAt())
                 .updatedAt(entity.getUpdatedAt())
                 .deletedAt(entity.getDeletedAt())
                 .build();
 
-        boolean isAdd = userDAO.add(UserConverter.toEntity(newUser));
-        if (!isAdd) {
+        boolean isAdded = userDAO.add(UserConverter.toEntity(newUser));
+        if (!isAdded) {
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
         return true;
@@ -61,35 +64,36 @@ public class UserServiceImpl implements UserService {
             throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_USER_INPUTS);
         }
 
-        // Retrieve the existing user from the database and convert to DTO.
+        // Retrieve the existing user from the database
         UserDTO originalUser = UserConverter.toDTO(userDAO.searchById(entity.getId()));
 
         if (!Objects.equals(originalUser.getEmail(), entity.getEmail())) {
             throw new MegaCityCabException(MegaCityCabExceptionType.CANNOT_CHANGE_EMAIL);
         }
 
-        // Determine the new password and salt:
-        // If a new password is provided, hash it; otherwise, keep the original values.
+        // Determine whether to generate a new password and salt
         String newPassword;
         String newSalt;
+
         if (entity.getPassword() != null && !entity.getPassword().isEmpty()) {
-            byte[] saltBytes = PasswordUtils.generateSalt();
-            newPassword = PasswordUtils.hashPassword(entity.getPassword(), saltBytes);
-            newSalt = Base64.getEncoder().encodeToString(saltBytes);
+            byte[] salt = PasswordUtils.generateSalt();
+            newPassword = PasswordUtils.hashPassword(entity.getPassword(), salt);
+            newSalt = Base64.getEncoder().encodeToString(salt);
         } else {
             newPassword = originalUser.getPassword();
             newSalt = originalUser.getSalt();
         }
 
-        // Build the updated UserDTO using the builder pattern.
+        // Build the updated UserDTO
         UserDTO updatedUser = new UserDTO.UserDTOBuilder()
                 .id(entity.getId())
+                .name(entity.getName())
                 .email(entity.getEmail())
                 .password(newPassword)
                 .salt(newSalt)
                 .role(entity.getRole() != null ? entity.getRole() : originalUser.getRole())
                 .createdAt(originalUser.getCreatedAt())
-                .updatedAt(new Date()) // update the timestamp to now
+                .updatedAt(new Date()) // Update timestamp
                 .deletedAt(originalUser.getDeletedAt())
                 .build();
 

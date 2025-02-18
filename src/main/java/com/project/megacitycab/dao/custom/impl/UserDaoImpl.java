@@ -14,12 +14,12 @@ import java.util.List;
 public class UserDaoImpl implements UserDAO {
     @Override
     public boolean add(User entity) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("INSERT INTO users (email, passwordHash, role) VALUES (?,?,?)", entity.getEmail(), entity.getPassword(), entity.getRole().toString());
+        return CrudUtil.execute("INSERT INTO users (name, email, passwordHash, role) VALUES (?,?,?,?)", entity.getName(), entity.getEmail(), entity.getPassword(), entity.getRole().toString());
     }
 
     @Override
     public boolean update(User entity) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("UPDATE users SET passwordHash=?, role=? WHERE id=?", entity.getPassword(), entity.getRole().toString(), entity.getId());
+        return CrudUtil.execute("UPDATE users SET name=? passwordHash=?, role=? WHERE id=?", entity.getName(), entity.getPassword(), entity.getRole().toString(), entity.getId());
     }
 
     @Override
@@ -33,8 +33,10 @@ public class UserDaoImpl implements UserDAO {
         if (result.next()) {
             return new User.UserBuilder()
                     .id(result.getString("id"))
+                    .name(result.getString("name"))
                     .email(result.getString("email"))
-                    .password(null) // Assuming password is not retrieved for security reasons
+                    .password(result.getString("passwordHash"))
+                    .salt(result.getString("salt"))
                     .role(Role.valueOf(result.getString("role")))
                     .createdAt(result.getDate("createdAt"))
                     .updatedAt(result.getDate("updatedAt"))
@@ -53,8 +55,10 @@ public class UserDaoImpl implements UserDAO {
         while (result.next()) {
             User user = new User.UserBuilder()
                     .id(result.getString("id"))
+                    .name(result.getString("name"))
                     .email(result.getString("email"))
-                    .password(null) // Password is not retrieved for security reasons
+                    .password(result.getString("passwordHash"))
+                    .salt(result.getString("salt"))
                     .role(Role.valueOf(result.getString("role")))
                     .createdAt(result.getDate("createdAt"))
                     .updatedAt(result.getDate("updatedAt"))
@@ -79,5 +83,24 @@ public class UserDaoImpl implements UserDAO {
     public boolean existByEmail(Object... args) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute("SELECT * FROM users WHERE email=?", args[0]);
         return result.next();
+    }
+
+    @Override
+    public User findByEmail(Object... args) throws SQLException, ClassNotFoundException {
+        ResultSet result = CrudUtil.execute("SELECT * FROM users WHERE email=?", args[0]);
+        if (result.next()) {
+            return new User.UserBuilder()
+                    .id(result.getString("id"))
+                    .name(result.getString("name"))
+                    .email(result.getString("email"))
+                    .password(result.getString("passwordHash"))
+                    .salt(result.getString("salt"))
+                    .role(Role.valueOf(result.getString("role")))
+                    .createdAt(result.getDate("createdAt"))
+                    .updatedAt(result.getDate("updatedAt"))
+                    .deletedAt(result.getDate("deletedAt"))
+                    .build();
+        }
+        return null;
     }
 }

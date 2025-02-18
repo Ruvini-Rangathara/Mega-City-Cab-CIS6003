@@ -1,31 +1,50 @@
 package com.project.megacitycab.util.security;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.security.SecureRandom;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import java.util.Base64;
 
 public class PasswordUtils {
-
-    private static final int SALT_LENGTH = 16; // Salt length (in bytes)
-    private static final int ITERATIONS = 10000; // Number of PBKDF2 iterations
-    private static final int KEY_LENGTH = 512; // Length of the generated hash (in bits)
+    private static final int SALT_LENGTH = 16;
 
     // Generate a random salt
     public static byte[] generateSalt() {
-        SecureRandom secureRandom = new SecureRandom();
+        SecureRandom random = new SecureRandom();
         byte[] salt = new byte[SALT_LENGTH];
-        secureRandom.nextBytes(salt);
+        random.nextBytes(salt);
         return salt;
     }
 
-    // Hash the password with PBKDF2
-    public static String hashPassword(String password, byte[] salt) {
+    // Convert bytes to hex string
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : bytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    }
+
+    // Hash password with salt using SHA-256 (byte[] version)
+    public static String hashPassword(String plainPassword, byte[] salt) {
+        return hashPassword(plainPassword, bytesToHex(salt));
+    }
+
+    // Hash password with salt using SHA-256 (String version)
+    public static String hashPassword(String plainPassword, String salt) {
         try {
-            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATIONS, KEY_LENGTH);
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
-            byte[] hash = skf.generateSecret(spec).getEncoded();
-            return Base64.getEncoder().encodeToString(hash);
+            // Concatenate the password and salt exactly as MySQL does
+            String saltedPassword = plainPassword + salt;
+
+            // Create SHA-256 hash
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
+
+            // Convert to lowercase hex string to match MySQL's SHA2 output
+            return bytesToHex(hashBytes);
         } catch (Exception e) {
             throw new RuntimeException("Error while hashing password", e);
         }
@@ -33,8 +52,14 @@ public class PasswordUtils {
 
     // Verify if the entered password matches the stored hash
     public static boolean verifyPassword(String plainPassword, String storedHash, String storedSalt) {
-        byte[] salt = Base64.getDecoder().decode(storedSalt);
-        String hashedPassword = hashPassword(plainPassword, salt);
-        return hashedPassword.equals(storedHash);
+        try {
+            // Hash the input password with the stored salt
+            String hashedPassword = hashPassword(plainPassword, storedSalt);
+
+            // Compare the hashed password with the stored hash (case-insensitive)
+            return hashedPassword.equalsIgnoreCase(storedHash);
+        } catch (Exception e) {
+            throw new RuntimeException("Error while verifying password", e);
+        }
     }
 }

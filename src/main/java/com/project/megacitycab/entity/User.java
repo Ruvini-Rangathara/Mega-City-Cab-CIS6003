@@ -5,8 +5,10 @@ import java.util.Date;
 
 public class User implements SuperEntity {
     private final String id;
+    private final String name;
     private final String email;
     private final String password;
+    private final String salt;
     private final Role role;
     private final Date createdAt;
     private final Date updatedAt;
@@ -14,8 +16,10 @@ public class User implements SuperEntity {
 
     private User(UserBuilder builder) {
         this.id = builder.id;
+        this.name = builder.name;
         this.email = builder.email;
         this.password = builder.password;
+        this.salt = builder.salt;
         this.role = builder.role;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
@@ -27,12 +31,20 @@ public class User implements SuperEntity {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getEmail() {
         return email;
     }
 
     public String getPassword() {
         return password;
+    }
+
+    public String getSalt(){
+        return salt;
     }
 
     public Role getRole() {
@@ -55,8 +67,10 @@ public class User implements SuperEntity {
     public String toString() {
         return "User{" +
                 "id='" + id + '\'' +
+                ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
+                ", salt='" + salt + '\'' +
                 ", role=" + role +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
@@ -67,8 +81,10 @@ public class User implements SuperEntity {
     // Static Builder class
     public static class UserBuilder {
         private String id;
+        private String name;
         private String email;
         private String password;
+        private String salt;
         private Role role;
         private Date createdAt;
         private Date updatedAt;
@@ -82,6 +98,11 @@ public class User implements SuperEntity {
             return this;
         }
 
+        public UserBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
         public UserBuilder email(String email) {
             this.email = email;
             return this;
@@ -89,6 +110,11 @@ public class User implements SuperEntity {
 
         public UserBuilder password(String password) {
             this.password = password;
+            return this;
+        }
+
+        public UserBuilder salt(String salt) {
+            this.salt = salt;
             return this;
         }
 

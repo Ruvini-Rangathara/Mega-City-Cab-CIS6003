@@ -1,7 +1,7 @@
 package com.project.megacitycab.service.custom;
 
 import com.project.megacitycab.dto.UserDTO;
-import com.project.megacitycab.service.SuperService;
+import com.project.megacitycab.service.CrudService;
 
-public interface UserService extends SuperService<UserDTO> {
+public interface UserService extends CrudService<UserDTO> {
 }

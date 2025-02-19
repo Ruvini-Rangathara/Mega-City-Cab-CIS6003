@@ -89,6 +89,7 @@ public class UserServlet extends HttpServlet {
             }
 
             UserDTO userDTO = new UserDTO.UserDTOBuilder()
+                    .name(request.getParameter("name"))
                     .email(request.getParameter("email"))
                     .password(request.getParameter("password"))
                     .role(request.getParameter("role") != null ?
@@ -116,6 +117,7 @@ public class UserServlet extends HttpServlet {
 
             UserDTO userDTO = new UserDTO.UserDTOBuilder()
                     .id(request.getParameter("id"))
+                    .name(request.getParameter("name"))
                     .email(request.getParameter("email"))
                     .password(request.getParameter("password"))
                     .role(request.getParameter("role") != null ?

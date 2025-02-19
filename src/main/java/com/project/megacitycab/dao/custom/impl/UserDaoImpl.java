@@ -14,7 +14,7 @@ import java.util.List;
 public class UserDaoImpl implements UserDAO {
     @Override
     public boolean add(User entity) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("INSERT INTO users (name, email, passwordHash, role) VALUES (?,?,?,?)", entity.getName(), entity.getEmail(), entity.getPassword(), entity.getRole().toString());
+        return CrudUtil.execute("INSERT INTO users (name, email, passwordHash, salt, role) VALUES (?,?,?,?,?)", entity.getName(), entity.getEmail(), entity.getPassword(),entity.getSalt(), entity.getRole().toString());
     }
 
     @Override

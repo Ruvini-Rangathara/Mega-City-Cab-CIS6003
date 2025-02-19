@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
 
         // Generate salt and hash password
         byte[] salt = PasswordUtils.generateSalt();
-        String hashedPassword = PasswordUtils.hashPassword("admin123", salt);
-        String encodedSalt = Base64.getEncoder().encodeToString(salt);
+        String encodedSalt = PasswordUtils.bytesToHex(salt);  // Store salt as HEX
+        String hashedPassword = PasswordUtils.hashPassword(entity.getPassword(), salt);
 
         // Create a new UserDTO using the builder pattern
         UserDTO newUser = new UserDTO.UserDTOBuilder()
@@ -135,6 +135,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserDTO searchByEmail(Object... args) throws SQLException, ClassNotFoundException {
+        try {
+            return UserConverter.toDTO(userDAO.findByEmail(args));
+        } catch (Exception e) {
+            if (e instanceof SQLException) {
+                throw new MegaCityCabException(MegaCityCabExceptionType.SQL_EXCEPTION);
+            }
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     private boolean validateUser(UserDTO user) {
         return user.getEmail().matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") && user.getPassword().length() >= 8;
     }
@@ -146,4 +158,5 @@ public class UserServiceImpl implements UserService {
     private boolean userExistsByEmail(UserDTO user) throws SQLException, ClassNotFoundException {
         return userDAO.existByEmail(user.getEmail());
     }
+
 }

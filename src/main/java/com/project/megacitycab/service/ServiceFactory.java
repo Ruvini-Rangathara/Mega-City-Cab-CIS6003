@@ -18,7 +18,6 @@ public class ServiceFactory {
     public <T extends SuperService> T getService(ServiceType type) {
 
         SuperService service = switch (type) {
-            case AUTH_SERVICE_IMPL -> new AuthServiceImpl();
             case BOOKING_SERVICE_IMPL -> new BookingServiceImpl();
             case CUSTOMER_SERVICE_IMPL -> new CustomerServiceImpl();
             case DRIVER_SERVICE_IMPL -> new DriverServiceImpl();

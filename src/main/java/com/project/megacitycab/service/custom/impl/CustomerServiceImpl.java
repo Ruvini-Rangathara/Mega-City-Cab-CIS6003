@@ -98,7 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List getAll() throws SQLException, ClassNotFoundException {
+    public List<CustomerDTO> getAll() throws SQLException, ClassNotFoundException {
         return CustomerConverter.toDTOList(customerDAO.getAll());
 
     }

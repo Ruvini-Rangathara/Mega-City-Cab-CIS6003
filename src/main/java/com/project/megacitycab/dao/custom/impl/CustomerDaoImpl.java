@@ -28,7 +28,7 @@ public class CustomerDaoImpl implements CustomerDAO {
 
     @Override
     public Customer searchById(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?", args[0]);
+        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?  AND deletedAt IS NULL", args[0]);
 
         if (result.next()) {
             return new Customer.CustomerBuilder()
@@ -51,7 +51,7 @@ public class CustomerDaoImpl implements CustomerDAO {
 
     @Override
     public List<Customer> getAll() throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers");
+        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE deletedAt IS NULL");
         List<Customer> list = new ArrayList<>();
 
         while (result.next()) {
@@ -78,26 +78,26 @@ public class CustomerDaoImpl implements CustomerDAO {
 
     @Override
     public boolean existByPk(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?", args[0]);
+        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?  AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 
 
     @Override
     public boolean existByEmail(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE email=?", args[0]);
+        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE email=? AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 
     @Override
     public boolean existByRegNo(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE registrationNo=?", args[0]);
+        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE registrationNo=? AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 
     @Override
     public boolean existByNic(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE nic=?", args[0]);
+        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE nic=? AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 }

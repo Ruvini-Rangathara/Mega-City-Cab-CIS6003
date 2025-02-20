@@ -4,20 +4,21 @@ import com.project.megacitycab.dto.CustomerDTO;
 import com.project.megacitycab.service.custom.CustomerService;
 import com.project.megacitycab.service.custom.impl.CustomerServiceImpl;
 import com.project.megacitycab.util.SendResponse;
-import com.project.megacitycab.util.exception.MegaCityCabException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @WebServlet(name = "customerServlet", value = "/customer-servlet")
 public class CustomerServlet extends HttpServlet {
+    private static final Logger logger = Logger.getLogger(CustomerServlet.class.getName());
     private CustomerService customerService;
 
     @Override
@@ -29,184 +30,106 @@ public class CustomerServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
 
-        if (action == null) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
-            return;
-        }
-
-        try {
-            switch (action) {
-                case "add":
-                    addCustomer(request, response);
-                    break;
-                case "update":
-                    updateCustomer(request, response);
-                    break;
-                case "delete":
-                    deleteCustomer(request, response);
-                    break;
-                default:
-                    SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
-            }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getExceptionType());
-        } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+        switch (action) {
+            case "add":
+                addCustomer(request, response);
+                break;
+            case "update":
+                updateCustomer(request, response);
+                break;
+            case "delete":
+                deleteCustomer(request, response);
+                break;
+            case "search":
+                searchCustomer(request, response);
+                break;
+            default:
+                logger.log(Level.SEVERE, "Error : Invalid Action");
+                response.sendRedirect(request.getContextPath() + "/customers?error=Invalid action");
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String action = request.getParameter("action");
-
-        if (action == null) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
-            return;
-        }
-
+        logger.log(Level.INFO, "Get all customers request received");
         try {
-            switch (action) {
-                case "search":
-                    searchCustomer(request, response);
-                    break;
-                case "getAll":
-                    getAllCustomers(request, response);
-                    break;
-                default:
-                    SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid action");
+            List<CustomerDTO> customers = customerService.getAll();
+            request.setAttribute("customers", customers);
+            for (CustomerDTO customer : customers) {
+                System.out.println("Customer : " + customer);
             }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getExceptionType());
+            request.getRequestDispatcher("/views/customer.jsp").forward(request, response);
         } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            logger.log(Level.SEVERE, "Error retrieving customers", e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching customers");
         }
     }
 
     private void addCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        logger.log(Level.INFO, "Add customer request received, Customer Registration No : " + request.getParameter("registrationNo"));
         try {
-            // Validate all required fields
-            if (request.getParameter("name") == null ||
-                    request.getParameter("email") == null ||
-                    request.getParameter("registrationNo") == null ||
-                    request.getParameter("address") == null ||
-                    request.getParameter("nic") == null ||
-                    request.getParameter("mobileNo") == null ||
-                    request.getParameter("dob") == null) {
-
-                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Fill the required Fields");
-                return;
-            }
-
             // Parse date of birth (expected format: yyyy-MM-dd)
             Date dob = null;
             String dobStr = request.getParameter("dob");
             if (dobStr != null && !dobStr.isEmpty()) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    dob = sdf.parse(dobStr);
-                } catch (ParseException e) {
-                    SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid date format for dob. Expected yyyy-MM-dd");
-                    return;
-                }
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                dob = sdf.parse(dobStr);
             }
 
-            // Build the CustomerDTO using the builder pattern
-            CustomerDTO customerDTO = new CustomerDTO.CustomerDTOBuilder()
-                    .registrationNo(request.getParameter("registrationNo"))
-                    .name(request.getParameter("name"))
-                    .address(request.getParameter("address"))
-                    .nic(request.getParameter("nic"))
-                    .dob(dob)
-                    .mobileNo(request.getParameter("mobileNo"))
-                    .email(request.getParameter("email"))
-                    .build();
-
-            boolean isAdded = customerService.add(customerDTO);
+            boolean isAdded = customerService.add(new CustomerDTO.CustomerDTOBuilder().registrationNo(request.getParameter("registrationNo")).name(request.getParameter("name")).address(request.getParameter("address")).nic(request.getParameter("nic")).dob(dob).mobileNo(request.getParameter("mobileNo")).email(request.getParameter("email")).build());
             if (isAdded) {
-                SendResponse.send(response, HttpServletResponse.SC_CREATED, "Customer added successfully");
+                response.sendRedirect(request.getContextPath() + "/customer-servlet?success=Customer successfully saved");
             } else {
-                SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to add customer");
+                response.sendRedirect(request.getContextPath() + "/customer-servlet?error=Failed to save customer");
             }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
         } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            logger.log(Level.SEVERE, "Error adding customer: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/customer-servlet?error=" + e.getMessage());
         }
     }
 
     private void updateCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        logger.log(Level.INFO, "Update customer request received, Customer ID : " + request.getParameter("id"));
         try {
-            // Validate that all required parameters are provided
-            if (request.getParameter("name") == null ||
-                    request.getParameter("email") == null ||
-                    request.getParameter("registrationNo") == null ||
-                    request.getParameter("address") == null ||
-                    request.getParameter("nic") == null ||
-                    request.getParameter("mobileNo") == null ||
-                    request.getParameter("dob") == null) {
-
-                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Fill the required Fields");
-                return;
-            }
-
             // Parse the date of birth (expected format: yyyy-MM-dd)
             Date dob = null;
             String dobStr = request.getParameter("dob");
             if (dobStr != null && !dobStr.isEmpty()) {
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    dob = sdf.parse(dobStr);
-                } catch (ParseException e) {
-                    SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid date format for dob. Expected yyyy-MM-dd");
-                    return;
-                }
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                dob = sdf.parse(dobStr);
             }
-
-            // Build the CustomerDTO using the builder pattern
-            CustomerDTO customerDTO = new CustomerDTO.CustomerDTOBuilder()
-                    .id(request.getParameter("id"))
-                    .registrationNo(request.getParameter("registrationNo"))
-                    .name(request.getParameter("name"))
-                    .address(request.getParameter("address"))
-                    .nic(request.getParameter("nic"))
-                    .dob(dob)
-                    .mobileNo(request.getParameter("mobileNo"))
-                    .email(request.getParameter("email"))
-                    .build();
-
             // Update the customer
-            boolean isUpdated = customerService.update(customerDTO);
+            boolean isUpdated = customerService.update(new CustomerDTO.CustomerDTOBuilder().id(request.getParameter("id")).registrationNo(request.getParameter("registrationNo")).name(request.getParameter("name")).address(request.getParameter("address")).nic(request.getParameter("nic")).dob(dob).mobileNo(request.getParameter("mobileNo")).email(request.getParameter("email")).build());
             if (isUpdated) {
-                SendResponse.send(response, HttpServletResponse.SC_OK, "Customer updated successfully");
+                response.sendRedirect(request.getContextPath() + "/customer-servlet?success=Customer successfully updated");
             } else {
-                SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update customer");
+                response.sendRedirect(request.getContextPath() + "/customer-servlet?error=Failed to update customer");
             }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
         } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            logger.log(Level.SEVERE, "Error updating customer: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/customer-servlet?error=" + e.getMessage());
         }
     }
 
     private void deleteCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        logger.log(Level.INFO, "Delete customer request received, Customer ID : " + request.getParameter("id"));
         try {
-            // For deletion, the customer ID is required.
-            String id = request.getParameter("id");
-            if (id == null) {
-                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Customer ID is required");
-                return;
+            boolean isDeleted = customerService.delete(request.getParameter("id"));
+
+            if (isDeleted) {
+                response.sendRedirect(request.getContextPath() + "/customer-servlet?success=Customer successfully deleted");
+            } else {
+                response.sendRedirect(request.getContextPath() + "/customer-servlet?error=Failed to delete customer");
             }
-            if (customerService.delete(id)) {
-                SendResponse.send(response, HttpServletResponse.SC_OK, "Customer deleted successfully");
-            }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
+
         } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            logger.log(Level.SEVERE, "Error deleting customer: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/customer-servlet?error=" + e.getMessage());
         }
     }
 
     private void searchCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        logger.log(Level.INFO, "Search customer request received, Customer ID : " + request.getParameter("id"));
         try {
             String id = request.getParameter("id");
             if (id == null) {
@@ -215,31 +138,12 @@ public class CustomerServlet extends HttpServlet {
             }
 
             CustomerDTO customerDTO = customerService.searchById(id);
-            if (customerDTO != null) {
-                SendResponse.send(response, HttpServletResponse.SC_OK, customerDTO.toString());
-            } else {
-                SendResponse.send(response, HttpServletResponse.SC_NOT_FOUND, "Customer not found");
-            }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
+            request.setAttribute("customer", customerDTO);
+            request.getRequestDispatcher("/customer.jsp").forward(request, response);
+
         } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+            logger.log(Level.SEVERE, "Error fetching customer", e);
+            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching customer");
         }
     }
-
-    private void getAllCustomers(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        try {
-            List<CustomerDTO> customers = customerService.getAll();
-            if (customers != null && !customers.isEmpty()) {
-                SendResponse.send(response, HttpServletResponse.SC_OK, customers.toString());
-            } else {
-                SendResponse.send(response, HttpServletResponse.SC_NOT_FOUND, "No customers found");
-            }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
-        } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
-        }
-    }
-
 }

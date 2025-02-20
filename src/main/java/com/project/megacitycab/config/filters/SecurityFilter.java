@@ -19,8 +19,6 @@ public class SecurityFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        logger.info("Security Filter - doFilter");
-
         HttpServletRequest httpRequest = (HttpServletRequest) request;
         HttpServletResponse httpResponse = (HttpServletResponse) response;
         HttpSession session = httpRequest.getSession(false);
@@ -38,15 +36,14 @@ public class SecurityFilter implements Filter {
 
         // Allow access to public paths for non-authenticated users
         if (isPublicPath) {
-            logger.info("Allowing access to public path: " + servletPath);
             chain.doFilter(request, response);
             return;
         }
 
         boolean isAuthenticated = (session != null && session.getAttribute("user") != null);
-        logger.log(Level.ALL, "isAuthenticated: " + isAuthenticated);
+        logger.log(Level.INFO, "Authentication Status : " + isAuthenticated);
         if (!isAuthenticated) {
-            logger.info("Security Filter - Not Authenticated. Redirecting to Login Page");
+            logger.log(Level.SEVERE, "Security Filter : Authentication Failed. Redirecting to Login Page");
             httpResponse.sendRedirect(httpRequest.getContextPath() + "/auth/login"); // Redirect to login page
             return;
         }

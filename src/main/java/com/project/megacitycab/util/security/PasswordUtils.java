@@ -1,10 +1,16 @@
 package com.project.megacitycab.util.security;
 
+import com.project.megacitycab.util.exception.MegaCityCabException;
+import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PasswordUtils {
+    private static final Logger logger = Logger.getLogger(PasswordUtils.class.getName());
     private static final int SALT_LENGTH = 16;
 
     // Generate a random salt
@@ -33,8 +39,7 @@ public class PasswordUtils {
         int len = hexString.length();
         byte[] bytes = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
-            bytes[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
-                    + Character.digit(hexString.charAt(i + 1), 16));
+            bytes[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character.digit(hexString.charAt(i + 1), 16));
         }
         return bytes;
     }
@@ -71,9 +76,12 @@ public class PasswordUtils {
             String hashedPassword = hashPassword(plainPassword, saltBytes);
 
             // Compare hashed password with stored hash
-            return hashedPassword.equalsIgnoreCase(storedHash);
+            boolean isVerify = hashedPassword.equalsIgnoreCase(storedHash);
+            logger.log(Level.INFO, "Password verification: " + isVerify);
+            return isVerify;
         } catch (Exception e) {
-            throw new RuntimeException("Error while verifying password", e);
+            logger.log(Level.SEVERE, "Error while verifying password", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.PASSWORD_UTIL_EXCEPTION);
         }
     }
 }

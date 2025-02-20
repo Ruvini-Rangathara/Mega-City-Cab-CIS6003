@@ -46,6 +46,7 @@ public enum MegaCityCabExceptionType {
     INVALID_BILL_DETAILS,
 
     // General System Exceptions
+    PASSWORD_UTIL_EXCEPTION,
     SQL_EXCEPTION,
     INTERNAL_SERVER_ERROR
 }

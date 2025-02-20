@@ -30,7 +30,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public List getAll() throws SQLException, ClassNotFoundException {
+    public List<VehicleDTO> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

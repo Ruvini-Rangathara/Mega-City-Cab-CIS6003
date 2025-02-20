@@ -29,7 +29,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List getAll() throws SQLException, ClassNotFoundException {
+    public List<BookingDTO> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

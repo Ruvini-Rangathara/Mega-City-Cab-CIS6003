@@ -30,7 +30,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public List getAll() throws SQLException, ClassNotFoundException {
+    public List<DriverDTO> getAll() throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

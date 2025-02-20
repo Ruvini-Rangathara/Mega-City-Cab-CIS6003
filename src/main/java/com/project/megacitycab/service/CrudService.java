@@ -15,7 +15,7 @@ public interface CrudService<T extends SuperDTO> extends SuperService {
 
     T searchById(Object... args) throws SQLException, ClassNotFoundException;
 
-    List getAll() throws SQLException, ClassNotFoundException;
+    List<T> getAll() throws SQLException, ClassNotFoundException;
 
     boolean existByPk(Object... args) throws SQLException, ClassNotFoundException;
 }

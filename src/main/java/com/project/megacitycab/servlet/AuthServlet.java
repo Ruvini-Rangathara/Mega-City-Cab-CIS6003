@@ -5,8 +5,6 @@ import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.service.ServiceFactory;
 import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.UserService;
-import com.project.megacitycab.util.SendResponse;
-import com.project.megacitycab.util.exception.MegaCityCabException;
 import com.project.megacitycab.util.security.PasswordUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,7 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet("/auth/*")
@@ -32,32 +30,22 @@ public class AuthServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        logger.info("doPost");
+        logger.log(Level.INFO, "Handling POST request for authentication");
         String pathInfo = request.getPathInfo();
-        try {
 
+        switch (pathInfo) {
+            case "/login":
+                login(request, response);
+                break;
+            case "/register":
+                register(request, response);
 
-            if (pathInfo == null) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request");
-                return;
-            }
-
-            switch (pathInfo) {
-                case "/login":
-                    login(request, response);
-                    break;
-                case "/register":
-                    register(request, response);
-
-                    break;
-                default:
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource not found");
-            }
-        } catch (MegaCityCabException e) {
-            SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, e.getExceptionType());
-        } catch (Exception e) {
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
+                break;
+            default:
+                logger.log(Level.SEVERE, "Error : Invalid Action");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid Action");
         }
+
 
     }
 
@@ -65,11 +53,6 @@ public class AuthServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         String pathInfo = request.getPathInfo();
-
-        if (pathInfo == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid request");
-            return;
-        }
 
         switch (pathInfo) {
             case "/login":
@@ -79,14 +62,15 @@ public class AuthServlet extends HttpServlet {
                 request.getRequestDispatcher("/register.jsp").forward(request, response);
                 break;
             default:
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Resource not found");
+                logger.log(Level.SEVERE, "Error : Invalid Action");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid Action");
         }
     }
 
 
     private void login(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            logger.info("Attempting to log in user");
+            logger.log(Level.INFO, "Logging in user");
 
             // Get form parameters from the login form
             String email = request.getParameter("email");
@@ -121,7 +105,7 @@ public class AuthServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/views/customer.jsp");
 
         } catch (Exception e) {
-            logger.severe("Error during login: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error during login: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/auth/login?error=system_error");
         }
     }
@@ -129,7 +113,7 @@ public class AuthServlet extends HttpServlet {
 
     private void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {
-            logger.info("Registering new user");
+            logger.log(Level.INFO, "Registering user");
 
             // Check if the user already exists
             UserDTO user = userService.searchByEmail(request.getParameter("email"));
@@ -138,14 +122,7 @@ public class AuthServlet extends HttpServlet {
                 return;
             }
 
-            UserDTO userDTO = new UserDTO.UserDTOBuilder()
-                    .name(request.getParameter("name"))
-                    .email(request.getParameter("email"))
-                    .password(request.getParameter("password"))
-                    .role(request.getParameter("role") != null ?
-                            Role.valueOf(request.getParameter("role")) :
-                            Role.USER)
-                    .build();
+            UserDTO userDTO = new UserDTO.UserDTOBuilder().name(request.getParameter("name")).email(request.getParameter("email")).password(request.getParameter("password")).role(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.USER).build();
 
             userService.add(userDTO);
 
@@ -153,7 +130,7 @@ public class AuthServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/auth/register?success=true");
 
         } catch (Exception e) {
-            logger.severe("Error during registration: " + e.getMessage());
+            logger.log(Level.SEVERE, "Error during registration: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/auth/register?error=" + e.getMessage());
         }
     }

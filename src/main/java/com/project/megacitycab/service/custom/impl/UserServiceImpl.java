@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List getAll() throws SQLException, ClassNotFoundException {
+    public List<UserDTO> getAll() throws SQLException, ClassNotFoundException {
         return UserConverter.toDTOList(userDAO.getAll());
 
     }

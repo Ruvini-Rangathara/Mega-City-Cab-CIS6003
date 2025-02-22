@@ -4,6 +4,7 @@ import com.project.megacitycab.dto.CustomerDTO;
 import com.project.megacitycab.service.custom.CustomerService;
 import com.project.megacitycab.service.custom.impl.CustomerServiceImpl;
 import com.project.megacitycab.util.SendResponse;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +13,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,19 +52,29 @@ public class CustomerServlet extends HttpServlet {
         }
     }
 
+
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        logger.log(Level.INFO, "Get all customers request received");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         try {
-            List<CustomerDTO> customers = customerService.getAll();
+            // Create search parameters map
+            Map<String, String> searchParams = new HashMap<>();
+            searchParams.put("registrationNo", request.getParameter("searchRegNo"));
+            searchParams.put("name", request.getParameter("searchName"));
+            searchParams.put("email", request.getParameter("searchEmail"));
+            searchParams.put("mobileNo", request.getParameter("searchMobile"));
+
+            // Get filtered list of customers
+            List<CustomerDTO> customers = customerService.getAll(searchParams);
             request.setAttribute("customers", customers);
-            for (CustomerDTO customer : customers) {
-                System.out.println("Customer : " + customer);
-            }
-            request.getRequestDispatcher("/views/customer.jsp").forward(request, response);
+
+            // Forward to JSP page
+            request.getRequestDispatcher("/views/customer.jsp")
+                    .forward(request, response);
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error retrieving customers", e);
-            response.sendRedirect(request.getContextPath() + "/error.jsp?message=Error fetching customers");
+            request.setAttribute("error", "Error retrieving customers: " + e.getMessage());
+            request.getRequestDispatcher("/views/customer.jsp")
+                    .forward(request, response);
         }
     }
 

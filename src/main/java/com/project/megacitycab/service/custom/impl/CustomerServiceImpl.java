@@ -10,7 +10,9 @@ import com.project.megacitycab.util.exception.MegaCityCabException;
 import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class CustomerServiceImpl implements CustomerService {
@@ -98,9 +100,18 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<CustomerDTO> getAll() throws SQLException, ClassNotFoundException {
-        return CustomerConverter.toDTOList(customerDAO.getAll());
+    public List<CustomerDTO> getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
+        // Validate and clean search parameters
+        Map<String, String> cleanParams = new HashMap<>();
+        if (searchParams != null) {
+            searchParams.forEach((key, value) -> {
+                if (value != null && !value.trim().isEmpty()) {
+                    cleanParams.put(key, value.trim());
+                }
+            });
+        }
 
+        return CustomerConverter.toDTOList(customerDAO.getAll(cleanParams));
     }
 
     @Override

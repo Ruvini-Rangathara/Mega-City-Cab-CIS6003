@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class CustomerDaoImpl implements CustomerDAO {
     @Override
@@ -50,38 +51,62 @@ public class CustomerDaoImpl implements CustomerDAO {
     }
 
     @Override
-    public List<Customer> getAll() throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE deletedAt IS NULL");
-        List<Customer> list = new ArrayList<>();
+    public List<Customer> getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
+        List<Customer> customers = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
 
-        while (result.next()) {
-            Customer customer = new Customer.CustomerBuilder()
-                    .id(result.getString("id"))
-                    .registrationNo(result.getString("registrationNo"))
-                    .name(result.getString("name"))
-                    .address(result.getString("address"))
-                    .nic(result.getString("nic"))
-                    .dob(result.getDate("dob"))
-                    .mobileNo(result.getString("mobileNo"))
-                    .email(result.getString("email"))
-                    .createdAt(result.getString("createdAt"))
-                    .updatedAt(result.getString("updatedAt"))
-                    .deletedAt(result.getString("deletedAt"))
-                    .build();
+        StringBuilder sql = new StringBuilder("SELECT * FROM customers WHERE deletedAt IS NULL");
 
-            list.add(customer);
+        // Add search conditions if provided
+        if (searchParams != null) {
+            if (searchParams.containsKey("registrationNo")) {
+                sql.append(" AND registration_no LIKE ?");
+                params.add("%" + searchParams.get("registrationNo") + "%");
+            }
+            if (searchParams.containsKey("name")) {
+                sql.append(" AND name LIKE ?");
+                params.add("%" + searchParams.get("name") + "%");
+            }
+            if (searchParams.containsKey("email")) {
+                sql.append(" AND email LIKE ?");
+                params.add("%" + searchParams.get("email") + "%");
+            }
+            if (searchParams.containsKey("mobileNo")) {
+                sql.append(" AND mobile_no LIKE ?");
+                params.add("%" + searchParams.get("mobileNo") + "%");
+            }
         }
 
-        return list;
-    }
+        // Add ordering by created date in descending order
+        sql.append(" ORDER BY createdAt DESC");
 
+        // Execute the query using CrudUtil
+        ResultSet result = CrudUtil.execute(sql.toString(), params.toArray());
+
+        while (result.next()) {
+            Customer customer = new Customer.CustomerBuilder().
+                    id(result.getString("id")).
+                    registrationNo(result.getString("registrationNo")).
+                    name(result.getString("name")).
+                    address(result.getString("address")).
+                    nic(result.getString("nic")).
+                    dob(result.getDate("dob")).
+                    mobileNo(result.getString("mobileNo")).
+                    email(result.getString("email")).
+                    createdAt(result.getString("createdAt")).
+                    updatedAt(result.getString("updatedAt")).
+                    deletedAt(result.getString("deletedAt")).
+                    build();
+            customers.add(customer);
+        }
+        return customers;
+    }
 
     @Override
     public boolean existByPk(Object... args) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?  AND deletedAt IS NULL", args[0]);
         return result.next();
     }
-
 
     @Override
     public boolean existByEmail(Object... args) throws SQLException, ClassNotFoundException {

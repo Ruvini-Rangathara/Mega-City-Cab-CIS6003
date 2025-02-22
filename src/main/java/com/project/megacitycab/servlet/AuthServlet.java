@@ -102,7 +102,8 @@ public class AuthServlet extends HttpServlet {
             session.setAttribute("userEmail", user.getEmail());
 
             // Redirect to the dashboard after successful login
-            response.sendRedirect(request.getContextPath() + "/views/customer.jsp");
+            response.sendRedirect(request.getContextPath() + "/customer-servlet");
+//            response.sendRedirect(request.getContextPath() + "/views/customer.jsp");
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error during login: " + e.getMessage());

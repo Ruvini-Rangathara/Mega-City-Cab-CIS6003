@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class UserDaoImpl implements UserDAO {
     @Override
@@ -48,7 +49,7 @@ public class UserDaoImpl implements UserDAO {
 
 
     @Override
-    public List<User> getAll() throws SQLException, ClassNotFoundException {
+    public List<User> getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute("SELECT * FROM users");
         List<User> list = new ArrayList<>();
 

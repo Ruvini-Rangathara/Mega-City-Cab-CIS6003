@@ -6,6 +6,7 @@ import com.project.megacitycab.service.custom.VehicleService;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 public class VehicleServiceImpl implements VehicleService {
 
@@ -30,7 +31,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     @Override
-    public List<VehicleDTO> getAll() throws SQLException, ClassNotFoundException {
+    public List<VehicleDTO> getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

@@ -11,10 +11,7 @@ import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
 import com.project.megacitycab.util.security.PasswordUtils;
 
 import java.sql.SQLException;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class UserServiceImpl implements UserService {
 
@@ -118,8 +115,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDTO> getAll() throws SQLException, ClassNotFoundException {
-        return UserConverter.toDTOList(userDAO.getAll());
+    public List<UserDTO> getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
+        return UserConverter.toDTOList(userDAO.getAll(searchParams));
 
     }
 

@@ -15,16 +15,17 @@ VALUES
 
 -- Customers table data
 INSERT INTO customers (registrationNo, name, address, nic, dob, mobileNo, email)
-VALUES ('REG001', 'John Smith', '123 Main St, City', 'NIC001', '1990-01-15', '+94771234567', 'john@email.com'),
-       ('REG002', 'Mary Johnson', '456 Oak Ave, Town', 'NIC002', '1985-03-22', '+94772234567', 'mary@email.com'),
-       ('REG003', 'David Wilson', '789 Pine Rd, Village', 'NIC003', '1992-07-08', '+94773234567', 'david@email.com'),
-       ('REG004', 'Sarah Brown', '321 Elm St, District', 'NIC004', '1988-11-30', '+94774234567', 'sarah@email.com'),
-       ('REG005', 'Michael Lee', '654 Maple Dr, City', 'NIC005', '1995-04-17', '+94775234567', 'michael@email.com'),
-       ('REG006', 'Lisa Anderson', '987 Cedar Ln, Town', 'NIC006', '1983-09-25', '+94776234567', 'lisa@email.com'),
-       ('REG007', 'James Taylor', '147 Birch St, Village', 'NIC007', '1991-12-03', '+94777234567', 'james@email.com'),
-       ('REG008', 'Emma Davis', '258 Walnut Ave, District', 'NIC008', '1987-06-20', '+94778234567', 'emma@email.com'),
-       ('REG009', 'Robert Martin', '369 Pine St, City', 'NIC009', '1993-02-14', '+94779234567', 'robert@email.com'),
-       ('REG010', 'Patricia White', '741 Oak Rd, Town', 'NIC010', '1986-08-09', '+94770234567', 'patricia@email.com');
+VALUES
+    ('REG001', 'John Smith', '123 Main St, City', '901234567V', '1990-01-15', '0711234561', 'john@email.com'),
+    ('REG002', 'Mary Johnson', '456 Oak Ave, Town', '851234567V', '1985-03-22', '0721234562', 'mary@email.com'),
+    ('REG003', 'David Wilson', '789 Pine Rd, Village', '921234567V', '1992-07-08', '0751234563', 'david@email.com'),
+    ('REG004', 'Sarah Brown', '321 Elm St, District', '881234567V', '1988-11-30', '0761234564', 'sarah@email.com'),
+    ('REG005', 'Michael Lee', '654 Maple Dr, City', '951234567V', '1995-04-17', '0771234565', 'michael@email.com'),
+    ('REG006', 'Lisa Anderson', '987 Cedar Ln, Town', '831234567V', '1983-09-25', '0781234566', 'lisa@email.com'),
+    ('REG007', 'James Taylor', '147 Birch St, Village', '911234567V', '1991-12-03', '0791234567', 'james@email.com'),
+    ('REG008', 'Emma Davis', '258 Walnut Ave, District', '861234567V', '1987-06-20', '0752234568', 'emma@email.com'),
+    ('REG009', 'Robert Martin', '369 Pine St, City', '941234567V', '1993-02-14', '0762234569', 'robert@email.com'),
+    ('REG010', 'Patricia White', '741 Oak Rd, Town', '871234567V', '1986-08-09', '0772234570', 'patricia@email.com');
 
 -- Drivers table data
 INSERT INTO drivers (name, licenseNumber, mobileNo, status, experience, email)

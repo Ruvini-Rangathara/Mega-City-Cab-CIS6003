@@ -5,6 +5,7 @@ import com.project.megacitycab.entity.Driver;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 public class DriverDaoImpl implements DriverDAO {
     @Override
@@ -28,7 +29,7 @@ public class DriverDaoImpl implements DriverDAO {
     }
 
     @Override
-    public List getAll() throws SQLException, ClassNotFoundException {
+    public List getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
         return List.of();
     }
 

@@ -11,7 +11,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -132,7 +134,8 @@ public class UserServlet extends HttpServlet {
     private void getAllUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
         logger.log(Level.INFO, "Getting all users");
         try {
-            List<UserDTO> users = userService.getAll();
+            Map<String, String> searchParams = new HashMap<>();
+            List<UserDTO> users = userService.getAll(searchParams);
 
             if (!users.isEmpty()) {
                 SendResponse.send(response, HttpServletResponse.SC_OK, "" + users);

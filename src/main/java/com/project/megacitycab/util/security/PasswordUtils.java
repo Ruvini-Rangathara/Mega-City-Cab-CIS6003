@@ -5,24 +5,71 @@ import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.SecureRandom;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PasswordUtils {
     private static final Logger logger = Logger.getLogger(PasswordUtils.class.getName());
-    private static final int SALT_LENGTH = 16;
 
-    // Generate a random salt
-    public static byte[] generateSalt() {
-        SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[SALT_LENGTH];
-        random.nextBytes(salt);
-        return salt;
+    /**
+     * Generates a simple random salt string
+     * @return random salt string
+     */
+    public static String generateSalt() {
+        return "randomSalt" + System.currentTimeMillis() % 1000;
     }
 
-    // Convert bytes to hex string
-    public static String bytesToHex(byte[] bytes) {
+    /**
+     * Hash password with salt using SHA-256 to match MySQL's SHA2 function
+     * @param plainPassword the password to hash
+     * @param salt the salt to use
+     * @return hashed password
+     */
+    public static String hashPassword(String plainPassword, String salt) {
+        try {
+            // Simple concatenation to match MySQL's CONCAT function
+            String saltedPassword = plainPassword + salt;
+
+            // Create SHA-256 hash (equivalent to MySQL's SHA2 with 256)
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
+
+            // Convert to lowercase hex string
+            return bytesToHex(hashBytes);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error while hashing password", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.PASSWORD_UTIL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Verify if the entered password matches the stored hash
+     * @param plainPassword the password to verify
+     * @param storedHash the hash stored in database
+     * @param storedSalt the salt stored in database
+     * @return true if password matches, false otherwise
+     */
+    public static boolean verifyPassword(String plainPassword, String storedHash, String storedSalt) {
+        try {
+            // Hash the input password with the stored salt
+            String hashedPassword = hashPassword(plainPassword, storedSalt);
+
+            // Compare hashed password with stored hash
+            boolean isVerified = hashedPassword.equalsIgnoreCase(storedHash);
+            logger.log(Level.INFO, "Password verification result: {0}", isVerified);
+            return isVerified;
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error while verifying password", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.PASSWORD_UTIL_EXCEPTION);
+        }
+    }
+
+    /**
+     * Convert bytes to hex string
+     * @param bytes byte array to convert
+     * @return hex string representation
+     */
+    private static String bytesToHex(byte[] bytes) {
         StringBuilder hexString = new StringBuilder();
         for (byte b : bytes) {
             String hex = Integer.toHexString(0xff & b);
@@ -32,56 +79,5 @@ public class PasswordUtils {
             hexString.append(hex);
         }
         return hexString.toString();
-    }
-
-    // Convert HEX string back to byte array
-    private static byte[] hexToBytes(String hexString) {
-        int len = hexString.length();
-        byte[] bytes = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            bytes[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4) + Character.digit(hexString.charAt(i + 1), 16));
-        }
-        return bytes;
-    }
-
-    // Hash password with salt using SHA-256 (byte[] version)
-    public static String hashPassword(String plainPassword, byte[] salt) {
-        return hashPassword(plainPassword, bytesToHex(salt));  // Store salt in HEX format
-    }
-
-    // Hash password with salt using SHA-256 (String version)
-    public static String hashPassword(String plainPassword, String salt) {
-        try {
-            // Concatenate the password and salt
-            String saltedPassword = plainPassword + salt;
-
-            // Create SHA-256 hash
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hashBytes = digest.digest(saltedPassword.getBytes(StandardCharsets.UTF_8));
-
-            // Convert to lowercase hex string
-            return bytesToHex(hashBytes);
-        } catch (Exception e) {
-            throw new RuntimeException("Error while hashing password", e);
-        }
-    }
-
-    // Verify if the entered password matches the stored hash
-    public static boolean verifyPassword(String plainPassword, String storedHash, String storedSalt) {
-        try {
-            // Convert HEX salt back to bytes
-            byte[] saltBytes = hexToBytes(storedSalt);
-
-            // Hash the input password with the stored salt
-            String hashedPassword = hashPassword(plainPassword, saltBytes);
-
-            // Compare hashed password with stored hash
-            boolean isVerify = hashedPassword.equalsIgnoreCase(storedHash);
-            logger.log(Level.INFO, "Password verification: " + isVerify);
-            return isVerify;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error while verifying password", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.PASSWORD_UTIL_EXCEPTION);
-        }
     }
 }

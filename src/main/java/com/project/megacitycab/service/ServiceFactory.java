@@ -20,9 +20,8 @@ public class ServiceFactory {
         SuperService service = switch (type) {
             case BOOKING_SERVICE_IMPL -> new BookingServiceImpl();
             case CUSTOMER_SERVICE_IMPL -> new CustomerServiceImpl();
-            case DRIVER_SERVICE_IMPL -> new DriverServiceImpl();
             case USER_SERVICE_IMPL -> new UserServiceImpl();
-            case VEHICLE_SERVICE_IMPL -> new VehicleServiceImpl();
+            case VEHICLE_DRIVER_SERVICE_IMPL -> new VehicleDriverServiceImpl();
         };
         return (T) service;
     }

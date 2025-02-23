@@ -3,6 +3,9 @@ package com.project.megacitycab.util.converter;
 import com.project.megacitycab.dto.DriverDTO;
 import com.project.megacitycab.entity.Driver;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class DriverConverter {
 
     // Convert Driver (Entity) to DriverDTO (DTO)
@@ -43,5 +46,10 @@ public class DriverConverter {
                 .updatedAt(driverDTO.getUpdatedAt())
                 .deletedAt(driverDTO.getDeletedAt())
                 .build();
+    }
+
+    // Convert a list of Driver (Entity) to a list of DriverDTO (DTO)
+    public static List<DriverDTO> toDTOList(List<Driver> drivers) {
+        return drivers.stream().map(DriverConverter::toDTO).collect(Collectors.toList());
     }
 }

@@ -3,6 +3,9 @@ package com.project.megacitycab.util.converter;
 import com.project.megacitycab.dto.VehicleDTO;
 import com.project.megacitycab.entity.Vehicle;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class VehicleConverter {
 
     // Convert Vehicle (Entity) to VehicleDTO (DTO)
@@ -45,5 +48,10 @@ public class VehicleConverter {
                 .updatedAt(vehicleDTO.getUpdatedAt())
                 .deletedAt(vehicleDTO.getDeletedAt())
                 .build();
+    }
+
+    // Convert a list of Vehicle (Entity) to a list of VehicleDTO (DTO)
+    public static List<VehicleDTO> toDTOList(List<Vehicle> vehicles) {
+        return vehicles.stream().map(VehicleConverter::toDTO).collect(Collectors.toList());
     }
 }

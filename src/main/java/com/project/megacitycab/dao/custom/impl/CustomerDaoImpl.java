@@ -4,6 +4,7 @@ import com.project.megacitycab.dao.custom.CustomerDAO;
 import com.project.megacitycab.dao.util.CrudUtil;
 import com.project.megacitycab.entity.Customer;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,23 +14,23 @@ import java.util.Map;
 
 public class CustomerDaoImpl implements CustomerDAO {
     @Override
-    public boolean add(Customer entity) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("INSERT INTO customers (registrationNo, name, address, nic, dob, mobileNo, email) VALUES (?,?,?,?,?,?,?)", entity.getRegistrationNo(), entity.getName(), entity.getAddress(), entity.getNic(), entity.getDob(), entity.getMobileNo(), entity.getEmail());
+    public boolean add( Connection connection, Customer entity) throws SQLException, ClassNotFoundException {
+        return CrudUtil.execute(connection,"INSERT INTO customers (registrationNo, name, address, nic, dob, mobileNo, email) VALUES (?,?,?,?,?,?,?)", entity.getRegistrationNo(), entity.getName(), entity.getAddress(), entity.getNic(), entity.getDob(), entity.getMobileNo(), entity.getEmail());
     }
 
     @Override
-    public boolean update(Customer entity) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("UPDATE customers SET name=?, address=?, nic=?, dob=?, mobileNo=?, email=? WHERE id=?", entity.getName(), entity.getAddress(), entity.getNic(), entity.getDob(), entity.getMobileNo(), entity.getEmail(), entity.getId());
+    public boolean update( Connection connection, Customer entity) throws SQLException, ClassNotFoundException {
+        return CrudUtil.execute(connection,"UPDATE customers SET name=?, address=?, nic=?, dob=?, mobileNo=?, email=? WHERE id=?", entity.getName(), entity.getAddress(), entity.getNic(), entity.getDob(), entity.getMobileNo(), entity.getEmail(), entity.getId());
     }
 
     @Override
-    public boolean delete(Object... args) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute("UPDATE customers SET deletedAt=? WHERE id=?", new Date(), args[0]);
+    public boolean delete(Connection connection, Object... args) throws SQLException, ClassNotFoundException {
+        return CrudUtil.execute(connection,"UPDATE customers SET deletedAt=? WHERE id=?", new Date(), args[0]);
     }
 
     @Override
-    public Customer searchById(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?  AND deletedAt IS NULL", args[0]);
+    public Customer searchById(Connection connection, Object... args) throws SQLException, ClassNotFoundException {
+        ResultSet result = CrudUtil.execute(connection,"SELECT * FROM customers WHERE id=?  AND deletedAt IS NULL", args[0]);
 
         if (result.next()) {
             return new Customer.CustomerBuilder()
@@ -51,7 +52,7 @@ public class CustomerDaoImpl implements CustomerDAO {
     }
 
     @Override
-    public List<Customer> getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
+    public List<Customer> getAll( Connection connection, Map<String, String> searchParams) throws SQLException, ClassNotFoundException {
         List<Customer> customers = new ArrayList<>();
         List<Object> params = new ArrayList<>();
 
@@ -81,7 +82,7 @@ public class CustomerDaoImpl implements CustomerDAO {
         sql.append(" ORDER BY createdAt DESC");
 
         // Execute the query using CrudUtil
-        ResultSet result = CrudUtil.execute(sql.toString(), params.toArray());
+        ResultSet result = CrudUtil.execute(connection, sql.toString(), params.toArray());
 
         while (result.next()) {
             Customer customer = new Customer.CustomerBuilder().
@@ -103,26 +104,26 @@ public class CustomerDaoImpl implements CustomerDAO {
     }
 
     @Override
-    public boolean existByPk(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE id=?  AND deletedAt IS NULL", args[0]);
+    public boolean existByPk( Connection connection, Object... args) throws SQLException, ClassNotFoundException {
+        ResultSet result = CrudUtil.execute(connection,"SELECT * FROM customers WHERE id=?  AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 
     @Override
-    public boolean existByEmail(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE email=? AND deletedAt IS NULL", args[0]);
+    public boolean existByEmail( Connection connection, Object... args) throws SQLException, ClassNotFoundException {
+        ResultSet result = CrudUtil.execute(connection,"SELECT * FROM customers WHERE email=? AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 
     @Override
-    public boolean existByRegNo(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE registrationNo=? AND deletedAt IS NULL", args[0]);
+    public boolean existByRegNo( Connection connection, Object... args) throws SQLException, ClassNotFoundException {
+        ResultSet result = CrudUtil.execute(connection,"SELECT * FROM customers WHERE registrationNo=? AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 
     @Override
-    public boolean existByNic(Object... args) throws SQLException, ClassNotFoundException {
-        ResultSet result = CrudUtil.execute("SELECT * FROM customers WHERE nic=? AND deletedAt IS NULL", args[0]);
+    public boolean existByNic( Connection connection, Object... args) throws SQLException, ClassNotFoundException {
+        ResultSet result = CrudUtil.execute(connection,"SELECT * FROM customers WHERE nic=? AND deletedAt IS NULL", args[0]);
         return result.next();
     }
 }

@@ -1,22 +1,21 @@
 package com.project.megacitycab.service;
 
 import com.project.megacitycab.dto.SuperDTO;
+import com.project.megacitycab.util.exception.MegaCityCabException;
 
-import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
 public interface CrudService<T extends SuperDTO> extends SuperService {
-    boolean add(T entity) throws SQLException, ClassNotFoundException;
+    boolean add(T entity) throws MegaCityCabException;
 
-    boolean update(T entity) throws SQLException, ClassNotFoundException;
+    boolean update(T entity) throws MegaCityCabException;
 
-    boolean delete(Object... args) throws SQLException, ClassNotFoundException;
+    boolean delete(Object... args) throws MegaCityCabException;
 
-    T searchById(Object... args) throws SQLException, ClassNotFoundException;
+    T searchById(Object... args) throws MegaCityCabException;
 
-    List<T> getAll(Map<String, String> searchParams) throws SQLException, ClassNotFoundException;
+    List<T> getAll(Map<String, String> searchParams) throws MegaCityCabException;
 
-    boolean existByPk(Object... args) throws SQLException, ClassNotFoundException;
+    boolean existByPk(Object... args) throws MegaCityCabException;
 }

@@ -61,7 +61,7 @@ public class DriverDaoImpl implements DriverDAO {
             return new Driver.DriverBuilder()
                     .id(result.getString("id"))
                     .name(result.getString("name"))
-                    .licenseNo(result.getString("licenseNo"))
+                    .licenseNo(result.getString("licenseNumber"))
                     .mobileNo(result.getString("mobileNo"))
                     .status(DriverStatus.valueOf(result.getString("status")))
                     .experience(result.getInt("experience"))

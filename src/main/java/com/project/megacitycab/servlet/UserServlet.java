@@ -76,7 +76,7 @@ public class UserServlet extends HttpServlet {
                 return;
             }
 
-            UserDTO userDTO = new UserDTO.UserDTOBuilder().id(request.getParameter("id")).name(request.getParameter("name")).email(request.getParameter("email")).password(request.getParameter("password")).role(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.USER).build();
+            UserDTO userDTO = new UserDTO.UserDTOBuilder().id(request.getParameter("id")).name(request.getParameter("name")).email(request.getParameter("email")).password(request.getParameter("password")).role(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.user).build();
 
             boolean isUpdated = userService.update(userDTO);
 

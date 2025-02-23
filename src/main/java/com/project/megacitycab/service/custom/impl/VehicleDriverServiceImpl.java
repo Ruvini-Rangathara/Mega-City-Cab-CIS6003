@@ -53,11 +53,6 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
                 throw new MegaCityCabException(MegaCityCabExceptionType.DRIVER_ALREADY_EXISTS);
             }
 
-            // Generate IDs and set timestamps
-            String driverId = UUID.randomUUID().toString();
-            String vehicleId = UUID.randomUUID().toString();
-            LocalDateTime timestamp = LocalDateTime.now();
-
             // Prepare and save driver
             boolean driverSaved = driverDAO.add(connection, DriverConverter.toEntity(vehicleDriverDTO.getDriver()));
 

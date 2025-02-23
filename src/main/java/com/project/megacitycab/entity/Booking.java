@@ -142,7 +142,7 @@ public class Booking implements SuperEntity {
             // Set default values if needed
             this.discount = 0.0;
             this.tax = 0.0;
-            this.status = BookingStatus.PENDING;
+            this.status = BookingStatus.pending;
         }
 
         public BookingBuilder id(String id) {

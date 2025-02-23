@@ -1,16 +1,16 @@
 -- Users table data
 INSERT INTO users (name, email, passwordHash, salt, role)
 VALUES
-    ('John Doe', 'johndoe@megacitycab.com', SHA2(CONCAT('admin123', 'randomSalt1'), 256), 'randomSalt1', 'ADMIN'),
-    ('Alice Johnson', 'alice.johnson@megacitycab.com', SHA2(CONCAT('user1123', 'randomSalt2'), 256), 'randomSalt2', 'USER'),
-    ('Bob Smith', 'bob.smith@megacitycab.com', SHA2(CONCAT('user2123', 'randomSalt3'), 256), 'randomSalt3', 'USER'),
-    ('Charlie Brown', 'charlie.brown@megacitycab.com', SHA2(CONCAT('user3123', 'randomSalt4'), 256), 'randomSalt4', 'USER'),
-    ('David Lee', 'david.lee@megacitycab.com', SHA2(CONCAT('user4123', 'randomSalt5'), 256), 'randomSalt5', 'USER'),
-    ('Emma Williams', 'emma.williams@megacitycab.com', SHA2(CONCAT('user5123', 'randomSalt6'), 256), 'randomSalt6', 'USER'),
-    ('Frank Miller', 'frank.miller@megacitycab.com', SHA2(CONCAT('user6123', 'randomSalt7'), 256), 'randomSalt7', 'USER'),
-    ('Grace Davis', 'grace.davis@megacitycab.com', SHA2(CONCAT('user7123', 'randomSalt8'), 256), 'randomSalt8', 'USER'),
-    ('Hannah Wilson', 'hannah.wilson@megacitycab.com', SHA2(CONCAT('user8123', 'randomSalt9'), 256), 'randomSalt9', 'USER'),
-    ('Isaac Moore', 'isaac.moore@megacitycab.com', SHA2(CONCAT('user9123', 'randomSalt10'), 256), 'randomSalt10', 'USER');
+    ('John Doe', 'johndoe@megacitycab.com', SHA2(CONCAT('admin123', 'randomSalt1'), 256), 'randomSalt1', 'admin'),
+    ('Alice Johnson', 'alice.johnson@megacitycab.com', SHA2(CONCAT('user1123', 'randomSalt2'), 256), 'randomSalt2', 'user'),
+    ('Bob Smith', 'bob.smith@megacitycab.com', SHA2(CONCAT('user2123', 'randomSalt3'), 256), 'randomSalt3', 'user'),
+    ('Charlie Brown', 'charlie.brown@megacitycab.com', SHA2(CONCAT('user3123', 'randomSalt4'), 256), 'randomSalt4', 'user'),
+    ('David Lee', 'david.lee@megacitycab.com', SHA2(CONCAT('user4123', 'randomSalt5'), 256), 'randomSalt5', 'user'),
+    ('Emma Williams', 'emma.williams@megacitycab.com', SHA2(CONCAT('user5123', 'randomSalt6'), 256), 'randomSalt6', 'user'),
+    ('Frank Miller', 'frank.miller@megacitycab.com', SHA2(CONCAT('user6123', 'randomSalt7'), 256), 'randomSalt7', 'user'),
+    ('Grace Davis', 'grace.davis@megacitycab.com', SHA2(CONCAT('user7123', 'randomSalt8'), 256), 'randomSalt8', 'user'),
+    ('Hannah Wilson', 'hannah.wilson@megacitycab.com', SHA2(CONCAT('user8123', 'randomSalt9'), 256), 'randomSalt9', 'user'),
+    ('Isaac Moore', 'isaac.moore@megacitycab.com', SHA2(CONCAT('user9123', 'randomSalt10'), 256), 'randomSalt10', 'user');
 
 
 -- Customers table data

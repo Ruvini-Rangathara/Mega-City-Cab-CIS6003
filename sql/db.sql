@@ -14,7 +14,7 @@ CREATE TABLE users
     email         VARCHAR(255) NOT NULL,
     passwordHash VARCHAR(255) NOT NULL,
     salt          VARCHAR(255) NOT NULL,
-    role          ENUM ('ADMIN', 'USER') NOT NULL DEFAULT 'USER', -- User role
+    role          ENUM ('admin', 'user') NOT NULL DEFAULT 'user', -- User role
     createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deletedAt     DATETIME NULL

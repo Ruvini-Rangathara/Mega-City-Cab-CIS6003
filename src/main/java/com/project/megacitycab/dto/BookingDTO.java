@@ -147,7 +147,7 @@ public class BookingDTO implements SuperDTO {
             // Initialize default values
             this.discount = 0.0;
             this.tax = 0.0;
-            this.status = BookingStatus.PENDING;
+            this.status = BookingStatus.pending;
             this.bookingDate = new Date();
         }
 

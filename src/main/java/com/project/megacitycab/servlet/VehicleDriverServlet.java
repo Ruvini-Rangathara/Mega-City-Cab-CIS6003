@@ -99,7 +99,8 @@ public class VehicleDriverServlet extends HttpServlet {
                     .brand(request.getParameter("brand"))
                     .model(request.getParameter("model"))
                     .color(request.getParameter("color"))
-                    .capacity(Double.parseDouble(request.getParameter("capacity")))
+                    .capacity(Integer.parseInt(request.getParameter("capacity")))
+                    .pricePerKm(Double.parseDouble(request.getParameter("pricePerKm")))
                     .status(VehicleStatus.valueOf(request.getParameter("vehicleStatus")))
                     .build();
 
@@ -142,7 +143,8 @@ public class VehicleDriverServlet extends HttpServlet {
                     .brand(request.getParameter("brand"))
                     .model(request.getParameter("model"))
                     .color(request.getParameter("color"))
-                    .capacity(Double.parseDouble(request.getParameter("capacity")))
+                    .capacity(Integer.parseInt(request.getParameter("capacity")))
+                    .pricePerKm(Double.parseDouble(request.getParameter("pricePerKm")))
                     .status(VehicleStatus.valueOf(request.getParameter("vehicleStatus")))
                     .driverId(request.getParameter("driverId"))
                     .build();

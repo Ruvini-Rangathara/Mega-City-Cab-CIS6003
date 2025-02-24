@@ -22,18 +22,18 @@ public class VehicleDaoImpl implements VehicleDAO {
     public boolean add(Connection connection, Vehicle entity) throws SQLException, ClassNotFoundException {
         return CrudUtil.execute(
 
-                connection,"INSERT INTO vehicles (licensePlate, driverId, model, brand, capacity, color, status) VALUES (?,?,?,?,?,?,?)",
+                connection,"INSERT INTO vehicles (licensePlate, driverId, model, brand, capacity, color,pricePerKm,  status) VALUES (?,?,?,?,?,?,?,?)",
                 entity.getLicensePlate(), entity.getDriverId(), entity.getModel(), entity.getBrand(),
-                entity.getCapacity(), entity.getColor(), entity.getStatus().toString()
+                entity.getCapacity(), entity.getColor(),entity.getPricePerKm(), entity.getStatus().toString()
         );
     }
 
     @Override
     public boolean update(Connection connection, Vehicle entity) throws SQLException, ClassNotFoundException {
         return CrudUtil.execute(
-                connection,"UPDATE vehicles SET licensePlate=?, driverId=?, model=?, brand=?, capacity=?, color=?, status=? WHERE id=?",
+                connection,"UPDATE vehicles SET licensePlate=?, driverId=?, model=?, brand=?, capacity=?, color=?, pricePerKm=?, status=? WHERE id=?",
                 entity.getLicensePlate(), entity.getDriverId(), entity.getModel(), entity.getBrand(),
-                entity.getCapacity(), entity.getColor(), entity.getStatus().toString(), entity.getId()
+                entity.getCapacity(), entity.getColor(),entity.getPricePerKm(), entity.getStatus().toString(), entity.getId()
         );
     }
 
@@ -53,8 +53,9 @@ public class VehicleDaoImpl implements VehicleDAO {
                     .driverId(result.getString("driverId"))
                     .model(result.getString("model"))
                     .brand(result.getString("brand"))
-                    .capacity(result.getDouble("capacity"))
+                    .capacity(result.getInt("capacity"))
                     .color(result.getString("color"))
+                    .pricePerKm(result.getDouble("pricePerKm"))
                     .status(VehicleStatus.valueOf(result.getString("status")))
                     .createdAt(result.getString("createdAt"))
                     .updatedAt(result.getString("updatedAt"))
@@ -101,8 +102,9 @@ public class VehicleDaoImpl implements VehicleDAO {
                     .driverId(result.getString("driverId"))
                     .model(result.getString("model"))
                     .brand(result.getString("brand"))
-                    .capacity(result.getDouble("capacity"))
+                    .capacity(result.getInt("capacity"))
                     .color(result.getString("color"))
+                    .pricePerKm(result.getDouble("pricePerKm"))
                     .status(VehicleStatus.valueOf(result.getString("status")))
                     .createdAt(result.getString("createdAt"))
                     .updatedAt(result.getString("updatedAt"))

@@ -16,6 +16,7 @@ public class BookingDTO implements SuperDTO {
     private final double fare;
     private final double discount;
     private final double tax;
+    private final double netTotal;
     private final String userId;
     private final Date createdAt;
     private final Date updatedAt;
@@ -33,6 +34,7 @@ public class BookingDTO implements SuperDTO {
         this.fare = builder.fare;
         this.discount = builder.discount;
         this.tax = builder.tax;
+        this.netTotal = builder.netTotal;
         this.userId = builder.userId;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
@@ -87,6 +89,10 @@ public class BookingDTO implements SuperDTO {
         return tax;
     }
 
+    public double getNetTotal() {
+        return netTotal;
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -97,11 +103,6 @@ public class BookingDTO implements SuperDTO {
 
     public Date getUpdatedAt() {
         return updatedAt;
-    }
-
-    // Utility method to calculate total fare including tax and discount
-    public double getTotalFare() {
-        return fare + tax - discount;
     }
 
     @Override
@@ -119,6 +120,7 @@ public class BookingDTO implements SuperDTO {
                 ", fare=" + fare +
                 ", discount=" + discount +
                 ", tax=" + tax +
+                ", netTotal=" + netTotal +
                 ", userId='" + userId + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
@@ -139,6 +141,7 @@ public class BookingDTO implements SuperDTO {
         private double fare;
         private double discount;
         private double tax;
+        private double netTotal;
         private String userId;
         private Date createdAt;
         private Date updatedAt;
@@ -211,6 +214,11 @@ public class BookingDTO implements SuperDTO {
             return this;
         }
 
+        public BookingDTOBuilder netTotal(double netTotal) {
+            this.netTotal = netTotal;
+            return this;
+        }
+
         public BookingDTOBuilder userId(String userId) {
             this.userId = userId;
             return this;
@@ -223,14 +231,6 @@ public class BookingDTO implements SuperDTO {
 
         public BookingDTOBuilder updatedAt(Date updatedAt) {
             this.updatedAt = updatedAt;
-            return this;
-        }
-
-        // Convenience method to set both timestamps to now
-        public BookingDTOBuilder setTimestampsToNow() {
-            Date now = new Date();
-            this.createdAt = now;
-            this.updatedAt = now;
             return this;
         }
 

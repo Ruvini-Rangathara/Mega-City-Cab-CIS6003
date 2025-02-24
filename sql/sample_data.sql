@@ -73,17 +73,17 @@ SET @driver10 = (SELECT id
                  WHERE licenseNo = 'LIC010');
 
 -- Vehicles table data
-INSERT INTO vehicles (licensePlate, driverId, model, brand, capacity, color, status)
-VALUES ('ABC-1234', @driver1, 'Camry', 'Toyota', 4.00, 'Silver', 'available'),
-       ('DEF-5678', @driver2, 'Civic', 'Honda', 4.00, 'Black', 'available'),
-       ('GHI-9012', @driver3, 'Corolla', 'Toyota', 4.00, 'White', 'unavailable'),
-       ('JKL-3456', @driver4, 'Accord', 'Honda', 4.00, 'Blue', 'available'),
-       ('MNO-7890', @driver5, 'Prius', 'Toyota', 4.00, 'Green', 'available'),
-       ('PQR-1234', @driver6, 'City', 'Honda', 4.00, 'Red', 'unavailable'),
-       ('STU-5678', @driver7, 'Avalon', 'Toyota', 4.00, 'Black', 'available'),
-       ('VWX-9012', @driver8, 'Insight', 'Honda', 4.00, 'Silver', 'available'),
-       ('YZA-3456', @driver9, 'Camry', 'Toyota', 4.00, 'White', 'unavailable'),
-       ('BCD-7890', @driver10, 'Civic', 'Honda', 4.00, 'Blue', 'available');
+INSERT INTO vehicles (licensePlate, driverId, model, brand, capacity, color,pricePerKm, status)
+VALUES ('ABC-1234', @driver1, 'Camry', 'Toyota', 4, 'Silver', 200.00,'available'),
+       ('DEF-5678', @driver2, 'Civic', 'Honda', 4, 'Black', 300.00,'available'),
+       ('GHI-9012', @driver3, 'Corolla', 'Toyota', 4, 'White', 400.00,'unavailable'),
+       ('JKL-3456', @driver4, 'Accord', 'Honda', 4, 'Blue', 500.00,'available'),
+       ('MNO-7890', @driver5, 'Prius', 'Toyota', 4, 'Green', 600.00, 'available'),
+       ('PQR-1234', @driver6, 'City', 'Honda', 4, 'Red', 250.00, 'unavailable'),
+       ('STU-5678', @driver7, 'Avalon', 'Toyota', 4, 'Black', 350.00, 'available'),
+       ('VWX-9012', @driver8, 'Insight', 'Honda', 4, 'Silver', 450.00, 'available'),
+       ('YZA-3456', @driver9, 'Camry', 'Toyota', 4, 'White', 550.00,'unavailable'),
+       ('BCD-7890', @driver10, 'Civic', 'Honda', 4, 'Blue', 350.00, 'available');
 
 -- Get IDs for bookings
 SET @customer1 = (SELECT id
@@ -136,24 +136,24 @@ SET @user5 = (SELECT id
 
 -- Bookings table data
 INSERT INTO bookings (customerId, bookingDate, pickupLocation, destination, pickupTime, vehicleID, status, distance,
-                      fare, discount, tax, userId)
+                      fare, discount, tax, netTotal, userId)
 VALUES (@customer1, '2024-02-17 10:00:00', 'Airport', 'Hotel Grand', '10:30:00', @vehicle1, 'confirmed', 15.50, 2500.00,
-        0.00, 250.00, @user1),
+        0.00, 250.00,1000.00,  @user1),
        (@customer2, '2024-02-17 11:30:00', 'Hotel Plaza', 'Shopping Mall', '12:00:00', @vehicle2, 'completed', 8.75,
-        1500.00, 100.00, 150.00, @user2),
+        1500.00, 100.00, 150.00, 1000.00,@user2),
        (@customer3, '2024-02-17 13:00:00', 'Office Complex', 'Restaurant Row', '13:30:00', @vehicle3, 'pending', 5.25,
-        1000.00, 50.00, 100.00, @user3),
+        1000.00, 50.00, 100.00, 1000.00,@user3),
        (@customer4, '2024-02-17 14:30:00', 'University', 'Library', '15:00:00', @vehicle4, 'confirmed', 3.80, 800.00,
-        0.00, 80.00, @user4),
+        0.00, 80.00, 1000.00,@user4),
        (@customer5, '2024-02-17 16:00:00', 'Train Station', 'Residential Area', '16:30:00', @vehicle5, 'cancelled',
-        12.30, 2000.00, 200.00, 200.00, @user5),
+        12.30, 2000.00, 200.00, 200.00, 1000.00,@user5),
        (@customer1, '2024-02-17 17:30:00', 'Shopping Mall', 'Airport', '18:00:00', @vehicle1, 'completed', 16.20,
-        2600.00, 100.00, 260.00, @user1),
+        2600.00, 100.00, 260.00, 1000.00,@user1),
        (@customer2, '2024-02-17 19:00:00', 'Restaurant', 'Hotel Plaza', '19:30:00', @vehicle2, 'confirmed', 7.50,
-        1300.00, 50.00, 130.00, @user2),
+        1300.00, 50.00, 130.00, 1000.00,@user2),
        (@customer3, '2024-02-17 20:30:00', 'Cinema', 'Office Complex', '21:00:00', @vehicle3, 'pending', 4.90, 950.00,
-        0.00, 95.00, @user3),
+        0.00, 95.00, 1000.00,@user3),
        (@customer4, '2024-02-17 22:00:00', 'Night Club', 'University', '22:30:00', @vehicle4, 'confirmed', 6.70,
-        1200.00, 100.00, 120.00, @user4),
+        1200.00, 100.00, 120.00, 1000.00,@user4),
        (@customer5, '2024-02-17 23:30:00', 'Hotel Grand', 'Train Station', '00:00:00', @vehicle5, 'pending', 9.40,
-        1700.00, 150.00, 170.00, @user5);
+        1700.00, 150.00, 170.00, 1000.00,@user5);

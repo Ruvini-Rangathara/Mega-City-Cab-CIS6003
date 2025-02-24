@@ -8,8 +8,9 @@ public class Vehicle implements SuperEntity {
     private String driverId;
     private String model;
     private String brand;
-    private double capacity;
+    private int capacity;
     private String color;
+    private double pricePerKm;
     private VehicleStatus status;
     private String createdAt;
     private String updatedAt;
@@ -23,6 +24,7 @@ public class Vehicle implements SuperEntity {
         this.brand = builder.brand;
         this.capacity = builder.capacity;
         this.color = builder.color;
+        this.pricePerKm = builder.pricePerKm;
         this.status = builder.status;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
@@ -35,8 +37,9 @@ public class Vehicle implements SuperEntity {
         private String driverId;
         private String model;
         private String brand;
-        private double capacity;
+        private int capacity;
         private String color;
+        private double pricePerKm;
         private VehicleStatus status;
         private String createdAt;
         private String updatedAt;
@@ -67,13 +70,18 @@ public class Vehicle implements SuperEntity {
             return this;
         }
 
-        public VehicleBuilder capacity(double capacity) {
+        public VehicleBuilder capacity(int capacity) {
             this.capacity = capacity;
             return this;
         }
 
         public VehicleBuilder color(String color) {
             this.color = color;
+            return this;
+        }
+
+        public VehicleBuilder pricePerKm(double pricePerKm) {
+            this.pricePerKm = pricePerKm;
             return this;
         }
 
@@ -112,6 +120,7 @@ public class Vehicle implements SuperEntity {
                 ", brand='" + brand + '\'' +
                 ", capacity=" + capacity +
                 ", color='" + color + '\'' +
+                ", pricePerKm=" + pricePerKm +
                 ", status=" + status +
                 ", createdAt='" + createdAt + '\'' +
                 ", updatedAt='" + updatedAt + '\'' +
@@ -139,12 +148,16 @@ public class Vehicle implements SuperEntity {
         return brand;
     }
 
-    public double getCapacity() {
+    public int getCapacity() {
         return capacity;
     }
 
     public String getColor() {
         return color;
+    }
+
+    public double getPricePerKm() {
+        return pricePerKm;
     }
 
     public VehicleStatus getStatus() {

@@ -16,6 +16,7 @@ public class Booking implements SuperEntity {
     private final double fare;
     private final double discount;
     private final double tax;
+    private final double netTotal;
     private final String userId;
     private final Date createdAt;
     private final Date updatedAt;
@@ -33,6 +34,7 @@ public class Booking implements SuperEntity {
         this.fare = builder.fare;
         this.discount = builder.discount;
         this.tax = builder.tax;
+        this.netTotal = builder.netTotal;
         this.userId = builder.userId;
         this.createdAt = builder.createdAt;
         this.updatedAt = builder.updatedAt;
@@ -87,6 +89,10 @@ public class Booking implements SuperEntity {
         return tax;
     }
 
+    public double getNetTotal() {
+        return netTotal;
+    }
+
     public String getUserId() {
         return userId;
     }
@@ -114,6 +120,7 @@ public class Booking implements SuperEntity {
                 ", fare=" + fare +
                 ", discount=" + discount +
                 ", tax=" + tax +
+                ", netTotal=" + netTotal +
                 ", userId='" + userId + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
@@ -134,6 +141,7 @@ public class Booking implements SuperEntity {
         private double fare;
         private double discount;
         private double tax;
+        private double netTotal;
         private String userId;
         private Date createdAt;
         private Date updatedAt;
@@ -205,6 +213,11 @@ public class Booking implements SuperEntity {
             return this;
         }
 
+        public BookingBuilder netTotal(double netTotal) {
+            this.netTotal = netTotal;
+            return this;
+        }
+
         public BookingBuilder userId(String userId) {
             this.userId = userId;
             return this;
@@ -217,14 +230,6 @@ public class Booking implements SuperEntity {
 
         public BookingBuilder updatedAt(Date updatedAt) {
             this.updatedAt = updatedAt;
-            return this;
-        }
-
-        // Convenience method to set both timestamps to now
-        public BookingBuilder setTimestampsToNow() {
-            Date now = new Date();
-            this.createdAt = now;
-            this.updatedAt = now;
             return this;
         }
 

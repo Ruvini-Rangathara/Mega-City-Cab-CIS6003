@@ -238,6 +238,7 @@
                         <th>Driver Name</th>
                         <th>Driver License</th>
                         <th>Vehicle Info</th>
+                        <th>Price/km</th>
                         <th>Driver Contact</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -260,6 +261,7 @@
                                 Capacity: <%= vd.getVehicle().getCapacity() %>
                             </small>
                         </td>
+                        <td>Rs. <%= vd.getVehicle().getPricePerKm() %></td>
                         <td>
                             <%= vd.getDriver().getMobileNo() %><br>
                             <small class="text-muted"><%= vd.getDriver().getEmail() %></small>
@@ -284,6 +286,7 @@
                                         '<%= vd.getVehicle().getModel() %>',
                                         '<%= vd.getVehicle().getColor() %>',
                                         '<%= vd.getVehicle().getCapacity() %>',
+                                        '<%= vd.getVehicle().getPricePerKm() %>',
                                         '<%= vd.getVehicle().getStatus() %>'
                                         )">
                                     <i class="bi bi-pencil-fill"></i>
@@ -408,6 +411,13 @@
                                 <label>Vehicle Status</label>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="pricePerKm" name="pricePerKm"
+                                       required min="0" step="0.01">
+                                <label>Price per km (Rs.)</label>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Form Actions -->
@@ -464,7 +474,7 @@
     }
 
     function editVehicleDriver(vehicleId, driverId, licensePlate, licenseNo, driverName, driverMobile, driverEmail,
-                               experience, brand, model, color, capacity, vehicleStatus) {
+                               experience, brand, model, color, pricePerKm, capacity, vehicleStatus) {
         document.getElementById("vehicleId").value = vehicleId;
         document.getElementById("driverId").value = driverId;
         document.getElementById("licensePlate").value = licensePlate;
@@ -476,6 +486,7 @@
         document.getElementById("brand").value = brand;
         document.getElementById("model").value = model;
         document.getElementById("color").value = color;
+        document.getElementById("pricePerKm").value = pricePerKm;
         document.getElementById("capacity").value = capacity;
         document.getElementById("vehicleStatus").value = vehicleStatus;
 

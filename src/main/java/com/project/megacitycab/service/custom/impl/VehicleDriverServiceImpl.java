@@ -78,6 +78,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
                     .brand(vehicleDriverDTO.getVehicle().getBrand())
                     .capacity(vehicleDriverDTO.getVehicle().getCapacity())
                     .color(vehicleDriverDTO.getVehicle().getColor())
+                    .pricePerKm(vehicleDriverDTO.getVehicle().getPricePerKm())
                     .status(vehicleDriverDTO.getVehicle().getStatus())
                     .build();
 

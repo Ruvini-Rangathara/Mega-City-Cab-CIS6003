@@ -108,7 +108,6 @@
             background-color: #ffeb99;
             border-color: #ffeb99;
             color: #000;
-            width: 100px;
         }
 
         .btn-edit:hover {
@@ -121,7 +120,6 @@
             background-color: #ff9999;
             border-color: #ff9999;
             color: #000;
-            width: 100px;
         }
 
         .btn-delete:hover {
@@ -217,6 +215,7 @@
                     <tr>
                         <th>Reg. No</th>
                         <th>Name</th>
+                        <th>Address</th>
                         <th>Email</th>
                         <th>NIC</th>
                         <th>Mobile</th>
@@ -232,6 +231,7 @@
                     <tr>
                         <td><%= customer.getRegistrationNo() %></td>
                         <td><%= customer.getName() %></td>
+                        <td><%= customer.getAddress() %></td>
                         <td><%= customer.getEmail() %></td>
                         <td><%= customer.getNic() %></td>
                         <td><%= customer.getMobileNo() %></td>
@@ -247,14 +247,14 @@
                                         '<%= customer.getMobileNo() %>',
                                         '<%= customer.getDob() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(customer.getDob()) : "" %>'
                                         )">
-                                    <i class="bi bi-pencil-fill"></i> Edit
+                                    <i class="bi bi-pencil-fill"></i>
                                 </button>
                                 <form action="${pageContext.request.contextPath}/customer-servlet" method="post" class="d-inline">
                                     <input type="hidden" name="action" value="delete">
                                     <input type="hidden" name="id" value="<%= customer.getId() %>">
                                     <button type="submit" class="btn btn-delete btn-sm"
                                             onclick="return confirm('Are you sure you want to delete this customer?')">
-                                        <i class="bi bi-trash-fill"></i> Delete
+                                        <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </form>
                             </div>

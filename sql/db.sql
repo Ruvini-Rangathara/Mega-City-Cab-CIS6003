@@ -3,8 +3,7 @@ DATABASE IF EXISTS `mega_city_cab`;
 CREATE
 DATABASE IF NOT EXISTS `mega_city_cab`;
 
-USE
-`mega_city_cab`;
+USE `mega_city_cab`;
 
 
 CREATE TABLE users
@@ -43,9 +42,8 @@ CREATE TABLE drivers
 (
     id            CHAR(36)     NOT NULL PRIMARY KEY DEFAULT (UUID()),
     name          VARCHAR(255) NOT NULL,
-    licenseNumber VARCHAR(255) NOT NULL UNIQUE,
+    licenseNo VARCHAR(255) NOT NULL UNIQUE,
     mobileNo      VARCHAR(15)  NOT NULL UNIQUE,
-    status        ENUM ('available', 'unavailable') NOT NULL DEFAULT 'available',
     experience    INT          NOT NULL,
     email         VARCHAR(255) NOT NULL,
     createdAt     DATETIME DEFAULT CURRENT_TIMESTAMP,

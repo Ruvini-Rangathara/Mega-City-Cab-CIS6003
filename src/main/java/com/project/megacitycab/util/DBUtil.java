@@ -1,5 +1,8 @@
 package com.project.megacitycab.util;
 
+import com.project.megacitycab.util.exception.MegaCityCabException;
+import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -13,8 +16,6 @@ public class DBUtil {
     private static final Logger logger = Logger.getLogger(DBUtil.class.getName());
     private static final DataSource dataSource;
 
-    private DBUtil() {}
-
     static {
         try {
             Context initContext = new InitialContext();
@@ -22,38 +23,20 @@ public class DBUtil {
             dataSource = (DataSource) envContext.lookup("jdbc/MySQLDB");
         } catch (NamingException e) {
             logger.log(Level.SEVERE, "Failed to initialize DataSource", e);
-            throw new RuntimeException("Failed to initialize DataSource", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.FAILED_TO_INITIALIZE_DATASOURCE);
         }
     }
 
-    public static Connection getConnection() throws SQLException {
+    private DBUtil() {
+    }
+
+    public static Connection getConnection() {
         try {
-            Connection connection = dataSource.getConnection();
-            connection.setAutoCommit(false); // Set default auto-commit to false
-            return connection;
+            return dataSource.getConnection();
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Failed to get database connection", e);
-            throw e;
+            throw new RuntimeException("Failed to get database connection", e);
         }
     }
 
-    public static void closeConnection(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                logger.log(Level.WARNING, "Failed to close connection", e);
-            }
-        }
-    }
-
-    public static void rollback(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                logger.log(Level.WARNING, "Failed to rollback transaction", e);
-            }
-        }
-    }
 }

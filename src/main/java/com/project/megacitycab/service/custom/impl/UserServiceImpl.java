@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 public class UserServiceImpl implements UserService {
     private static final Logger logger = Logger.getLogger(UserServiceImpl.class.getName());
+    private final Connection connection = DBUtil.getConnection();
     private final UserDAO userDAO;
 
     public UserServiceImpl() {
@@ -26,15 +27,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean add(UserDTO entity) throws MegaCityCabException {
-        Connection connection = null;
+
         try {
             if (!validateUser(entity)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_USER_INPUTS);
             }
 
-            connection = DBUtil.getConnection();
-
-            if (userExistsByEmail(connection, entity)) {
+            if (userDAO.existByEmail(connection, entity)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.USER_ALREADY_EXISTS);
             }
 
@@ -59,26 +58,19 @@ public class UserServiceImpl implements UserService {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
             }
 
-            connection.commit();
             return true;
         } catch (Exception e) {
-            DBUtil.rollback(connection);
             logger.log(Level.SEVERE, "Error in add user service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
     @Override
     public boolean update(UserDTO entity) throws MegaCityCabException {
-        Connection connection = null;
         try {
             if (!validateUser(entity)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_USER_INPUTS);
             }
-
-            connection = DBUtil.getConnection();
 
             UserDTO originalUser = UserConverter.toDTO(userDAO.searchById(connection, entity.getId()));
 
@@ -114,94 +106,65 @@ public class UserServiceImpl implements UserService {
             if (!isUpdated) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
             }
-
-            connection.commit();
             return true;
         } catch (Exception e) {
-            DBUtil.rollback(connection);
             logger.log(Level.SEVERE, "Error in update user service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
     // Other methods remain unchanged as they don't deal with password handling
     @Override
     public boolean delete(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
-
-            if (!userExistsByPk(connection, args[0])) {
+            if (!userDAO.existByPk(connection, args)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.USER_NOT_FOUND);
             }
 
-            boolean result = userDAO.delete(connection, args);
-            connection.commit();
-            return result;
+            return userDAO.delete(connection, args);
         } catch (Exception e) {
-            DBUtil.rollback(connection);
             logger.log(Level.SEVERE, "Error in delete user service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
     @Override
     public UserDTO searchById(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return UserConverter.toDTO(userDAO.searchById(connection, args));
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in search user by ID service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
     @Override
     public List<UserDTO> getAll(Map<String, String> searchParams) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return UserConverter.toDTOList(userDAO.getAll(connection, searchParams));
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in get all users service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
     @Override
     public boolean existByPk(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return userDAO.existByPk(connection, args);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in exist by PK service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
     @Override
     public UserDTO searchByEmail(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return UserConverter.toDTO(userDAO.findByEmail(connection, args));
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in search by email service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
@@ -210,23 +173,5 @@ public class UserServiceImpl implements UserService {
                 user.getEmail().matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$") &&
                 user.getPassword() != null &&
                 user.getPassword().length() >= 8;
-    }
-
-    private boolean userExistsByPk(Connection connection, Object id) throws MegaCityCabException {
-        try {
-            return userDAO.existByPk(connection, id);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error checking user exists by PK", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    private boolean userExistsByEmail(Connection connection, UserDTO user) throws MegaCityCabException {
-        try {
-            return userDAO.existByEmail(connection, user.getEmail());
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error checking user exists by email", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        }
     }
 }

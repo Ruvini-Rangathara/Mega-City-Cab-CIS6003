@@ -1,13 +1,10 @@
 package com.project.megacitycab.dto;
 
-import com.project.megacitycab.constant.DriverStatus;
-
 public class DriverDTO implements SuperDTO {
     private final String id;
     private final String name;
     private final String licenseNo;
     private final String mobileNo;
-    private final DriverStatus status;
     private final int experience;
     private final String email;
     private final String createdAt;
@@ -19,7 +16,6 @@ public class DriverDTO implements SuperDTO {
         this.name = builder.name;
         this.licenseNo = builder.licenseNo;
         this.mobileNo = builder.mobileNo;
-        this.status = builder.status;
         this.experience = builder.experience;
         this.email = builder.email;
         this.createdAt = builder.createdAt;
@@ -41,10 +37,6 @@ public class DriverDTO implements SuperDTO {
 
     public String getMobileNo() {
         return mobileNo;
-    }
-
-    public DriverStatus getStatus() {
-        return status;
     }
 
     public int getExperience() {
@@ -74,7 +66,6 @@ public class DriverDTO implements SuperDTO {
                 ", name='" + name + '\'' +
                 ", licenseNo='" + licenseNo + '\'' +
                 ", mobileNo='" + mobileNo + '\'' +
-                ", status=" + status +
                 ", experience=" + experience +
                 ", email='" + email + '\'' +
                 ", createdAt='" + createdAt + '\'' +
@@ -89,7 +80,6 @@ public class DriverDTO implements SuperDTO {
         private String name;
         private String licenseNo;
         private String mobileNo;
-        private DriverStatus status;
         private int experience;
         private String email;
         private String createdAt;
@@ -116,11 +106,6 @@ public class DriverDTO implements SuperDTO {
 
         public DriverDTOBuilder mobileNo(String mobileNo) {
             this.mobileNo = mobileNo;
-            return this;
-        }
-
-        public DriverDTOBuilder status(DriverStatus status) {
-            this.status = status;
             return this;
         }
 

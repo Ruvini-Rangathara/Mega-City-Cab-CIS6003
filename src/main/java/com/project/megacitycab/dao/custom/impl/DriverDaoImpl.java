@@ -3,7 +3,6 @@ package com.project.megacitycab.dao.custom.impl;
 import com.project.megacitycab.dao.custom.DriverDAO;
 import com.project.megacitycab.dao.util.CrudUtil;
 import com.project.megacitycab.entity.Driver;
-import com.project.megacitycab.constant.DriverStatus;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -17,14 +16,13 @@ public class DriverDaoImpl implements DriverDAO {
 
     @Override
     public boolean add(Connection connection, Driver entity) throws SQLException, ClassNotFoundException {
-        String sql = "INSERT INTO drivers (name, licenseNo, mobileNo, status, experience, email) VALUES (?,?,?,?,?,?)";
+        String sql = "INSERT INTO drivers (name, licenseNo, mobileNo, experience, email) VALUES (?,?,?,?,?)";
         return CrudUtil.execute(
                 connection,
                 sql,
                 entity.getName(),
                 entity.getLicenseNo(),
                 entity.getMobileNo(),
-                entity.getStatus().toString(), // Save status as string
                 entity.getExperience(),
                 entity.getEmail()
         );
@@ -32,14 +30,13 @@ public class DriverDaoImpl implements DriverDAO {
 
     @Override
     public boolean update(Connection connection, Driver entity) throws SQLException, ClassNotFoundException {
-        String sql = "UPDATE drivers SET name=?, licenseNo=?, mobileNo=?, status=?, experience=?, email=? WHERE id=?";
+        String sql = "UPDATE drivers SET name=?, licenseNo=?, mobileNo=?, experience=?, email=? WHERE id=?";
         return CrudUtil.execute(
                 connection,
                 sql,
                 entity.getName(),
                 entity.getLicenseNo(),
                 entity.getMobileNo(),
-                entity.getStatus().toString(),
                 entity.getExperience(),
                 entity.getEmail(),
                 entity.getId()
@@ -61,9 +58,8 @@ public class DriverDaoImpl implements DriverDAO {
             return new Driver.DriverBuilder()
                     .id(result.getString("id"))
                     .name(result.getString("name"))
-                    .licenseNo(result.getString("licenseNumber"))
+                    .licenseNo(result.getString("licenseNo"))
                     .mobileNo(result.getString("mobileNo"))
-                    .status(DriverStatus.valueOf(result.getString("status")))
                     .experience(result.getInt("experience"))
                     .email(result.getString("email"))
                     .createdAt(result.getString("createdAt"))
@@ -111,7 +107,6 @@ public class DriverDaoImpl implements DriverDAO {
                     .name(result.getString("name"))
                     .licenseNo(result.getString("licenseNo"))
                     .mobileNo(result.getString("mobileNo"))
-                    .status(DriverStatus.valueOf(result.getString("status")))
                     .experience(result.getInt("experience"))
                     .email(result.getString("email"))
                     .createdAt(result.getString("createdAt"))
@@ -135,5 +130,15 @@ public class DriverDaoImpl implements DriverDAO {
         String sql = "SELECT * FROM drivers WHERE licenseNo=? AND deletedAt IS NULL";
         ResultSet result = CrudUtil.execute(connection,sql, args[0]);
         return result.next();
+    }
+
+    @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT id FROM drivers ORDER BY createdAt DESC LIMIT 1";
+        ResultSet rs = CrudUtil.execute(connection, sql);
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        throw new SQLException("Failed to get last inserted ID");
     }
 }

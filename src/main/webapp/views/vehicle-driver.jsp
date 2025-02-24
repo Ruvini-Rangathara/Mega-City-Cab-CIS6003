@@ -50,6 +50,10 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
         }
 
+        #successMessage, #errorMessage{
+            margin-top: 2rem;
+        }
+
         .section-header {
             display: flex;
             justify-content: space-between;

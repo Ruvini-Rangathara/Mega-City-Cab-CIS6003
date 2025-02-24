@@ -1,6 +1,5 @@
 package com.project.megacitycab.servlet;
 
-import com.project.megacitycab.constant.DriverStatus;
 import com.project.megacitycab.constant.VehicleStatus;
 import com.project.megacitycab.dto.DriverDTO;
 import com.project.megacitycab.dto.VehicleDTO;
@@ -91,7 +90,6 @@ public class VehicleDriverServlet extends HttpServlet {
                     .licenseNo(request.getParameter("licenseNo"))
                     .mobileNo(request.getParameter("driverMobile"))
                     .email(request.getParameter("driverEmail"))
-                    .status(DriverStatus.valueOf(request.getParameter("driverStatus")))
                     .experience(Integer.parseInt(request.getParameter("experience")))
                     .build();
 
@@ -134,7 +132,6 @@ public class VehicleDriverServlet extends HttpServlet {
                     .licenseNo(request.getParameter("licenseNo"))
                     .mobileNo(request.getParameter("driverMobile"))
                     .email(request.getParameter("driverEmail"))
-                    .status(DriverStatus.valueOf(request.getParameter("driverStatus")))
                     .experience(Integer.parseInt(request.getParameter("experience")))
                     .build();
 

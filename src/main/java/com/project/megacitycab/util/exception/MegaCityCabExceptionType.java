@@ -56,6 +56,8 @@ public enum MegaCityCabExceptionType {
 
     // General System Exceptions
     PASSWORD_UTIL_EXCEPTION,
-    SQL_EXCEPTION,
-    INTERNAL_SERVER_ERROR
+    INTERNAL_SERVER_ERROR,
+    FAILED_TO_INITIALIZE_DATASOURCE,
+    DATABASE_ERROR
+
 }

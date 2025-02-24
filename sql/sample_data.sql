@@ -28,49 +28,49 @@ VALUES
     ('REG010', 'Patricia White', '741 Oak Rd, Town', '871234567V', '1986-08-09', '0772234570', 'patricia@email.com');
 
 -- Drivers table data
-INSERT INTO drivers (name, licenseNumber, mobileNo, status, experience, email)
-VALUES ('Tom Wilson', 'LIC001', '+94781234567', 'available', 5, 'tom@driver.com'),
-       ('Jane Cooper', 'LIC002', '+94782234567', 'available', 3, 'jane@driver.com'),
-       ('Steve Rogers', 'LIC003', '+94783234567', 'unavailable', 7, 'steve@driver.com'),
-       ('Diana Prince', 'LIC004', '+94784234567', 'available', 4, 'diana@driver.com'),
-       ('Bruce Wayne', 'LIC005', '+94785234567', 'available', 6, 'bruce@driver.com'),
-       ('Peter Parker', 'LIC006', '+94786234567', 'unavailable', 2, 'peter@driver.com'),
-       ('Tony Stark', 'LIC007', '+94787234567', 'available', 8, 'tony@driver.com'),
-       ('Clark Kent', 'LIC008', '+94788234567', 'available', 5, 'clark@driver.com'),
-       ('Wade Wilson', 'LIC009', '+94789234567', 'unavailable', 3, 'wade@driver.com'),
-       ('Logan Howlett', 'LIC010', '+94780234567', 'available', 6, 'logan@driver.com');
+INSERT INTO drivers (name, licenseNo, mobileNo, experience, email)
+VALUES ('Tom Wilson', 'LIC001', '+94781234567', 5, 'tom@driver.com'),
+       ('Jane Cooper', 'LIC002', '+94782234567', 3, 'jane@driver.com'),
+       ('Steve Rogers', 'LIC003', '+94783234567',  7, 'steve@driver.com'),
+       ('Diana Prince', 'LIC004', '+94784234567', 4, 'diana@driver.com'),
+       ('Bruce Wayne', 'LIC005', '+94785234567', 6, 'bruce@driver.com'),
+       ('Peter Parker', 'LIC006', '+94786234567', 2, 'peter@driver.com'),
+       ('Tony Stark', 'LIC007', '+94787234567', 8, 'tony@driver.com'),
+       ('Clark Kent', 'LIC008', '+94788234567', 5, 'clark@driver.com'),
+       ('Wade Wilson', 'LIC009', '+94789234567',  3, 'wade@driver.com'),
+       ('Logan Howlett', 'LIC010', '+94780234567', 6, 'logan@driver.com');
 
 -- Get driver IDs for vehicles
 SET @driver1 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC001');
+                WHERE licenseNo = 'LIC001');
 SET @driver2 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC002');
+                WHERE licenseNo = 'LIC002');
 SET @driver3 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC003');
+                WHERE licenseNo = 'LIC003');
 SET @driver4 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC004');
+                WHERE licenseNo = 'LIC004');
 SET @driver5 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC005');
+                WHERE licenseNo = 'LIC005');
 SET @driver6 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC006');
+                WHERE licenseNo = 'LIC006');
 SET @driver7 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC007');
+                WHERE licenseNo = 'LIC007');
 SET @driver8 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC008');
+                WHERE licenseNo = 'LIC008');
 SET @driver9 = (SELECT id
                 FROM drivers
-                WHERE licenseNumber = 'LIC009');
+                WHERE licenseNo = 'LIC009');
 SET @driver10 = (SELECT id
                  FROM drivers
-                 WHERE licenseNumber = 'LIC010');
+                 WHERE licenseNo = 'LIC010');
 
 -- Vehicles table data
 INSERT INTO vehicles (licensePlate, driverId, model, brand, capacity, color, status)

@@ -7,6 +7,8 @@ import com.project.megacitycab.dao.custom.VehicleDAO;
 import com.project.megacitycab.dto.DriverDTO;
 import com.project.megacitycab.dto.VehicleDTO;
 import com.project.megacitycab.dto.VehicleDriverDTO;
+import com.project.megacitycab.entity.Driver;
+import com.project.megacitycab.entity.Vehicle;
 import com.project.megacitycab.service.custom.VehicleDriverService;
 import com.project.megacitycab.util.DBUtil;
 import com.project.megacitycab.util.converter.DriverConverter;
@@ -15,17 +17,17 @@ import com.project.megacitycab.util.exception.MegaCityCabException;
 import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
 
 import java.sql.Connection;
-import java.time.LocalDateTime;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class VehicleDriverServiceImpl implements VehicleDriverService {
     private static final Logger logger = Logger.getLogger(VehicleDriverServiceImpl.class.getName());
+    private final Connection connection = DBUtil.getConnection();
     private final VehicleDAO vehicleDAO;
     private final DriverDAO driverDAO;
 
@@ -35,62 +37,93 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
     }
 
     @Override
-    public boolean add(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException {
-        Connection connection = null;
+    public boolean add(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException, SQLException {
         try {
             if (!validateVehicleDriver(vehicleDriverDTO)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_VEHICLE_DRIVER_INPUTS);
             }
-
-            connection = DBUtil.getConnection();
+            connection.setAutoCommit(false);
 
             // Check for existing license plate and driver license
-            if (vehicleExistsByLicensePlate(connection, vehicleDriverDTO.getVehicle())) {
+            if (existByLicensePlate(vehicleDriverDTO.getVehicle().getLicensePlate())) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.VEHICLE_ALREADY_EXISTS);
             }
 
-            if (existsByDriverLicense(connection, vehicleDriverDTO.getDriver().getLicenseNo())) {
+            if (existsByDriverLicense(vehicleDriverDTO.getDriver().getLicenseNo())) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.DRIVER_ALREADY_EXISTS);
             }
 
-            // Prepare and save driver
-            boolean driverSaved = driverDAO.add(connection, DriverConverter.toEntity(vehicleDriverDTO.getDriver()));
+            // First save the driver
+            Driver driver = DriverConverter.toEntity(vehicleDriverDTO.getDriver());
+            boolean driverSaved = driverDAO.add(connection, driver);
 
-            // Prepare and save vehicle
-            boolean vehicleSaved = vehicleDAO.add(connection, VehicleConverter.toEntity(vehicleDriverDTO.getVehicle()));
+            if (!driverSaved) {
+                connection.rollback();
+                throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+            }
 
-            if (!driverSaved || !vehicleSaved) {
+            // Get the newly created driver's ID and verify it exists
+            String driverId = driverDAO.getLastInsertedId(connection);
+            if (driverId == null || driverId.isEmpty()) {
+                connection.rollback();
+                throw new MegaCityCabException(MegaCityCabExceptionType.DRIVER_NOT_FOUND);
+            }
+
+            // Set the driver ID in the vehicle entity and ensure all required fields are present
+            Vehicle vehicle = new Vehicle.VehicleBuilder()
+                    .id(vehicleDriverDTO.getVehicle().getId())
+                    .licensePlate(vehicleDriverDTO.getVehicle().getLicensePlate())
+                    .driverId(driverId)  // Using the verified driver ID
+                    .model(vehicleDriverDTO.getVehicle().getModel())
+                    .brand(vehicleDriverDTO.getVehicle().getBrand())
+                    .capacity(vehicleDriverDTO.getVehicle().getCapacity())
+                    .color(vehicleDriverDTO.getVehicle().getColor())
+                    .status(vehicleDriverDTO.getVehicle().getStatus())
+                    .build();
+
+            // Validate vehicle data
+            if (vehicle.getLicensePlate() == null || vehicle.getDriverId() == null) {
+                connection.rollback();
+                throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_VEHICLE_INPUTS);
+            }
+
+            // Now save the vehicle with the driver ID
+            boolean vehicleSaved = vehicleDAO.add(connection, vehicle);
+
+            if (!vehicleSaved) {
+                connection.rollback();
                 throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
             }
 
             connection.commit();
             return true;
 
+        } catch (SQLException e) {
+            connection.rollback();
+            logger.log(Level.SEVERE, "SQL Error in add vehicle-driver service", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.DATABASE_ERROR);
         } catch (Exception e) {
-            DBUtil.rollback(connection);
+            connection.rollback();
             logger.log(Level.SEVERE, "Error in add vehicle-driver service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         } finally {
-            DBUtil.closeConnection(connection);
+            if (connection != null) {
+                connection.setAutoCommit(true);
+            }
         }
     }
-
     @Override
-    public boolean update(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException {
-        Connection connection = null;
+    public boolean update(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException, SQLException {
         try {
+            connection.setAutoCommit(false);
             if (!validateVehicleDriver(vehicleDriverDTO)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_VEHICLE_DRIVER_INPUTS);
             }
 
-            connection = DBUtil.getConnection();
-
-            if (!existsByVehicleId(connection, vehicleDriverDTO.getVehicle().getId()) ||
-                    !existsByDriverId(connection, vehicleDriverDTO.getDriver().getId())) {
+            if (!existsByVehicleId(vehicleDriverDTO.getVehicle().getId()) ||
+                    !existsByDriverId(vehicleDriverDTO.getDriver().getId())) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.VEHICLE_DRIVER_NOT_FOUND);
             }
-
-            LocalDateTime timestamp = LocalDateTime.now();
 
             boolean driverUpdated = driverDAO.update(connection,
                     DriverConverter.toEntity(vehicleDriverDTO.getDriver()));
@@ -105,24 +138,24 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             return true;
 
         } catch (Exception e) {
-            DBUtil.rollback(connection);
+            connection.rollback();
             logger.log(Level.SEVERE, "Error in update vehicle-driver service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         } finally {
-            DBUtil.closeConnection(connection);
+            connection.setAutoCommit(true);
         }
     }
 
     @Override
-    public boolean delete(Object... args) throws MegaCityCabException {
-        Connection connection = null;
+    public boolean delete(Object... args) throws MegaCityCabException, SQLException {
+
         try {
-            connection = DBUtil.getConnection();
+            connection.setAutoCommit(false);
 
             String vehicleId = (String) args[0];
             String driverId = (String) args[1];
 
-            if (!existsByVehicleId(connection, vehicleId) || !existsByDriverId(connection, driverId)) {
+            if (!existsByVehicleId(vehicleId) || !existsByDriverId(driverId)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.VEHICLE_DRIVER_NOT_FOUND);
             }
 
@@ -137,19 +170,17 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             return true;
 
         } catch (Exception e) {
-            DBUtil.rollback(connection);
+            connection.rollback();
             logger.log(Level.SEVERE, "Error in delete vehicle-driver service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         } finally {
-            DBUtil.closeConnection(connection);
+            connection.setAutoCommit(true);
         }
     }
 
     @Override
     public VehicleDriverDTO searchById(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             VehicleDTO vehicle = VehicleConverter.toDTO(vehicleDAO.searchById(connection, args));
 
             if (vehicle == null) {
@@ -165,17 +196,12 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in search vehicle-driver by ID service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
     @Override
     public List<VehicleDriverDTO> getAll(Map<String, String> searchParams) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
-
             Map<String, String> cleanParams = new HashMap<>();
             if (searchParams != null) {
                 searchParams.forEach((key, value) -> {
@@ -201,8 +227,6 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in get all vehicle-drivers service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } finally {
-            DBUtil.closeConnection(connection);
         }
     }
 
@@ -238,20 +262,9 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
                 !vehicle.getModel().trim().isEmpty();
     }
 
-    private boolean vehicleExistsByLicensePlate(Connection connection, VehicleDTO vehicle) throws MegaCityCabException {
-        try {
-            return vehicleDAO.existByLicensePlate(connection, vehicle.getLicensePlate());
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error checking vehicle exists by license plate", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     @Override
     public boolean existByLicensePlate(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return vehicleDAO.existByLicensePlate(connection, args[0]);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error checking vehicle exists by license plate", e);
@@ -261,9 +274,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
 
     @Override
     public boolean existsByVehicleId(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return vehicleDAO.existByPk(connection, args[0]);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error checking vehicle exists by PK", e);
@@ -273,9 +284,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
 
     @Override
     public boolean existsByDriverId(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return driverDAO.existByPk(connection, args[0]);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error checking driver exists by PK", e);
@@ -285,9 +294,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
 
     @Override
     public boolean existsByDriverLicense(Object... args) throws MegaCityCabException {
-        Connection connection = null;
         try {
-            connection = DBUtil.getConnection();
             return driverDAO.existByLicenseNo(connection, args[0]);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error checking driver exists by license", e);

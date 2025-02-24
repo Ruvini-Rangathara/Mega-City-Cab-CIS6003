@@ -1,15 +1,20 @@
 package com.project.megacitycab.entity;
 
 import com.project.megacitycab.constant.BookingStatus;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 
 public class Booking implements SuperEntity {
     private final String id;
     private final String customerId;
-    private final Date bookingDate;
+    private final LocalDate bookingDate;
     private final String pickupLocation;
     private final String destination;
-    private final String pickupTime;
+    private final LocalTime pickupTime;
+    private final LocalTime releaseTime;
     private final String vehicleId;
     private final BookingStatus status;
     private final double distance;
@@ -28,6 +33,7 @@ public class Booking implements SuperEntity {
         this.pickupLocation = builder.pickupLocation;
         this.destination = builder.destination;
         this.pickupTime = builder.pickupTime;
+        this.releaseTime = builder.releaseTime;
         this.vehicleId = builder.vehicleId;
         this.status = builder.status;
         this.distance = builder.distance;
@@ -49,7 +55,7 @@ public class Booking implements SuperEntity {
         return customerId;
     }
 
-    public Date getBookingDate() {
+    public LocalDate getBookingDate() {
         return bookingDate;
     }
 
@@ -61,8 +67,12 @@ public class Booking implements SuperEntity {
         return destination;
     }
 
-    public String getPickupTime() {
+    public LocalTime getPickupTime() {
         return pickupTime;
+    }
+
+    public LocalTime getReleaseTime() {
+        return releaseTime;
     }
 
     public String getVehicleId() {
@@ -114,6 +124,7 @@ public class Booking implements SuperEntity {
                 ", pickupLocation='" + pickupLocation + '\'' +
                 ", destination='" + destination + '\'' +
                 ", pickupTime='" + pickupTime + '\'' +
+                ", releaseTime='" + releaseTime + '\'' +
                 ", vehicleId='" + vehicleId + '\'' +
                 ", status=" + status +
                 ", distance=" + distance +
@@ -131,10 +142,11 @@ public class Booking implements SuperEntity {
     public static class BookingBuilder {
         private String id;
         private String customerId;
-        private Date bookingDate;
+        private LocalDate bookingDate;
         private String pickupLocation;
         private String destination;
-        private String pickupTime;
+        private LocalTime pickupTime;
+        private LocalTime releaseTime;
         private String vehicleId;
         private BookingStatus status;
         private double distance;
@@ -163,7 +175,7 @@ public class Booking implements SuperEntity {
             return this;
         }
 
-        public BookingBuilder bookingDate(Date bookingDate) {
+        public BookingBuilder bookingDate(LocalDate bookingDate) {
             this.bookingDate = bookingDate;
             return this;
         }
@@ -178,8 +190,13 @@ public class Booking implements SuperEntity {
             return this;
         }
 
-        public BookingBuilder pickupTime(String pickupTime) {
+        public BookingBuilder pickupTime(LocalTime pickupTime) {
             this.pickupTime = pickupTime;
+            return this;
+        }
+
+        public BookingBuilder releaseTime(LocalTime releaseTime) {
+            this.releaseTime = releaseTime;
             return this;
         }
 

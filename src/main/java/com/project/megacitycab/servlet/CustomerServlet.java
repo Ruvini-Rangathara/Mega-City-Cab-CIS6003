@@ -152,7 +152,7 @@ public class CustomerServlet extends HttpServlet {
 
             CustomerDTO customerDTO = customerService.searchById(id);
             request.setAttribute("customer", customerDTO);
-            request.getRequestDispatcher("/customer.jsp").forward(request, response);
+            request.getRequestDispatcher("/views/customer.jsp").forward(request, response);
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error fetching customer", e);

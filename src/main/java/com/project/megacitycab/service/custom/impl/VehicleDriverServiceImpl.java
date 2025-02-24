@@ -302,4 +302,30 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @Override
+    public List<VehicleDTO> getAllVehicles(Map<String, String> searchParams) throws MegaCityCabException, SQLException {
+        try {
+            return VehicleConverter.toDTOList(vehicleDAO.getAll(connection, searchParams));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting all vehicles", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public DriverDTO findDriverByVehicleId(Object... args) throws MegaCityCabException, SQLException {
+        try {
+            VehicleDTO vehicle = VehicleConverter.toDTO(vehicleDAO.searchById(connection, args));
+            if (vehicle == null) {
+                return null;
+            }
+
+            return DriverConverter.toDTO(driverDAO.searchById(connection, vehicle.getDriverId()));
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error finding driver by vehicle ID", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

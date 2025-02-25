@@ -5,6 +5,15 @@
   Time: 16.31
   To change this template use File | Settings | File Templates.
 --%>
+
+<%--
+  Created by IntelliJ IDEA.
+  User: ruvini
+  Date: 2025-02-24
+  Time: 16.31
+  To change this template use File | Settings | File Templates.
+--%>
+
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
@@ -187,14 +196,22 @@
 
 <div class="container">
     <!-- Alert Messages -->
-    <div id="successMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
-        ${param.success}
+    <%
+        String success = request.getParameter("success");
+        String error = request.getParameter("error");
+    %>
+    <% if (success != null && !success.isEmpty()) { %>
+    <div id="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+        <%= success %>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
-        ${param.error}
+    <% } %>
+    <% if (error != null && !error.isEmpty()) { %>
+    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= error %>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    <% } %>
 
     <!-- Top Section -->
     <div class="top-section">
@@ -202,7 +219,7 @@
             <h2 class="section-title">
                 <i class="bi bi-calendar-check-fill me-2"></i>Booking Management
             </h2>
-            <a href="${pageContext.request.contextPath}/views/booking-form.jsp" class="btn btn-primary">
+            <a href="${pageContext.request.contextPath}/booking-servlet?action=newForm" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-2"></i>New Booking
             </a>
         </div>
@@ -213,14 +230,14 @@
                 <div class="col-md-4">
                     <div class="form-floating">
                         <input type="date" class="form-control" id="searchDate" name="searchDate"
-                               value="${param.searchDate}">
+                               value="${searchDate}">
                         <label for="searchDate">Booking Date</label>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="form-floating">
                         <input type="text" class="form-control" id="searchCustomer" name="searchCustomer"
-                               value="${param.searchCustomer}" placeholder="Customer Name or Mobile">
+                               value="${searchCustomer}" placeholder="Customer Name or Mobile">
                         <label for="searchCustomer">Customer Name or Mobile</label>
                     </div>
                 </div>
@@ -228,10 +245,10 @@
                     <div class="form-floating">
                         <select class="form-select" id="searchStatus" name="searchStatus">
                             <option value="">All Status</option>
-                            <option value="PENDING">Pending</option>
-                            <option value="CONFIRMED">Confirmed</option>
-                            <option value="CANCELLED">Cancelled</option>
-                            <option value="COMPLETED">Completed</option>
+                            <option value="pending" ${searchStatus eq 'pending' ? 'selected' : ''}>Pending</option>
+                            <option value="confirmed" ${searchStatus eq 'confirmed' ? 'selected' : ''}>Confirmed</option>
+                            <option value="cancelled" ${searchStatus eq 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                            <option value="completed" ${searchStatus eq 'completed' ? 'selected' : ''}>Completed</option>
                         </select>
                         <label for="searchStatus">Status</label>
                     </div>
@@ -322,7 +339,7 @@
                         </td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="${pageContext.request.contextPath}/views/booking-form.jsp?id=<%= booking.getId() %>"
+                                <a href="${pageContext.request.contextPath}/booking-servlet?action=view&id=<%= booking.getId() %>"
                                    class="btn btn-view btn-sm">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
@@ -350,25 +367,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Show alert messages if they exist
-        const successMessage = document.getElementById("successMessage");
-        const errorMessage = document.getElementById("errorMessage");
+        // Auto-hide alert messages after 5 seconds
+        setTimeout(function() {
+            const successMessage = document.getElementById("successMessage");
+            if (successMessage) {
+                const bsAlert = new bootstrap.Alert(successMessage);
+                bsAlert.close();
+            }
 
-        if (successMessage.textContent.trim()) {
-            successMessage.classList.remove("d-none");
-            setTimeout(() => successMessage.classList.add("d-none"), 5000);
-        }
-        if (errorMessage.textContent.trim()) {
-            errorMessage.classList.remove("d-none");
-            setTimeout(() => errorMessage.classList.add("d-none"), 5000);
-        }
-
-        // Set selected status in dropdown if it exists in URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const statusParam = urlParams.get('searchStatus');
-        if (statusParam) {
-            document.getElementById('searchStatus').value = statusParam;
-        }
+            const errorMessage = document.getElementById("errorMessage");
+            if (errorMessage) {
+                const bsAlert = new bootstrap.Alert(errorMessage);
+                bsAlert.close();
+            }
+        }, 5000);
     });
 
     function clearSearch() {

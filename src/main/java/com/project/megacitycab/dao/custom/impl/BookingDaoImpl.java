@@ -75,38 +75,37 @@ public class BookingDaoImpl implements BookingDAO {
         List<Booking> bookings = new ArrayList<>();
         List<Object> params = new ArrayList<>();
 
-        StringBuilder sql = new StringBuilder("SELECT * FROM bookings");
+        StringBuilder sql = new StringBuilder("SELECT b.* FROM bookings b");
+
+        // Add JOIN with customers table if searching by customer name or mobile
+        if (searchParams != null && !searchParams.isEmpty() && searchParams.containsKey("searchCustomer")) {
+            sql.append(" LEFT JOIN customers c ON b.customerId = c.id");
+        }
+
+        sql.append(" WHERE 1=1");
 
         // Add search conditions if provided
-        if (searchParams != null) {
-            if (searchParams.containsKey("customerId")) {
-                sql.append(" AND customerId = ?");
-                params.add(searchParams.get("customerId"));
+        if (searchParams != null && !searchParams.isEmpty()) {
+            if (searchParams.containsKey("searchCustomer")) {
+                sql.append(" AND (c.name LIKE ? OR c.mobileNo LIKE ?)");
+                String searchTerm = "%" + searchParams.get("searchCustomer") + "%";
+                params.add(searchTerm);
+                params.add(searchTerm);
             }
-            if (searchParams.containsKey("vehicleId")) {
-                sql.append(" AND vehicleId = ?");
-                params.add(searchParams.get("vehicleId"));
+
+            if (searchParams.containsKey("searchStatus")) {
+                sql.append(" AND b.status = ?");
+                params.add(searchParams.get("searchStatus"));
             }
-            if (searchParams.containsKey("status")) {
-                sql.append(" AND status = ?");
-                params.add(searchParams.get("status"));
-            }
-            if (searchParams.containsKey("bookingDate")) {
-                sql.append(" AND DATE(bookingDate) = ?");
-                params.add(searchParams.get("bookingDate"));
-            }
-            if (searchParams.containsKey("pickupLocation")) {
-                sql.append(" AND pickupLocation LIKE ?");
-                params.add("%" + searchParams.get("pickupLocation") + "%");
-            }
-            if (searchParams.containsKey("destination")) {
-                sql.append(" AND destination LIKE ?");
-                params.add("%" + searchParams.get("destination") + "%");
+
+            if (searchParams.containsKey("searchDate")) {
+                sql.append(" AND DATE(b.bookingDate) = ?");
+                params.add(searchParams.get("searchDate"));
             }
         }
 
         // Add ordering by created date in descending order
-        sql.append(" ORDER BY createdAt DESC");
+        sql.append(" ORDER BY b.createdAt DESC");
 
         // Execute the query using CrudUtil
         ResultSet result = CrudUtil.execute(connection, sql.toString(), params.toArray());
@@ -114,9 +113,9 @@ public class BookingDaoImpl implements BookingDAO {
         while (result.next()) {
             bookings.add(extractBookingFromResultSet(result));
         }
+
         return bookings;
     }
-
     @Override
     public boolean existByPk(Connection connection, Object... args) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute(connection, "SELECT * FROM bookings WHERE id=?", args[0]);

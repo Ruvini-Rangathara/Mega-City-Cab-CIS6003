@@ -151,7 +151,6 @@ public class BookingServiceImpl implements BookingService {
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
     }
-
     @Override
     public boolean existByPk(Object... args) throws MegaCityCabException {
         try {

@@ -115,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
 
             // Return null if not found
             if (booking == null) {
-                return null;
+                throw new MegaCityCabException(MegaCityCabExceptionType.BOOKING_NOT_FOUND);
             }
 
             return BookingConverter.toDTO(booking);

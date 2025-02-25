@@ -85,8 +85,29 @@ public class BookingServlet extends HttpServlet {
         // Call getAll with search parameters
         List<BookingDTO> bookings = bookingService.getAll(searchParams);
 
-        // Set attributes and forward request
+        // Create maps for customer and vehicle details
+        Map<String, CustomerDTO> customerMap = new HashMap<>();
+        Map<String, VehicleDTO> vehicleMap = new HashMap<>();
+
+        // Populate maps with data
+        for (BookingDTO booking : bookings) {
+            CustomerDTO customer = customerService.searchById(booking.getCustomerId());
+            VehicleDTO vehicle = vehicleDriverService.findVehicleByVehicleId(booking.getVehicleId());
+
+            if (customer != null) {
+                customerMap.put(booking.getId(), customer);
+            }
+            if (vehicle != null) {
+                vehicleMap.put(booking.getId(), vehicle);
+            }
+        }
+
+        // Set attributes for request
         request.setAttribute("bookings", bookings);
+        request.setAttribute("customerMap", customerMap);
+        request.setAttribute("vehicleMap", vehicleMap);
+
+        // Forward request
         RequestDispatcher dispatcher = request.getRequestDispatcher("/views/booking-list.jsp");
         dispatcher.forward(request, response);
     }
@@ -112,7 +133,7 @@ public class BookingServlet extends HttpServlet {
             RequestDispatcher dispatcher = request.getRequestDispatcher("/views/booking-form.jsp");
             dispatcher.forward(request, response);
         } else {
-            response.sendRedirect(request.getContextPath() + "/booking-list.jsp?error=Booking not found");
+            response.sendRedirect(request.getContextPath() + "/views/booking-list.jsp?error=Booking not found");
         }
     }
 

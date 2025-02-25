@@ -42,11 +42,11 @@
         }
 
         .top-section {
-            margin-top: 2rem;
+            margin-top: 1rem;
             background-color: white;
             border-radius: 1rem;
             padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
         }
 
@@ -58,7 +58,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            /*margin-bottom: 1.5rem;*/
         }
 
         .section-title {
@@ -157,10 +157,16 @@
 
     <!-- Search Section -->
     <div class="top-section">
-        <div class="section-header">
-            <h2 class="section-title">
-                <i class="bi bi-search me-2"></i>Search Vehicle-Driver
-            </h2>
+        <div class="card-header d-flex justify-content-between align-items-center mb-4">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="bi bi-search me-2"></i>Search Vehicle-Driver
+                </h2>
+            </div>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#vehicleDriverModal">
+                <i class="bi bi-plus-circle me-2"></i>New Vehicle & Driver
+            </button>
+
         </div>
 
         <form id="searchForm" action="${pageContext.request.contextPath}/vehicle-driver-servlet" method="get">
@@ -224,10 +230,7 @@
     <!-- Vehicle-Driver List -->
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Vehicle-Driver Management</h5>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#vehicleDriverModal">
-                <i class="bi bi-plus-circle me-2"></i>New Vehicle & Driver
-            </button>
+            <h5 class="mb-1 mt-1">Vehicle-Driver Details</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">

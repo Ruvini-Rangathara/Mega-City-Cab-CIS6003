@@ -144,7 +144,7 @@ public class BookingDaoImpl implements BookingDAO {
                 .customerId(result.getString("customerId"))
                 .vehicleId(result.getString("vehicleId"))
                 .bookingDate(result.getObject("bookingDate", LocalDate.class))
-                .pickupTime(result.getTime("pickupTime").toLocalTime())  // Changed to LocalTime
+                .pickupTime(result.getTime("pickupTime").toLocalTime())
                 .releaseTime(result.getTime("releaseTime").toLocalTime())
                 .pickupLocation(result.getString("pickupLocation"))
                 .destination(result.getString("destination"))

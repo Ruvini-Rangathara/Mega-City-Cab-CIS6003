@@ -1,11 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ruvini
-  Date: 2025-02-24
-  Time: 16.32
-  To change this template use File | Settings | File Templates.
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.project.megacitycab.dto.VehicleDriverDTO" %>
@@ -17,13 +9,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Booking - Mega City Cab Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
             --background-color: #f8f9fa;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --warning-color: #ffc107;
         }
 
         body {
@@ -48,6 +45,7 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
             border-radius: 1rem;
             margin-top: 2rem;
+            padding-top: 10px;
         }
 
         .vehicle-card {
@@ -66,7 +64,7 @@
 
         .summary-card {
             position: sticky;
-            top: 80px;
+            margin-top: 2rem;
         }
 
         .customer-info {
@@ -102,6 +100,29 @@
 
         .select2-container--default .select2-selection--single .select2-selection__arrow {
             height: 36px;
+        }
+
+        /* Vehicle section styling */
+        .vehicle-section {
+            background-color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: #212529;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin: 0;
         }
 
         .filter-controls {
@@ -147,6 +168,128 @@
             background-color: #6c757d;
             color: white;
         }
+
+        /* Enhanced customer selection dropdown styling */
+        .select2-result-customer__name {
+            font-weight: bold;
+        }
+
+        .select2-result-customer__details {
+            color: #6c757d;
+        }
+
+        .vehicle-table {
+            display: none;
+        }
+
+        .vehicle-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .vehicle-table tr.selected {
+            background-color: rgba(252, 163, 17, 0.2);
+        }
+
+        .vehicle-table th {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .vehicle-table td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #e59100;
+            border-color: #e59100;
+        }
+
+
+        /* Enhanced summary card styling */
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /*margin-bottom: 1rem;*/
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .summary-item:hover {
+            background-color: rgba(252, 163, 17, 0.1);
+        }
+
+        .summary-item i {
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .summary-total {
+            background-color: rgba(252, 163, 17, 0.2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
+        }
+
+        .booking-details-summary {
+            margin-top: 1.5rem;
+        }
+
+        .vehicle-details-summary {
+            margin-top: 1.5rem;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid rgba(252, 163, 17, 0.3);
+        }
+
+        .card-header h5 {
+            color: var(--primary-color);
+        }
+
+        .icon-primary {
+            color: var(--primary-color);
+        }
+
+        .icon-summary {
+            color: var(--secondary-color);
+        }
+
+        .animated-icon {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 <body>
@@ -168,16 +311,21 @@
     <div class="row">
         <!-- Booking Form -->
         <div class="col-lg-8">
-            <div class="card">
+
+            <div class="card mb-2">
                 <div class="card-header">
-                    <h5 class="mb-0">Create New Booking</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-calendar2-event icon-primary me-2"></i>
+                        Manage Booking</h5>
                 </div>
                 <div class="card-body">
-                    <form id="bookingForm" action="${pageContext.request.contextPath}/booking-servlet" method="post" onsubmit="return validateForm()">
+                    <form id="bookingForm" action="${pageContext.request.contextPath}/booking-servlet" method="post"
+                          onsubmit="return validateForm()">
                         <input type="hidden" id="action" name="action" value="add">
                         <input type="hidden" id="bookingId" name="bookingId">
                         <input type="hidden" id="selectedVehicleId" name="vehicleId">
-                        <input type="hidden" id="userId" name="userId" value="<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>">
+                        <input type="hidden" id="userId" name="userId"
+                               value="<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>">
                         <input type="hidden" id="fare" name="fare">
                         <input type="hidden" id="netTotal" name="netTotal">
 
@@ -228,7 +376,8 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" id="bookingDate" name="bookingDate" required>
+                                    <input type="date" class="form-control" id="bookingDate" name="bookingDate"
+                                           required>
                                     <label>Booking Date</label>
                                 </div>
                             </div>
@@ -240,19 +389,22 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="time" class="form-control" id="releaseTime" name="releaseTime" required>
+                                    <input type="time" class="form-control" id="releaseTime" name="releaseTime"
+                                           required>
                                     <label>Release Time</label>
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="pickupLocation" name="pickupLocation" required>
+                                    <input type="text" class="form-control" id="pickupLocation" name="pickupLocation"
+                                           required>
                                     <label>Pickup Location</label>
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="destination" name="destination" required>
+                                    <input type="text" class="form-control" id="destination" name="destination"
+                                           required>
                                     <label>Destination</label>
                                 </div>
                             </div>
@@ -283,113 +435,11 @@
                                         <%
                                             for (com.project.megacitycab.constant.BookingStatus status : com.project.megacitycab.constant.BookingStatus.values()) {
                                         %>
-                                        <option value="<%= status %>"><%= status.toString() %></option>
+                                        <option value="<%= status %>"><%= status.toString() %>
+                                        </option>
                                         <% } %>
                                     </select>
                                     <label>Booking Status</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Vehicle Selection -->
-                        <h6 class="mb-3 mt-4">Select Vehicle</h6>
-
-                        <!-- Vehicle Filters -->
-                        <div class="filter-controls">
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <label for="capacityFilter" class="form-label">Capacity</label>
-                                    <select class="form-select" id="capacityFilter">
-                                        <option value="">All</option>
-                                        <option value="4">4 Passengers</option>
-                                        <option value="6">6 Passengers</option>
-                                        <option value="8">8 Passengers</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="brandFilter" class="form-label">Brand</label>
-                                    <select class="form-select" id="brandFilter">
-                                        <option value="">All</option>
-                                        <%
-                                            // Get unique brands from available vehicles
-                                            List<VehicleDriverDTO> availableVehicles = (List<VehicleDriverDTO>) request.getAttribute("availableVehicles");
-                                            if (availableVehicles != null && !availableVehicles.isEmpty()) {
-                                                java.util.Set<String> uniqueBrands = new java.util.HashSet<>();
-                                                for (VehicleDriverDTO vd : availableVehicles) {
-                                                    uniqueBrands.add(vd.getVehicle().getBrand());
-                                                }
-                                                for (String brand : uniqueBrands) {
-                                        %>
-                                        <option value="<%= brand %>"><%= brand %></option>
-                                        <%
-                                                }
-                                            }
-                                        %>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label for="modelFilter" class="form-label">Model</label>
-                                    <select class="form-select" id="modelFilter">
-                                        <option value="">All</option>
-                                        <%
-                                            // Get unique models from available vehicles
-                                            if (availableVehicles != null && !availableVehicles.isEmpty()) {
-                                                java.util.Set<String> uniqueModels = new java.util.HashSet<>();
-                                                for (VehicleDriverDTO vd : availableVehicles) {
-                                                    uniqueModels.add(vd.getVehicle().getModel());
-                                                }
-                                                for (String model : uniqueModels) {
-                                        %>
-                                        <option value="<%= model %>"><%= model %></option>
-                                        <%
-                                                }
-                                            }
-                                        %>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3" id="vehicleList">
-                            <%
-                                if (availableVehicles != null && !availableVehicles.isEmpty()) {
-                                    for (VehicleDriverDTO vd : availableVehicles) {
-                            %>
-                            <div class="col-md-6 vehicle-item"
-                                 data-capacity="<%= vd.getVehicle().getCapacity() %>"
-                                 data-brand="<%= vd.getVehicle().getBrand() %>"
-                                 data-model="<%= vd.getVehicle().getModel() %>">
-                                <div class="card vehicle-card" onclick="selectVehicle(this, '<%= vd.getVehicle().getId() %>', <%= vd.getVehicle().getPricePerKm() %>, '<%= vd.getDriver().getName() %>', '<%= vd.getDriver().getMobileNo() %>', '<%= vd.getDriver().getLicenseNo() %>')">
-                                    <div class="card-body">
-                                        <h6 class="card-title"><%= vd.getVehicle().getBrand() %> <%= vd.getVehicle().getModel() %></h6>
-                                        <p class="card-text mb-1">
-                                            <small class="text-muted">
-                                                License Plate: <%= vd.getVehicle().getLicensePlate() %><br>
-                                                Capacity: <%= vd.getVehicle().getCapacity() %> passengers<br>
-                                                Price per km: Rs. <%= vd.getVehicle().getPricePerKm() %>
-                                            </small>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <%
-                                    }
-                                }
-                            %>
-                        </div>
-
-                        <!-- Driver Information -->
-                        <div id="driverInfo" class="driver-info mt-3">
-                            <h6 class="mb-2">Driver Information</h6>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <p class="mb-1"><strong>Name:</strong> <span id="driverName"></span></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="mb-1"><strong>Phone:</strong> <span id="driverPhone"></span></p>
-                                </div>
-                                <div class="col-md-4">
-                                    <p class="mb-1"><strong>License:</strong> <span id="driverLicense"></span></p>
                                 </div>
                             </div>
                         </div>
@@ -406,36 +456,194 @@
                     </form>
                 </div>
             </div>
+            <!-- Vehicle Selection Section -->
+            <div class="vehicle-section">
+                <div class="card-header">
+                    <h5 class="mb-2">
+                        <i class="bi bi-car-front-fill me-2 icon-primary animated-icon"></i>
+                        Vehicle Selection</h5>
+                </div>
+
+                <!-- Vehicle Filters -->
+                <form id="vehicleSearchForm" class="mt-4">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="capacityFilter" min="1"
+                                       placeholder="Min. capacity">
+                                <label for="capacityFilter">Capacity</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select class="form-select" id="brandFilter">
+                                    <option value="">All</option>
+                                    <%
+                                        // Get unique brands from available vehicles
+                                        List<VehicleDriverDTO> availableVehicles = (List<VehicleDriverDTO>) request.getAttribute("availableVehicles");
+                                        if (availableVehicles != null && !availableVehicles.isEmpty()) {
+                                            java.util.Set<String> uniqueBrands = new java.util.HashSet<>();
+                                            for (VehicleDriverDTO vd : availableVehicles) {
+                                                uniqueBrands.add(vd.getVehicle().getBrand());
+                                            }
+                                            for (String brand : uniqueBrands) {
+                                    %>
+                                    <option value="<%= brand %>"><%= brand %>
+                                    </option>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                </select>
+                                <label for="brandFilter">Brand</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <select class="form-select" id="modelFilter">
+                                    <option value="">All</option>
+                                    <%
+                                        // Get unique models from available vehicles
+                                        if (availableVehicles != null && !availableVehicles.isEmpty()) {
+                                            java.util.Set<String> uniqueModels = new java.util.HashSet<>();
+                                            for (VehicleDriverDTO vd : availableVehicles) {
+                                                uniqueModels.add(vd.getVehicle().getModel());
+                                            }
+                                            for (String model : uniqueModels) {
+                                    %>
+                                    <option value="<%= model %>"><%= model %>
+                                    </option>
+                                    <%
+                                            }
+                                        }
+                                    %>
+                                </select>
+                                <label for="modelFilter">Model</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-3">
+                        <button type="button" class="btn btn-secondary" onclick="clearVehicleSearch()">
+                            <i class="bi bi-x-circle me-2"></i>Clear Filter
+                        </button>
+                        <button type="button" class="btn btn-primary" onclick="searchVehicles()">
+                            <i class="bi bi-search me-2"></i>Search
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Vehicle Table -->
+                <div id="vehicleTableContainer" class="vehicle-table mt-3">
+                    <table class="table table-hover">
+                        <thead>
+                        <tr>
+                            <th>Vehicle</th>
+                            <th>License Plate</th>
+                            <th>Capacity</th>
+                            <th>Price/km</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="vehicleTableBody">
+                        <!-- Vehicle rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Driver Information -->
+                <div id="driverInfo" class="driver-info mt-3">
+                    <h6 class="mb-2">Driver Information</h6>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="mb-1"><strong>Name:</strong> <span id="driverName"></span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-1"><strong>Phone:</strong> <span id="driverPhone"></span></p>
+                        </div>
+                        <div class="col-md-4">
+                            <p class="mb-1"><strong>License:</strong> <span id="driverLicense"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Booking Summary -->
         <div class="col-lg-4">
             <div class="card summary-card">
                 <div class="card-header">
-                    <h5 class="mb-0">Booking Summary</h5>
+                    <h5 class="mb-0">
+                        <i class="bi bi-clipboard-check me-2 icon-primary animated-icon"></i>
+                        Booking Summary</h5>
                 </div>
                 <div class="card-body">
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Distance:</span>
-                        <span id="summaryDistance">0 km</span>
+                    <!-- Fare Summary Section -->
+                    <div class="summary-title">
+                        <i class="bi bi-currency-exchange me-2 icon-primary"></i>Fare Details
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Fare:</span>
-                        <span id="summaryFare">Rs. 0.00</span>
+                    <div class="summary-item">
+                        <div><i class="bi bi-signpost-2-fill icon-summary"></i> Distance:</div>
+                        <div id="summaryDistance">0 km</div>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Tax:</span>
-                        <span id="summaryTax">Rs. 0.00</span>
+                    <div class="summary-item">
+                        <div><i class="bi bi-cash-stack icon-summary"></i> Base Fare:</div>
+                        <div id="summaryFare">Rs. 0.00</div>
                     </div>
-                    <div class="d-flex justify-content-between mb-3">
-                        <span>Discount:</span>
-                        <span id="summaryDiscount">Rs. 0.00</span>
+                    <div class="summary-item">
+                        <div><i class="bi bi-receipt icon-summary"></i> Tax:</div>
+                        <div id="summaryTax">Rs. 0.00</div>
                     </div>
-                    <hr>
-                    <div class="d-flex justify-content-between">
-                        <strong>Net Total:</strong>
-                        <strong id="summaryNetTotal">Rs. 0.00</strong>
+                    <div class="summary-item">
+                        <div><i class="bi bi-tag-fill icon-summary"></i> Discount:</div>
+                        <div id="summaryDiscount">Rs. 0.00</div>
                     </div>
+
+                    <div class="summary-total d-flex justify-content-between">
+                        <div><i class="bi bi-cash-coin icon-summary"></i> Net Total:</div>
+                        <div id="summaryNetTotal">Rs. 0.00</div>
+                    </div>
+
+                    <!-- Booking Details Summary -->
+                    <div class="booking-details-summary">
+                        <div class="summary-title">
+                            <i class="bi bi-info-circle me-2 icon-primary"></i>Booking Details
+                        </div>
+                        <div class="summary-item">
+                            <div><i class="bi bi-calendar-date icon-summary"></i> Date:</div>
+                            <div id="summaryDate">Not selected</div>
+                        </div>
+                        <div class="summary-item">
+                            <div><i class="bi bi-clock icon-summary"></i> Time:</div>
+                            <div id="summaryTime">Not selected</div>
+                        </div>
+                        <div class="summary-item">
+                            <div><i class="bi bi-geo-alt-fill icon-summary"></i> From:</div>
+                            <div id="summaryPickup">Not specified</div>
+                        </div>
+                        <div class="summary-item">
+                            <div><i class="bi bi-geo-fill icon-summary"></i> To:</div>
+                            <div id="summaryDestination">Not specified</div>
+                        </div>
+                    </div>
+
+                    <!-- Vehicle Details Summary (will appear when vehicle is selected) -->
+                    <div class="vehicle-details-summary" id="vehicleSummarySection" style="display: none;">
+                        <div class="summary-title">
+                            <i class="bi bi-car-front me-2 icon-primary"></i>Vehicle Details
+                        </div>
+                        <div class="summary-item">
+                            <div><i class="bi bi-car-front-fill icon-summary"></i> Vehicle:</div>
+                            <div id="summaryVehicle">Not selected</div>
+                        </div>
+                        <div class="summary-item">
+                            <div><i class="bi bi-person-fill icon-summary"></i> Driver:</div>
+                            <div id="summaryDriver">Not assigned</div>
+                        </div>
+                        <div class="summary-item">
+                            <div><i class="bi bi-people-fill icon-summary"></i> Capacity:</div>
+                            <div id="summaryCapacity">-</div>
+                        </div>
+                    </div>
+
                     <div class="mt-3">
                         <span>Status: </span>
                         <span id="summaryStatus" class="status-badge status-pending">Pending</span>
@@ -453,11 +661,33 @@
 <script>
     let selectedPricePerKm = 0;
 
-    $(document).ready(function() {
-        // Initialize Select2 for customer dropdown
+    // Store all available vehicles for filtering
+    const availableVehicles = [
+        <% if (availableVehicles != null && !availableVehicles.isEmpty()) {
+            for (int i = 0; i < availableVehicles.size(); i++) {
+                VehicleDriverDTO vd = availableVehicles.get(i);
+        %>
+        {
+            vehicleId: '<%= vd.getVehicle().getId() %>',
+            brand: '<%= vd.getVehicle().getBrand() %>',
+            model: '<%= vd.getVehicle().getModel() %>',
+            licensePlate: '<%= vd.getVehicle().getLicensePlate() %>',
+            capacity: <%= vd.getVehicle().getCapacity() %>,
+            pricePerKm: <%= vd.getVehicle().getPricePerKm() %>,
+            driverName: '<%= vd.getDriver().getName() %>',
+            driverPhone: '<%= vd.getDriver().getMobileNo() %>',
+            driverLicense: '<%= vd.getDriver().getLicenseNo() %>'
+        }<%= i < availableVehicles.size() - 1 ? "," : "" %>
+        <% } } %>
+    ];
+
+    $(document).ready(function () {
+        // Initialize Select2 for customer dropdown with custom templates
         $('#customerSelect').select2({
             placeholder: "Select customer by NIC or name",
-            allowClear: true
+            allowClear: true,
+            templateResult: formatCustomerResult,
+            templateSelection: formatCustomerSelection
         });
 
         // Initialize booking date with current date
@@ -469,7 +699,7 @@
         document.getElementById('bookingStatus').value = "pending";
 
         // Customer selection change event
-        $('#customerSelect').on('change', function() {
+        $('#customerSelect').on('change', function () {
             const customerId = $(this).val();
             if (customerId) {
                 const selectedOption = $(this).find('option:selected');
@@ -490,18 +720,45 @@
         });
 
         // Booking status change event
-        $('#bookingStatus').on('change', function() {
+        $('#bookingStatus').on('change', function () {
             updateStatusBadge();
-        });
-
-        // Setup vehicle filters
-        $('#capacityFilter, #brandFilter, #modelFilter').on('change', function() {
-            filterVehicles();
         });
 
         // Initial status badge
         updateStatusBadge();
     });
+
+    // Format customer results in the dropdown for better visibility
+    function formatCustomerResult(customer) {
+        if (!customer.id) {
+            return customer.text;
+        }
+
+        const $option = $(customer.element);
+        const nic = $option.data('nic');
+        const name = $option.data('name');
+        const phone = $option.data('phone');
+
+        return $('<div class="select2-result-customer">' +
+            '<div class="select2-result-customer__name">' + name + '</div>' +
+            '<div class="select2-result-customer__details">' +
+            '<small>NIC: ' + nic + ' | Phone: ' + phone + '</small>' +
+            '</div>' +
+            '</div>');
+    }
+
+    // Format selected customer in the dropdown
+    function formatCustomerSelection(customer) {
+        if (!customer.id) {
+            return customer.text;
+        }
+
+        const $option = $(customer.element);
+        const nic = $option.data('nic');
+        const name = $option.data('name');
+
+        return name + ' (' + nic + ')';
+    }
 
     function updateStatusBadge() {
         const status = document.getElementById('bookingStatus').value;
@@ -517,42 +774,82 @@
         statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
     }
 
-    function filterVehicles() {
-        const capacityFilter = $('#capacityFilter').val();
+    function clearVehicleSearch() {
+        // Reset all filter fields
+        document.getElementById('capacityFilter').value = '';
+        document.getElementById('brandFilter').value = '';
+        document.getElementById('modelFilter').value = '';
+
+        // Hide the vehicle table if it's currently shown
+        $('#vehicleTableContainer').hide();
+    }
+
+    function searchVehicles() {
+        const capacityFilter = parseInt($('#capacityFilter').val()) || 0;
         const brandFilter = $('#brandFilter').val();
         const modelFilter = $('#modelFilter').val();
 
-        $('.vehicle-item').each(function() {
-            const capacity = $(this).data('capacity');
-            const brand = $(this).data('brand');
-            const model = $(this).data('model');
-
-            let showVehicle = true;
-
-            if (capacityFilter && capacity != capacityFilter) {
-                showVehicle = false;
+        // Filter vehicles based on criteria
+        const filteredVehicles = availableVehicles.filter(vehicle => {
+            if (capacityFilter > 0 && vehicle.capacity < capacityFilter) {
+                return false;
             }
-
-            if (brandFilter && brand !== brandFilter) {
-                showVehicle = false;
+            if (brandFilter && vehicle.brand !== brandFilter) {
+                return false;
             }
-
-            if (modelFilter && model !== modelFilter) {
-                showVehicle = false;
+            if (modelFilter && vehicle.model !== modelFilter) {
+                return false;
             }
-
-            $(this).toggle(showVehicle);
+            return true;
         });
+
+        // Clear table body
+        const tableBody = document.getElementById('vehicleTableBody');
+        tableBody.innerHTML = '';
+
+        // Show or hide vehicle table based on results
+        if (filteredVehicles.length === 0) {
+            $('#vehicleTableContainer').hide();
+            alert('No vehicles match your search criteria. Please adjust your filters and try again.');
+            return;
+        }
+
+        // Populate table with filtered vehicles
+        filteredVehicles.forEach(vehicle => {
+            const row = document.createElement('tr');
+            row.dataset.vehicleId = vehicle.vehicleId;
+            row.innerHTML = `
+                <td>${vehicle.brand} ${vehicle.model}</td>
+                <td>${vehicle.licensePlate}</td>
+                <td>${vehicle.capacity} passengers</td>
+                <td>Rs. ${vehicle.pricePerKm.toFixed(2)}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary select-vehicle-btn" type="button"
+                            onclick="selectVehicleFromTable('${vehicle.vehicleId}', ${vehicle.pricePerKm}, '${vehicle.driverName}', '${vehicle.driverPhone}', '${vehicle.driverLicense}')">
+                        Select
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Show the vehicle table
+        $('#vehicleTableContainer').show();
     }
 
-    function selectVehicle(element, vehicleId, pricePerKm, driverName, driverPhone, driverLicense) {
-        // Remove selection from all vehicles
-        document.querySelectorAll('.vehicle-card').forEach(card => {
-            card.classList.remove('selected');
+    function selectVehicleFromTable(vehicleId, pricePerKm, driverName, driverPhone, driverLicense) {
+        // Remove selection from all rows
+        document.querySelectorAll('#vehicleTableBody tr').forEach(row => {
+            row.classList.remove('selected');
         });
 
-        // Add selection to clicked vehicle
-        element.classList.add('selected');
+        // Add selection to the clicked row
+        const selectedRow = document.querySelector(`#vehicleTableBody tr[data-vehicle-id="${vehicleId}"]`);
+        if (selectedRow) {
+            selectedRow.classList.add('selected');
+        }
+
+        // Set the selected vehicle ID
         document.getElementById('selectedVehicleId').value = vehicleId;
         selectedPricePerKm = pricePerKm;
 

@@ -18,4 +18,6 @@ public interface VehicleDriverService extends CrudService<VehicleDriverDTO> {
     boolean existsByDriverLicense(Object... args) throws MegaCityCabException, SQLException;
     List<VehicleDTO> getAllVehicles(Map<String, String> searchParams) throws MegaCityCabException, SQLException;
     DriverDTO findDriverByVehicleId(Object... args) throws MegaCityCabException, SQLException;
+    VehicleDTO findVehicleByVehicleId(Object... args) throws MegaCityCabException, SQLException;
+    DriverDTO findDriverByDriverId(Object... args) throws MegaCityCabException, SQLException;
 }

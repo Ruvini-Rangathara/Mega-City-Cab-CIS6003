@@ -7,7 +7,10 @@
 --%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.Map" %>
 <%@ page import="com.project.megacitycab.dto.BookingDTO" %>
+<%@ page import="com.project.megacitycab.dto.CustomerDTO" %>
+<%@ page import="com.project.megacitycab.dto.VehicleDTO" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -148,6 +151,30 @@
             font-weight: 500;
             color: #495057;
         }
+
+        .customer-info {
+            font-size: 0.9rem;
+        }
+
+        .customer-name {
+            font-weight: 500;
+        }
+
+        .customer-mobile {
+            color: #6c757d;
+        }
+
+        .vehicle-info {
+            font-size: 0.9rem;
+        }
+
+        .vehicle-brand {
+            font-weight: 500;
+        }
+
+        .vehicle-model {
+            color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -175,7 +202,7 @@
             <h2 class="section-title">
                 <i class="bi bi-calendar-check-fill me-2"></i>Booking Management
             </h2>
-            <a href="${pageContext.request.contextPath}/booking-new.jsp" class="btn btn-primary">
+            <a href="${pageContext.request.contextPath}/views/booking-form.jsp" class="btn btn-primary">
                 <i class="bi bi-plus-circle me-2"></i>New Booking
             </a>
         </div>
@@ -193,8 +220,8 @@
                 <div class="col-md-4">
                     <div class="form-floating">
                         <input type="text" class="form-control" id="searchCustomer" name="searchCustomer"
-                               value="${param.searchCustomer}" placeholder="Customer ID">
-                        <label for="searchCustomer">Customer ID</label>
+                               value="${param.searchCustomer}" placeholder="Customer Name or Mobile">
+                        <label for="searchCustomer">Customer Name or Mobile</label>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -228,7 +255,7 @@
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th>Booking ID</th>
+                        <th>#</th>
                         <th>Customer</th>
                         <th>Date</th>
                         <th>Vehicle Schedule</th>
@@ -242,12 +269,27 @@
                     <tbody>
                     <%
                         List<BookingDTO> bookings = (List<BookingDTO>) request.getAttribute("bookings");
+                        Map<String, CustomerDTO> customerMap = (Map<String, CustomerDTO>) request.getAttribute("customerMap");
+                        Map<String, VehicleDTO> vehicleMap = (Map<String, VehicleDTO>) request.getAttribute("vehicleMap");
+
                         if (bookings != null && !bookings.isEmpty()) {
+                            int count = 1;
                             for (BookingDTO booking : bookings) {
+                                CustomerDTO customer = customerMap.get(booking.getId());
+                                VehicleDTO vehicle = vehicleMap.get(booking.getId());
                     %>
                     <tr>
-                        <td><%= booking.getId() %></td>
-                        <td><%= booking.getCustomerId() %></td>
+                        <td><%= count++ %></td>
+                        <td>
+                            <div class="customer-info">
+                                <% if (customer != null) { %>
+                                <div class="customer-name"><%= customer.getName() %></div>
+                                <div class="customer-mobile"><i class="bi bi-telephone"></i> <%= customer.getMobileNo() %></div>
+                                <% } else { %>
+                                <span class="text-muted">ID: <%= booking.getCustomerId() %></span>
+                                <% } %>
+                            </div>
+                        </td>
                         <td><%= booking.getBookingDate() %></td>
                         <td>
                             <div class="time-info">
@@ -259,7 +301,16 @@
                             From: <%= booking.getPickupLocation() %><br>
                             To: <%= booking.getDestination() %>
                         </td>
-                        <td><%= booking.getVehicleId() %></td>
+                        <td>
+                            <div class="vehicle-info">
+                                <% if (vehicle != null) { %>
+                                <div class="vehicle-brand"><%= vehicle.getBrand() %></div>
+                                <div class="vehicle-model"><%= vehicle.getModel() %></div>
+                                <% } else { %>
+                                <span class="text-muted">ID: <%= booking.getVehicleId() %></span>
+                                <% } %>
+                            </div>
+                        </td>
                         <td>
                             Net Total: Rs. <%= booking.getNetTotal() %><br>
                             <small class="text-muted">Distance: <%= booking.getDistance() %> km</small>
@@ -271,7 +322,7 @@
                         </td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a href="${pageContext.request.contextPath}/booking-new.jsp?id=<%= booking.getId() %>"
+                                <a href="${pageContext.request.contextPath}/views/booking-form.jsp?id=<%= booking.getId() %>"
                                    class="btn btn-view btn-sm">
                                     <i class="bi bi-eye-fill"></i>
                                 </a>
@@ -329,3 +380,4 @@
 </script>
 </body>
 </html>
+

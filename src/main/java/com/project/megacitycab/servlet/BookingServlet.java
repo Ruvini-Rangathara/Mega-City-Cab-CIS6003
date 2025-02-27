@@ -1,10 +1,7 @@
 package com.project.megacitycab.servlet;
 
 import com.project.megacitycab.constant.BookingStatus;
-import com.project.megacitycab.dto.BookingDTO;
-import com.project.megacitycab.dto.CustomerDTO;
-import com.project.megacitycab.dto.VehicleDTO;
-import com.project.megacitycab.dto.VehicleDriverDTO;
+import com.project.megacitycab.dto.*;
 import com.project.megacitycab.service.custom.BookingService;
 import com.project.megacitycab.service.custom.CustomerService;
 import com.project.megacitycab.service.custom.VehicleDriverService;
@@ -166,19 +163,14 @@ public class BookingServlet extends HttpServlet {
 
         if (booking != null) {
             request.setAttribute("booking", booking);
-            // Get customers for dropdown using builder pattern if applicable
-            List<CustomerDTO> customers = customerService.getAll(null);
-            request.setAttribute("customers", customers);
+            CustomerDTO customer = customerService.searchById(booking.getCustomerId());
+            request.setAttribute("customer", customer);
 
-            // Get available vehicles for this booking time
-            List<VehicleDriverDTO> availableVehicles = getAvailableVehicles(booking.getBookingDate(), booking.getPickupTime(), booking.getReleaseTime(), booking.getId());  // Pass booking ID to exclude current booking from time overlap check
-            request.setAttribute("availableVehicles", availableVehicles);
+            VehicleDTO vehicle = vehicleDriverService.findVehicleByVehicleId(booking.getVehicleId());
+            request.setAttribute("vehicle", vehicle);
 
-            // Get the current vehicle driver for this booking
-            if (booking.getVehicleId() != null) {
-                VehicleDriverDTO currentVehicleDriver = new VehicleDriverDTO.VehicleDriverDTOBuilder().vehicle(vehicleDriverService.findVehicleByVehicleId(booking.getVehicleId())).driver(vehicleDriverService.findDriverByVehicleId(booking.getVehicleId())).build();
-                request.setAttribute("currentVehicleDriver", currentVehicleDriver);
-            }
+            DriverDTO driver = vehicleDriverService.findDriverByVehicleId(vehicle.getId());
+            request.setAttribute("driver", driver);
 
             RequestDispatcher dispatcher = request.getRequestDispatcher("/views/booking-form.jsp");
             dispatcher.forward(request, response);
@@ -187,7 +179,7 @@ public class BookingServlet extends HttpServlet {
         }
     }
 
-    private void createBooking(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException, ServletException {
+    private void createBooking(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
         try {
             // Extract form data
             String customerId = request.getParameter("customerId");

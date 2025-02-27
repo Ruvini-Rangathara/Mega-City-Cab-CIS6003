@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
-<%@ page import="com.project.megacitycab.dto.VehicleDriverDTO" %>
-<%@ page import="com.project.megacitycab.dto.CustomerDTO" %>
+<%@ page import="com.project.megacitycab.dto.*" %>
+<%@ page import="com.project.megacitycab.constant.BookingStatus" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,8 +19,6 @@
             --background-color: #f8f9fa;
             --success-color: #28a745;
             --danger-color: #dc3545;
-            --info-color: #17a2b8;
-            --warning-color: #ffc107;
         }
 
         body {
@@ -29,6 +27,7 @@
             padding-top: 60px;
         }
 
+        /* Navbar styles */
         .navbar {
             background-color: #fff;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -40,34 +39,35 @@
             font-size: 1.5rem;
         }
 
+        .vehicle-and-driver-section{
+            border: none;
+            background-color: white;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+            border-radius: 1rem;
+            /*margin-top: 1rem;*/
+            margin-bottom: 2rem;
+            padding: 5px 1rem
+        }
+
+        /* Card styles */
         .card {
             border: none;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
             border-radius: 1rem;
             margin-top: 2rem;
-            padding-top: 10px;
+            padding-top: 1rem;
         }
 
-        .vehicle-card {
-            cursor: pointer;
-            transition: all 0.3s ease;
+        .card-header {
+            background-color: white;
+            border-bottom: 2px solid rgba(252, 163, 17, 0.3);
         }
 
-        .vehicle-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12);
+        .card-header h5 {
+            color: var(--primary-color);
         }
 
-        .vehicle-card.selected {
-            border: 2px solid var(--primary-color);
-        }
-
-        .summary-card {
-            position: sticky;
-            margin-top: 2rem;
-        }
-
-        .customer-info {
+        .customer-info{
             background-color: #f8f9fa;
             border-radius: 8px;
             padding: 10px;
@@ -75,14 +75,62 @@
             display: none;
         }
 
-        .driver-info {
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            padding: 10px;
-            margin-top: 10px;
+        /* Vehicle section - positioned below booking details */
+        /*.vehicle-section {*/
+        /*    background-color: white;*/
+        /*    padding: 1.5rem;*/
+        /*    border: none;*/
+        /*    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);*/
+        /*    border-radius: 1rem;*/
+        /*    margin-top: 1rem;*/
+        /*}*/
+
+        /* Vehicle table */
+        .vehicle-table {
             display: none;
+            margin-top: 1rem;
         }
 
+        .vehicle-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .vehicle-table tr.selected {
+            background-color: rgba(252, 163, 17, 0.2);
+        }
+
+        .vehicle-table th {
+            background-color: #f1f1f1;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .vehicle-table td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        /* Filter section */
+        .filter-controls {
+            background: #f1f1f1;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #e59100;
+            border-color: #e59100;
+        }
+
+        /* Select2 styling */
         .select2-container {
             width: 100% !important;
         }
@@ -102,36 +150,43 @@
             height: 36px;
         }
 
-        /* Vehicle section styling */
-        .vehicle-section {
-            background-color: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-top: 1rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+        /* Summary card */
+        .summary-card {
+            position: sticky;
+            margin-top: 2rem;
         }
 
-        .section-header {
+        .summary-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            padding: 0.2rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
         }
 
-        .section-title {
-            color: #212529;
+        .summary-item:hover {
+            background-color: rgba(252, 163, 17, 0.1);
+        }
+
+        .summary-total {
+            background-color: rgba(252, 163, 17, 0.2);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            color: var(--primary-color);
             font-weight: 600;
-            font-size: 1.25rem;
-            margin: 0;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.5rem;
         }
 
-        .filter-controls {
-            background: #f1f1f1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
+        /* Status badges */
         .status-badge {
             display: inline-block;
             padding: 0.25em 0.6em;
@@ -168,203 +223,110 @@
             background-color: #6c757d;
             color: white;
         }
-
-        /* Enhanced customer selection dropdown styling */
-        .select2-result-customer__name {
-            font-weight: bold;
-        }
-
-        .select2-result-customer__details {
-            color: #6c757d;
-        }
-
-        .vehicle-table {
-            display: none;
-        }
-
-        .vehicle-table table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .vehicle-table tr.selected {
-            background-color: rgba(252, 163, 17, 0.2);
-        }
-
-        .vehicle-table th {
-            background-color: #f1f1f1;
-            padding: 10px;
-            text-align: left;
-        }
-
-        .vehicle-table td {
-            padding: 10px;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .btn-primary {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-        }
-
-        .btn-primary:hover {
-            background-color: #e59100;
-            border-color: #e59100;
-        }
-
-
-        /* Enhanced summary card styling */
-        .summary-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            /*margin-bottom: 1rem;*/
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .summary-item:hover {
-            background-color: rgba(252, 163, 17, 0.1);
-        }
-
-        .summary-item i {
-            margin-right: 0.5rem;
-            font-size: 1.2rem;
-        }
-
-        .summary-total {
-            background-color: rgba(252, 163, 17, 0.2);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-top: 1rem;
-            font-weight: bold;
-        }
-
-        .summary-title {
-            font-size: 1.1rem;
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 1rem;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 0.5rem;
-        }
-
-        .booking-details-summary {
-            margin-top: 1.5rem;
-        }
-
-        .vehicle-details-summary {
-            margin-top: 1.5rem;
-        }
-
-        .card-header {
-            background-color: white;
-            border-bottom: 2px solid rgba(252, 163, 17, 0.3);
-        }
-
-        .card-header h5 {
-            color: var(--primary-color);
-        }
-
-        .icon-primary {
-            color: var(--primary-color);
-        }
-
-        .icon-summary {
-            color: var(--secondary-color);
-        }
-
-        .animated-icon {
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.1);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
     </style>
 </head>
 <body>
+
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
         <a class="navbar-brand" href="${pageContext.request.contextPath}/">MEGA CITY CAB</a>
         <div class="ms-auto d-flex align-items-center">
-            <%
-                String currentUser = (String) session.getAttribute("username");
-                if (currentUser == null) currentUser = "User";
-            %>
-            <span class="me-3"><i class="bi bi-person-circle me-2"></i><%= currentUser %></span>
+            <% String currentUser = (String) session.getAttribute("username");
+                if (currentUser == null) currentUser = "User"; %>
+            <span class="me-3"><i class="bi bi-person-circle me-2"></i><%=currentUser%></span>
         </div>
     </div>
 </nav>
+
+<%
+    BookingDTO booking = (BookingDTO) request.getAttribute("booking");
+    CustomerDTO customer = (CustomerDTO) request.getAttribute("customer");
+    VehicleDTO vehicle = (VehicleDTO) request.getAttribute("vehicle");
+    DriverDTO driver = (DriverDTO) request.getAttribute("driver");
+    boolean isEditMode = (booking != null);
+    String bookingStatus = isEditMode ? booking.getStatus().toString() : "";
+    boolean isReadOnlyStatus = isEditMode && !bookingStatus.equals("pending");
+%>
 
 <div class="container">
     <div class="row">
         <!-- Booking Form -->
         <div class="col-lg-8">
-
             <div class="card mb-2">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="bi bi-calendar2-event icon-primary me-2"></i>
-                        Manage Booking</h5>
+                        <i class="bi bi-calendar2-event me-2"></i>
+                        <%=isEditMode ? "View/Edit Booking" : "Create Booking"%>
+                    </h5>
                 </div>
                 <div class="card-body">
                     <form id="bookingForm" action="${pageContext.request.contextPath}/booking-servlet" method="post"
                           onsubmit="return validateForm()">
-                        <input type="hidden" id="action" name="action" value="add">
-                        <input type="hidden" id="bookingId" name="bookingId">
-                        <input type="hidden" id="selectedVehicleId" name="vehicleId">
+                        <input type="hidden" id="action" name="action" value="<%=isEditMode ? "update" : "add"%>">
+                        <input type="hidden" id="bookingId" name="bookingId"
+                               value="<%=isEditMode ? booking.getId() : ""%>">
+                        <input type="hidden" id="selectedVehicleId" name="vehicleId"
+                               value="<%=isEditMode ? booking.getVehicleId() : ""%>">
                         <input type="hidden" id="userId" name="userId"
-                               value="<%= session.getAttribute("userId") != null ? session.getAttribute("userId") : "" %>">
-                        <input type="hidden" id="fare" name="fare">
-                        <input type="hidden" id="netTotal" name="netTotal">
+                               value="<%=session.getAttribute("userId") != null ? session.getAttribute("userId") : ""%>">
+                        <input type="hidden" id="fare" name="fare" value="<%=isEditMode ? booking.getFare() : ""%>">
+                        <input type="hidden" id="netTotal" name="netTotal"
+                               value="<%=isEditMode ? booking.getNetTotal() : ""%>">
 
                         <!-- Customer Details -->
                         <h6 class="mb-3">Customer Information</h6>
                         <div class="row g-3">
+                            <% if (!isReadOnlyStatus) { %>
                             <div class="col-md-12">
                                 <label for="customerSelect" class="form-label">Select Customer</label>
-                                <select class="form-select" id="customerSelect" name="customerId" required>
+                                <select class="form-select" id="customerSelect" name="customerId" required
+                                        <%=isEditMode ? "disabled" : ""%>>
                                     <option value="">Select customer by NIC or name</option>
                                     <%
                                         List<CustomerDTO> customers = (List<CustomerDTO>) request.getAttribute("customers");
                                         if (customers != null) {
-                                            for (CustomerDTO customer : customers) {
+                                            for (CustomerDTO c : customers) {
+                                                String selected = "";
+                                                if (isEditMode && customer != null && c.getId().equals(customer.getId())) {
+                                                    selected = "selected";
+                                                }
                                     %>
-                                    <option value="<%= customer.getId() %>"
-                                            data-nic="<%= customer.getNic() %>"
-                                            data-name="<%= customer.getName() %>"
-                                            data-phone="<%= customer.getMobileNo() %>"
-                                            data-email="<%= customer.getEmail() %>">
-                                        <%= customer.getNic() %> - <%= customer.getName() %>
+                                    <option value="<%= c.getId()%>"
+                                            data-nic="<%=c.getNic()%>"
+                                            data-name="<%=c.getName()%>"
+                                            data-phone="<%=c.getMobileNo()%>"
+                                            data-email="<%=c.getEmail()%>"
+                                            <%=selected%>>
+                                        <%=c.getNic()%> - <%=c.getName()%>
                                     </option>
-                                    <%
-                                            }
-                                        }
-                                    %>
+                                    <% }
+                                    } %>
                                 </select>
+                                <% if (isEditMode) { %>
+                                <input type="hidden" name="customerId" value="<%=customer.getId()%>">
+                                <% } %>
                             </div>
+                            <% } %>
 
                             <div class="col-md-12">
-                                <div id="customerInfo" class="customer-info">
+                                <div id="customerInfo" class="customer-info"
+                                     style="<%=isEditMode ? "display: block;" : ""%>">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <p class="mb-1"><strong>Name:</strong> <span id="customerName"></span></p>
-                                            <p class="mb-1"><strong>NIC:</strong> <span id="customerNIC"></span></p>
+                                            <p class="mb-1"><strong>Name:</strong> <span
+                                                    id="customerName"><%=isEditMode ? customer.getName() : ""%></span>
+                                            </p>
+                                            <p class="mb-1"><strong>NIC:</strong> <span
+                                                    id="customerNIC"><%=isEditMode ? customer.getNic() : ""%></span></p>
                                         </div>
                                         <div class="col-md-6">
-                                            <p class="mb-1"><strong>Phone:</strong> <span id="customerPhone"></span></p>
-                                            <p class="mb-1"><strong>Email:</strong> <span id="customerEmail"></span></p>
+                                            <p class="mb-1"><strong>Phone:</strong> <span
+                                                    id="customerPhone"><%=isEditMode ? customer.getMobileNo() : ""%></span>
+                                            </p>
+                                            <p class="mb-1"><strong>Email:</strong> <span
+                                                    id="customerEmail"><%=isEditMode ? customer.getEmail() : ""%></span>
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -377,65 +339,79 @@
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <input type="date" class="form-control" id="bookingDate" name="bookingDate"
-                                           required>
+                                           value="<%=isEditMode ? booking.getBookingDate() : ""%>"
+                                           required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="time" class="form-control" id="pickupTime" name="pickupTime" required>
+                                    <input type="time" class="form-control" id="pickupTime" name="pickupTime"
+                                           value="<%=isEditMode ? booking.getPickupTime() : ""%>"
+                                           required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Pickup Time</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <input type="time" class="form-control" id="releaseTime" name="releaseTime"
-                                           required>
+                                           value="<%=isEditMode ? booking.getReleaseTime() : ""%>"
+                                           required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Release Time</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="pickupLocation" name="pickupLocation"
-                                           required>
+                                           value="<%=isEditMode ? booking.getPickupLocation() : ""%>"
+                                           required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Pickup Location</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <input type="text" class="form-control" id="destination" name="destination"
-                                           required>
+                                           value="<%=isEditMode ? booking.getDestination() : ""%>"
+                                           required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Destination</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <input type="number" class="form-control" id="distance" name="distance"
-                                           required min="1" step="0.1" onchange="calculateFare()">
+                                           value="<%=isEditMode ? booking.getDistance() : ""%>" required min="1"
+                                           step="0.1"
+                                           onchange="calculateFare()" <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Distance (km)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <input type="number" class="form-control" id="discount" name="discount"
-                                           value="0" min="0" step="0.01" onchange="calculateNetTotal()">
+                                           value="<%=isEditMode ? booking.getDiscount() : "0"%>" min="0" step="0.01"
+                                           onchange="calculateNetTotal()" <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Discount (Rs.)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
                                     <input type="number" class="form-control" id="tax" name="tax"
-                                           value="0" min="0" step="0.01" onchange="calculateNetTotal()">
+                                           value="<%=isEditMode ? booking.getTax() : "0"%>" min="0" step="0.01"
+                                           onchange="calculateNetTotal()" <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Tax (Rs.)</label>
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-floating">
-                                    <select class="form-select" id="bookingStatus" name="status">
-                                        <%
-                                            for (com.project.megacitycab.constant.BookingStatus status : com.project.megacitycab.constant.BookingStatus.values()) {
+                                    <select class="form-select" id="bookingStatus"
+                                            name="status" <%=isReadOnlyStatus ? "disabled" : ""%>>
+                                        <% for (BookingStatus status : BookingStatus.values()) {
+                                            String selected = "";
+                                            if (isEditMode && booking.getStatus().toString().equals(status.toString())) {
+                                                selected = "selected";
+                                            }
                                         %>
-                                        <option value="<%= status %>"><%= status.toString() %>
+                                        <option value="<%=status%>" <%=selected%>><%=status.toString()%>
                                         </option>
                                         <% } %>
                                     </select>
@@ -445,213 +421,273 @@
                         </div>
 
                         <!-- Form Actions -->
-                        <div class="d-flex justify-content-end gap-2 mt-4">
-                            <a href="${pageContext.request.contextPath}/booking-list.jsp" class="btn btn-secondary">
+                        <div class="d-flex justify-content-end gap-2 mt-2">
+                            <% if (isReadOnlyStatus) { %>
+                            <a href="${pageContext.request.contextPath}/views/booking-list.jsp"
+                               class="btn btn-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back
+                            </a>
+                            <% } else { %>
+                            <a href="${pageContext.request.contextPath}/views/booking-list.jsp"
+                               class="btn btn-secondary">
                                 <i class="bi bi-x-circle me-2"></i>Cancel
                             </a>
                             <button type="submit" class="btn btn-primary" id="submitButton">
-                                <i class="bi bi-plus-circle me-2"></i>Create Booking
+                                <i class="bi <%=isEditMode ? "bi-check-circle" : "bi-plus-circle"%> me-2"></i>
+                                <%=isEditMode ? "Update Booking" : "Create Booking"%>
                             </button>
+                            <% } %>
                         </div>
                     </form>
                 </div>
             </div>
-            <!-- Vehicle Selection Section -->
-            <div class="vehicle-section">
-                <div class="card-header">
-                    <h5 class="mb-2">
-                        <i class="bi bi-car-front-fill me-2 icon-primary animated-icon"></i>
-                        Vehicle Selection</h5>
-                </div>
 
-                <!-- Vehicle Filters -->
-                <form id="vehicleSearchForm" class="mt-4">
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <div class="form-floating">
-                                <input type="number" class="form-control" id="capacityFilter" min="1"
-                                       placeholder="Min. capacity">
-                                <label for="capacityFilter">Capacity</label>
+            <div class="vehicle-and-driver-section">
+                <!-- Vehicle Selection Section -->
+                <% List<VehicleDriverDTO> availableVehicles = null;
+                    if (!isReadOnlyStatus) { %>
+                <div class="vehicle-section">
+                    <div class="card-header">
+                        <h5 class="mb-2"><i class="bi bi-car-front-fill me-2"></i>Vehicle Selection</h5>
+                    </div>
+
+                    <!-- Vehicle Filters -->
+                    <form id="vehicleSearchForm" class="mt-4">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <input type="number" class="form-control" id="capacityFilter" min="1"
+                                           placeholder="Min. capacity">
+                                    <label for="capacityFilter">Capacity</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <select class="form-select" id="brandFilter">
+                                        <option value="">All</option>
+                                        <%
+                                            availableVehicles = (List<VehicleDriverDTO>) request.getAttribute("availableVehicles");
+                                            if (availableVehicles != null && !availableVehicles.isEmpty()) {
+                                                java.util.Set<String> uniqueBrands = new java.util.HashSet<>();
+                                                for (VehicleDriverDTO vd : availableVehicles) {
+                                                    uniqueBrands.add(vd.getVehicle().getBrand());
+                                                }
+                                                for (String brand : uniqueBrands) {
+                                        %>
+                                        <option value="<%=brand%>"><%=brand%>
+                                        </option>
+                                        <% }
+                                        } %>
+                                    </select>
+                                    <label for="brandFilter">Brand</label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-floating">
+                                    <select class="form-select" id="modelFilter">
+                                        <option value="">All</option>
+                                        <%
+                                            if (availableVehicles != null && !availableVehicles.isEmpty()) {
+                                                java.util.Set<String> uniqueModels = new java.util.HashSet<>();
+                                                for (VehicleDriverDTO vd : availableVehicles) {
+                                                    uniqueModels.add(vd.getVehicle().getModel());
+                                                }
+                                                for (String model : uniqueModels) {
+                                        %>
+                                        <option value="<%=model%>"><%=model%>
+                                        </option>
+                                        <% }
+                                        } %>
+                                    </select>
+                                    <label for="modelFilter">Model</label>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-floating">
-                                <select class="form-select" id="brandFilter">
-                                    <option value="">All</option>
-                                    <%
-                                        // Get unique brands from available vehicles
-                                        List<VehicleDriverDTO> availableVehicles = (List<VehicleDriverDTO>) request.getAttribute("availableVehicles");
-                                        if (availableVehicles != null && !availableVehicles.isEmpty()) {
-                                            java.util.Set<String> uniqueBrands = new java.util.HashSet<>();
-                                            for (VehicleDriverDTO vd : availableVehicles) {
-                                                uniqueBrands.add(vd.getVehicle().getBrand());
-                                            }
-                                            for (String brand : uniqueBrands) {
-                                    %>
-                                    <option value="<%= brand %>"><%= brand %>
-                                    </option>
-                                    <%
-                                            }
-                                        }
-                                    %>
-                                </select>
-                                <label for="brandFilter">Brand</label>
-                            </div>
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="button" class="btn btn-secondary" onclick="clearVehicleSearch()">
+                                <i class="bi bi-x-circle me-2"></i>Clear Filter
+                            </button>
+                            <button type="button" class="btn btn-primary" onclick="searchVehicles()">
+                                <i class="bi bi-search me-2"></i>Search
+                            </button>
                         </div>
-                        <div class="col-md-4">
-                            <div class="form-floating">
-                                <select class="form-select" id="modelFilter">
-                                    <option value="">All</option>
-                                    <%
-                                        // Get unique models from available vehicles
-                                        if (availableVehicles != null && !availableVehicles.isEmpty()) {
-                                            java.util.Set<String> uniqueModels = new java.util.HashSet<>();
-                                            for (VehicleDriverDTO vd : availableVehicles) {
-                                                uniqueModels.add(vd.getVehicle().getModel());
-                                            }
-                                            for (String model : uniqueModels) {
-                                    %>
-                                    <option value="<%= model %>"><%= model %>
-                                    </option>
-                                    <%
-                                            }
-                                        }
-                                    %>
-                                </select>
-                                <label for="modelFilter">Model</label>
+                    </form>
+
+                    <!-- Vehicle Table -->
+                    <div id="vehicleTableContainer" class="vehicle-table mt-3" style="display: none;">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Vehicle</th>
+                                <th>License Plate</th>
+                                <th>Capacity</th>
+                                <th>Price/km</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="vehicleTableBody">
+                            <!-- Vehicle rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } %>
+
+                    <!-- Vehicle Information -->
+                    <div id="vehicleInfo" class="vehicle-info mt-3"
+                         style="<%=isEditMode && vehicle != null ? "display: block;" : "display: none;"%>">
+                        <h6 class="mb-2">Vehicle Information</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>Brand:</strong> <span
+                                        id="vehicleBrand"><%=isEditMode && vehicle != null ? vehicle.getBrand() : ""%></span>
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>Model:</strong> <span
+                                        id="vehicleModel"><%=isEditMode && vehicle != null ? vehicle.getModel() : ""%></span>
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>Price Per km:</strong> <span
+                                        id="vehiclePricePerKm"><%=isEditMode && vehicle != null ? vehicle.getPricePerKm() : ""%></span>
+                                </p>
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-end gap-2 mt-3">
-                        <button type="button" class="btn btn-secondary" onclick="clearVehicleSearch()">
-                            <i class="bi bi-x-circle me-2"></i>Clear Filter
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="searchVehicles()">
-                            <i class="bi bi-search me-2"></i>Search
-                        </button>
-                    </div>
-                </form>
 
-                <!-- Vehicle Table -->
-                <div id="vehicleTableContainer" class="vehicle-table mt-3">
-                    <table class="table table-hover">
-                        <thead>
-                        <tr>
-                            <th>Vehicle</th>
-                            <th>License Plate</th>
-                            <th>Capacity</th>
-                            <th>Price/km</th>
-                            <th>Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody id="vehicleTableBody">
-                        <!-- Vehicle rows will be dynamically added here -->
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Driver Information -->
-                <div id="driverInfo" class="driver-info mt-3">
-                    <h6 class="mb-2">Driver Information</h6>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p class="mb-1"><strong>Name:</strong> <span id="driverName"></span></p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="mb-1"><strong>Phone:</strong> <span id="driverPhone"></span></p>
-                        </div>
-                        <div class="col-md-4">
-                            <p class="mb-1"><strong>License:</strong> <span id="driverLicense"></span></p>
+                    <!-- Driver Information -->
+                    <div id="driverInfo" class="driver-info mt-3"
+                         style="<%=isEditMode && driver != null ? "display: block;" : "display: none;"%>">
+                        <h6 class="mb-2">Driver Information</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>Name:</strong> <span
+                                        id="driverName"><%=isEditMode && driver != null ? driver.getName() : ""%></span>
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>Phone:</strong> <span
+                                        id="driverPhone"><%=isEditMode && driver != null ? driver.getMobileNo() : ""%></span>
+                                </p>
+                            </div>
+                            <div class="col-md-4">
+                                <p class="mb-1"><strong>License:</strong> <span
+                                        id="driverLicense"><%=isEditMode && driver != null ? driver.getLicenseNo() : ""%></span>
+                                </p>
+                            </div>
                         </div>
                     </div>
+
                 </div>
+
             </div>
-        </div>
 
-        <div class="col-lg-4">
-            <div class="card summary-card">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-clipboard-check me-2 icon-primary animated-icon"></i>
-                        Booking Summary</h5>
-                </div>
-                <div class="card-body">
-                    <!-- Fare Summary Section -->
-                    <div class="summary-title">
-                        <i class="bi bi-currency-exchange me-2 icon-primary"></i>Fare Details
+            <!-- Summary Section -->
+            <div class="col-lg-4">
+                <div class="card summary-card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Booking Summary</h5>
                     </div>
-                    <div class="summary-item">
-                        <div><i class="bi bi-signpost-2-fill icon-summary"></i> Distance:</div>
-                        <div id="summaryDistance">0 km</div>
-                    </div>
-                    <div class="summary-item">
-                        <div><i class="bi bi-cash-stack icon-summary"></i> Base Fare:</div>
-                        <div id="summaryFare">Rs. 0.00</div>
-                    </div>
-                    <div class="summary-item">
-                        <div><i class="bi bi-receipt icon-summary"></i> Tax:</div>
-                        <div id="summaryTax">Rs. 0.00</div>
-                    </div>
-                    <div class="summary-item">
-                        <div><i class="bi bi-tag-fill icon-summary"></i> Discount:</div>
-                        <div id="summaryDiscount">Rs. 0.00</div>
-                    </div>
-
-                    <div class="summary-total d-flex justify-content-between">
-                        <div><i class="bi bi-cash-coin icon-summary"></i> Net Total:</div>
-                        <div id="summaryNetTotal">Rs. 0.00</div>
-                    </div>
-
-                    <!-- Booking Details Summary -->
-                    <div class="booking-details-summary">
+                    <div class="card-body">
+                        <!-- Fare Summary Section -->
                         <div class="summary-title">
-                            <i class="bi bi-info-circle me-2 icon-primary"></i>Booking Details
+                            <i class="bi bi-currency-exchange me-2"></i>Fare Details
                         </div>
                         <div class="summary-item">
-                            <div><i class="bi bi-calendar-date icon-summary"></i> Date:</div>
-                            <div id="summaryDate">Not selected</div>
+                            <div>Price Per km:</div>
+                            <div id="summaryPricePerKm"><%=isEditMode ? "Rs. " + vehicle.getPricePerKm() : "Rs. 0"%>
+                            </div>
                         </div>
                         <div class="summary-item">
-                            <div><i class="bi bi-clock icon-summary"></i> Time:</div>
-                            <div id="summaryTime">Not selected</div>
+                            <div>Distance:</div>
+                            <div id="summaryDistance"><%=isEditMode ? booking.getDistance() + " km" : "0 km"%>
+                            </div>
                         </div>
                         <div class="summary-item">
-                            <div><i class="bi bi-geo-alt-fill icon-summary"></i> From:</div>
-                            <div id="summaryPickup">Not specified</div>
+                            <div>Base Fare:</div>
+                            <div id="summaryFare"><%=isEditMode ? "Rs. " + booking.getFare() : "Rs. 0.00"%>
+                            </div>
                         </div>
                         <div class="summary-item">
-                            <div><i class="bi bi-geo-fill icon-summary"></i> To:</div>
-                            <div id="summaryDestination">Not specified</div>
+                            <div>Tax:</div>
+                            <div id="summaryTax"><%=isEditMode ? "Rs. " + booking.getTax() : "Rs. 0.00"%>
+                            </div>
                         </div>
-                    </div>
+                        <div class="summary-item">
+                            <div>Discount:</div>
+                            <div id="summaryDiscount"><%=isEditMode ? "Rs. " + booking.getDiscount() : "Rs. 0.00"%>
+                            </div>
+                        </div>
 
-                    <!-- Vehicle Details Summary (will appear when vehicle is selected) -->
-                    <div class="vehicle-details-summary" id="vehicleSummarySection" style="display: none;">
-                        <div class="summary-title">
-                            <i class="bi bi-car-front me-2 icon-primary"></i>Vehicle Details
+                        <div class="summary-total d-flex justify-content-between">
+                            <div><i class="bi bi-cash-coin"></i> Net Total:</div>
+                            <div id="summaryNetTotal"><%=isEditMode ? "Rs. " + booking.getNetTotal() : "Rs. 0.00"%>
+                            </div>
                         </div>
-                        <div class="summary-item">
-                            <div><i class="bi bi-car-front-fill icon-summary"></i> Vehicle:</div>
-                            <div id="summaryVehicle">Not selected</div>
-                        </div>
-                        <div class="summary-item">
-                            <div><i class="bi bi-person-fill icon-summary"></i> Driver:</div>
-                            <div id="summaryDriver">Not assigned</div>
-                        </div>
-                        <div class="summary-item">
-                            <div><i class="bi bi-people-fill icon-summary"></i> Capacity:</div>
-                            <div id="summaryCapacity">-</div>
-                        </div>
-                    </div>
 
-                    <div class="mt-3">
-                        <span>Status: </span>
-                        <span id="summaryStatus" class="status-badge status-pending">Pending</span>
+                        <!-- Booking Details Summary -->
+                        <div class="booking-details-summary mt-3">
+                            <div class="summary-title">
+                                <i class="bi bi-info-circle me-2"></i>Booking Details
+                            </div>
+                            <div class="summary-item">
+                                <div>Date:</div>
+                                <div id="summaryDate"><%=isEditMode ? booking.getBookingDate() : "Not selected"%>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div>Time:</div>
+                                <div id="summaryTime"><%=isEditMode ? booking.getPickupTime() + " - " + booking.getReleaseTime() : "Not selected"%>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div>From:</div>
+                                <div id="summaryPickup"><%=isEditMode ? booking.getPickupLocation() : "Not specified"%>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div> To:</div>
+                                <div id="summaryDestination"><%=isEditMode ? booking.getDestination() : "Not specified"%>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Vehicle Details Summary -->
+                        <div class="vehicle-details-summary mt-3" id="vehicleSummarySection"
+                             style="<%=isEditMode ? "display: block;" : "display: none;"%>">
+                            <div class="summary-title">
+                                <i class="bi bi-car-front me-2"></i>Vehicle Details
+                            </div>
+                            <div class="summary-item">
+                                <div>Vehicle:</div>
+                                <div id="summaryVehicle"><%=isEditMode ? vehicle.getBrand() + " " + vehicle.getModel() : "Not selected"%>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div>Driver:</div>
+                                <div id="summaryDriver"><%=isEditMode && driver != null ? driver.getName() : "Not assigned"%>
+                                </div>
+                            </div>
+                            <div class="summary-item">
+                                <div>Capacity:</div>
+                                <div id="summaryCapacity"><%=isEditMode ? vehicle.getCapacity() : "-"%>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <span>Status: </span>
+                            <span id="summaryStatus"
+                                  class="status-badge status-<%=isEditMode ? booking.getStatus().toString() : "pending"%>">
+                            <%=isEditMode ? booking.getStatus().toString().substring(0, 1).toUpperCase() + booking.getStatus().toString().substring(1) : "Pending"%>
+                        </span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- Scripts -->
@@ -659,30 +695,31 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 <script>
-    let selectedPricePerKm = 0;
+    let selectedPricePerKm = <%=isEditMode && vehicle != null ? vehicle.getPricePerKm() : 0%>;
 
     // Store all available vehicles for filtering
     const availableVehicles = [
         <% if (availableVehicles != null && !availableVehicles.isEmpty()) {
             for (int i = 0; i < availableVehicles.size(); i++) {
                 VehicleDriverDTO vd = availableVehicles.get(i);
-        %>
+                %>
         {
-            vehicleId: '<%= vd.getVehicle().getId() %>',
-            brand: '<%= vd.getVehicle().getBrand() %>',
-            model: '<%= vd.getVehicle().getModel() %>',
-            licensePlate: '<%= vd.getVehicle().getLicensePlate() %>',
-            capacity: <%= vd.getVehicle().getCapacity() %>,
-            pricePerKm: <%= vd.getVehicle().getPricePerKm() %>,
-            driverName: '<%= vd.getDriver().getName() %>',
-            driverPhone: '<%= vd.getDriver().getMobileNo() %>',
-            driverLicense: '<%= vd.getDriver().getLicenseNo() %>'
-        }<%= i < availableVehicles.size() - 1 ? "," : "" %>
-        <% } } %>
+            vehicleId: '<%=vd.getVehicle().getId()%>',
+            brand: '<%=vd.getVehicle().getBrand()%>',
+            model: '<%=vd.getVehicle().getModel()%>',
+            licensePlate: '<%=vd.getVehicle().getLicensePlate()%>',
+            capacity: <%=vd.getVehicle().getCapacity()%>,
+            pricePerKm: <%=vd.getVehicle().getPricePerKm()%>,
+            driverName: '<%=vd.getDriver().getName()%>',
+            driverPhone: '<%=vd.getDriver().getMobileNo()%>',
+            driverLicense: '<%=vd.getDriver().getLicenseNo()%>'
+        }<%=i < availableVehicles.size() - 1 ? "," : ""%>
+        <% }
+} %>
     ];
 
     $(document).ready(function () {
-        // Initialize Select2 for customer dropdown with custom templates
+        // Initialize Select2 for customer dropdown
         $('#customerSelect').select2({
             placeholder: "Select customer by NIC or name",
             allowClear: true,
@@ -690,13 +727,17 @@
             templateSelection: formatCustomerSelection
         });
 
-        // Initialize booking date with current date
+        // Initialize booking date with current date if not in edit mode
+        <% if (!isEditMode) { %>
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('bookingDate').value = today;
         document.getElementById('bookingDate').min = today;
+        <% } %>
 
-        // Set default status to pending
+        // Set default status to pending for new bookings
+        <% if (!isEditMode) { %>
         document.getElementById('bookingStatus').value = "pending";
+        <% } %>
 
         // Customer selection change event
         $('#customerSelect').on('change', function () {
@@ -726,19 +767,20 @@
 
         // Initial status badge
         updateStatusBadge();
+
+        // If in edit mode, calculate fare and net total
+        <% if (isEditMode) { %>
+        calculateFare();
+        <% } %>
     });
 
     // Format customer results in the dropdown for better visibility
     function formatCustomerResult(customer) {
-        if (!customer.id) {
-            return customer.text;
-        }
-
+        if (!customer.id) return customer.text;
         const $option = $(customer.element);
         const nic = $option.data('nic');
         const name = $option.data('name');
         const phone = $option.data('phone');
-
         return $('<div class="select2-result-customer">' +
             '<div class="select2-result-customer__name">' + name + '</div>' +
             '<div class="select2-result-customer__details">' +
@@ -749,27 +791,20 @@
 
     // Format selected customer in the dropdown
     function formatCustomerSelection(customer) {
-        if (!customer.id) {
-            return customer.text;
-        }
-
+        if (!customer.id) return customer.text;
         const $option = $(customer.element);
         const nic = $option.data('nic');
         const name = $option.data('name');
-
         return name + ' (' + nic + ')';
     }
 
     function updateStatusBadge() {
         const status = document.getElementById('bookingStatus').value;
         const statusBadge = document.getElementById('summaryStatus');
-
         // Remove all status classes
         statusBadge.className = "status-badge";
-
         // Add specific status class
         statusBadge.classList.add("status-" + status);
-
         // Update text
         statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
     }
@@ -779,7 +814,6 @@
         document.getElementById('capacityFilter').value = '';
         document.getElementById('brandFilter').value = '';
         document.getElementById('modelFilter').value = '';
-
         // Hide the vehicle table if it's currently shown
         $('#vehicleTableContainer').hide();
     }
@@ -819,17 +853,17 @@
             const row = document.createElement('tr');
             row.dataset.vehicleId = vehicle.vehicleId;
             row.innerHTML = `
-                <td>${vehicle.brand} ${vehicle.model}</td>
-                <td>${vehicle.licensePlate}</td>
-                <td>${vehicle.capacity} passengers</td>
-                <td>Rs. ${vehicle.pricePerKm.toFixed(2)}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary select-vehicle-btn" type="button"
-                            onclick="selectVehicleFromTable('${vehicle.vehicleId}', ${vehicle.pricePerKm}, '${vehicle.driverName}', '${vehicle.driverPhone}', '${vehicle.driverLicense}')">
-                        Select
-                    </button>
-                </td>
-            `;
+            <td>${vehicle.brand} ${vehicle.model}</td>
+            <td>${vehicle.licensePlate}</td>
+            <td>${vehicle.capacity} passengers</td>
+            <td>Rs. ${vehicle.pricePerKm.toFixed(2)}</td>
+            <td>
+                <button class="btn btn-sm btn-primary select-vehicle-btn" type="button"
+                        onclick="selectVehicleFromTable('${vehicle.vehicleId}', ${vehicle.pricePerKm}, '${vehicle.driverName}', '${vehicle.driverPhone}', '${vehicle.driverLicense}')">
+                    Select
+                </button>
+            </td>
+        `;
             tableBody.appendChild(row);
         });
 
@@ -838,93 +872,163 @@
     }
 
     function selectVehicleFromTable(vehicleId, pricePerKm, driverName, driverPhone, driverLicense) {
-        // Remove selection from all rows
-        document.querySelectorAll('#vehicleTableBody tr').forEach(row => {
-            row.classList.remove('selected');
-        });
-
-        // Add selection to the clicked row
-        const selectedRow = document.querySelector(`#vehicleTableBody tr[data-vehicle-id="${vehicleId}"]`);
-        if (selectedRow) {
-            selectedRow.classList.add('selected');
-        }
-
-        // Set the selected vehicle ID
+        // Set selected vehicle ID in the hidden field
         document.getElementById('selectedVehicleId').value = vehicleId;
         selectedPricePerKm = pricePerKm;
 
-        // Update driver info
+        // Find the vehicle from our data
+        const selectedVehicle = availableVehicles.find(v => v.vehicleId === vehicleId);
+
+        // Update vehicle info display
+        if (selectedVehicle) {
+            document.getElementById('vehicleBrand').textContent = selectedVehicle.brand;
+            document.getElementById('vehicleModel').textContent = selectedVehicle.model;
+            document.getElementById('vehiclePricePerKm').textContent = selectedVehicle.pricePerKm.toFixed(2);
+
+            // Show vehicle info section
+            document.getElementById('vehicleInfo').style.display = 'block';
+
+            // Update summary section
+            document.getElementById('summaryVehicle').textContent = selectedVehicle.brand + ' ' + selectedVehicle.model;
+            document.getElementById('summaryCapacity').textContent = selectedVehicle.capacity;
+            document.getElementById('vehicleSummarySection').style.display = 'block';
+        }
+
+        // Update driver info display
         document.getElementById('driverName').textContent = driverName;
         document.getElementById('driverPhone').textContent = driverPhone;
         document.getElementById('driverLicense').textContent = driverLicense;
+
+        // Show driver info section
         document.getElementById('driverInfo').style.display = 'block';
 
+        // Update summary for driver
+        document.getElementById('summaryDriver').textContent = driverName;
+
+        // Recalculate fare based on new price per km
         calculateFare();
+
+        // Hide the vehicle table after selection
+        document.getElementById('vehicleTableContainer').style.display = 'none';
     }
 
     function calculateFare() {
         const distance = parseFloat(document.getElementById('distance').value) || 0;
-        const fare = distance * selectedPricePerKm;
 
-        document.getElementById('fare').value = fare.toFixed(2);
-        document.getElementById('summaryDistance').textContent = distance + ' km';
-        document.getElementById('summaryFare').textContent = 'Rs. ' + fare.toFixed(2);
+        if (distance > 0 && selectedPricePerKm > 0) {
+            // Calculate the fare based on distance and price per km
+            const fare = distance * selectedPricePerKm;
 
-        calculateNetTotal();
+            // Update the fare in the form
+            document.getElementById('fare').value = fare.toFixed(2);
+
+            // Update the fare in the summary
+            document.getElementById('summaryFare').textContent = 'Rs. ' + fare.toFixed(2);
+            document.getElementById('summaryDistance').textContent = distance + ' km';
+
+            // Calculate net total
+            calculateNetTotal();
+        }
     }
 
     function calculateNetTotal() {
         const fare = parseFloat(document.getElementById('fare').value) || 0;
-        const tax = parseFloat(document.getElementById('tax').value) || 0;
         const discount = parseFloat(document.getElementById('discount').value) || 0;
+        const tax = parseFloat(document.getElementById('tax').value) || 0;
 
+        // Calculate net total
         const netTotal = fare + tax - discount;
 
+        // Update net total in the form
         document.getElementById('netTotal').value = netTotal.toFixed(2);
-        document.getElementById('summaryTax').textContent = 'Rs. ' + tax.toFixed(2);
+
+        // Update summary
         document.getElementById('summaryDiscount').textContent = 'Rs. ' + discount.toFixed(2);
+        document.getElementById('summaryTax').textContent = 'Rs. ' + tax.toFixed(2);
         document.getElementById('summaryNetTotal').textContent = 'Rs. ' + netTotal.toFixed(2);
     }
 
     function validateForm() {
-        if (!document.getElementById('selectedVehicleId').value) {
+        const form = document.getElementById('bookingForm');
+
+        // Validate customer selection
+        <% if (!isReadOnlyStatus && !isEditMode) { %>
+        if (!form.customerId.value) {
+            alert('Please select a customer');
+            return false;
+        }
+        <% } %>
+
+        // Validate date fields
+        if (!form.bookingDate.value) {
+            alert('Please select a booking date');
+            return false;
+        }
+
+        // Validate time fields
+        if (!form.pickupTime.value || !form.releaseTime.value) {
+            alert('Please specify both pickup and release times');
+            return false;
+        }
+
+        // Validate location fields
+        if (!form.pickupLocation.value || !form.destination.value) {
+            alert('Please specify both pickup location and destination');
+            return false;
+        }
+
+        // Validate distance
+        if (!form.distance.value || parseFloat(form.distance.value) <= 0) {
+            alert('Please enter a valid distance');
+            return false;
+        }
+
+        // Validate vehicle selection
+        <% if (!isReadOnlyStatus && !isEditMode) { %>
+        if (!form.vehicleId.value) {
             alert('Please select a vehicle');
             return false;
         }
+        <% } %>
 
-        const bookingDate = new Date(document.getElementById('bookingDate').value);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        if (bookingDate < today) {
-            alert('Booking date cannot be in the past');
-            return false;
-        }
-
-        const pickupTime = document.getElementById('pickupTime').value;
-        const releaseTime = document.getElementById('releaseTime').value;
-
-        if (pickupTime >= releaseTime) {
-            alert('Release time must be after pickup time');
-            return false;
-        }
-
-        const distance = parseFloat(document.getElementById('distance').value);
-        if (distance <= 0) {
-            alert('Distance must be greater than 0');
-            return false;
-        }
-
-        const discount = parseFloat(document.getElementById('discount').value);
-        const fare = parseFloat(document.getElementById('fare').value);
-
-        if (discount > fare) {
-            alert('Discount cannot be greater than fare');
-            return false;
-        }
+        // If all validations pass, update the summary before submitting
+        updateSummary();
 
         return true;
     }
+
+    function updateSummary() {
+        // Update booking details in summary
+        document.getElementById('summaryDate').textContent = document.getElementById('bookingDate').value;
+        document.getElementById('summaryTime').textContent =
+            document.getElementById('pickupTime').value + ' - ' +
+            document.getElementById('releaseTime').value;
+        document.getElementById('summaryPickup').textContent = document.getElementById('pickupLocation').value;
+        document.getElementById('summaryDestination').textContent = document.getElementById('destination').value;
+    }
+
+    // Update summary when form fields change
+    document.getElementById('bookingDate').addEventListener('change', function () {
+        document.getElementById('summaryDate').textContent = this.value;
+    });
+
+    document.getElementById('pickupTime').addEventListener('change', function () {
+        document.getElementById('summaryTime').textContent =
+            this.value + ' - ' + document.getElementById('releaseTime').value;
+    });
+
+    document.getElementById('releaseTime').addEventListener('change', function () {
+        document.getElementById('summaryTime').textContent =
+            document.getElementById('pickupTime').value + ' - ' + this.value;
+    });
+
+    document.getElementById('pickupLocation').addEventListener('change', function () {
+        document.getElementById('summaryPickup').textContent = this.value;
+    });
+
+    document.getElementById('destination').addEventListener('change', function () {
+        document.getElementById('summaryDestination').textContent = this.value;
+    });
 </script>
 </body>
 </html>

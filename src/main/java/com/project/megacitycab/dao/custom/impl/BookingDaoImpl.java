@@ -149,6 +149,8 @@ public class BookingDaoImpl implements BookingDAO {
                 .destination(result.getString("destination"))
                 .distance(result.getDouble("distance"))
                 .fare(result.getDouble("fare"))
+                .discount(result.getDouble("discount"))
+                .tax(result.getDouble("tax"))
                 .netTotal(result.getDouble("netTotal"))
                 .status(Enum.valueOf(com.project.megacitycab.constant.BookingStatus.class, result.getString("status")))
                 .createdAt(result.getTimestamp("createdAt"))

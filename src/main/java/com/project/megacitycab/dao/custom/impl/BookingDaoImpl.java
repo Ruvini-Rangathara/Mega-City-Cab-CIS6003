@@ -17,41 +17,12 @@ public class BookingDaoImpl implements BookingDAO {
 
     @Override
     public boolean add(Connection connection, Booking entity) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute(connection,
-                "INSERT INTO bookings (id, customerId, vehicleId, bookingDate, pickupTime, releaseTime, pickupLocation, destination, distance, fare, netTotal, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
-                entity.getId(),
-                entity.getCustomerId(),
-                entity.getVehicleId(),
-                entity.getBookingDate(),
-                entity.getPickupTime(),
-                entity.getReleaseTime(),
-                entity.getPickupLocation(),
-                entity.getDestination(),
-                entity.getDistance(),
-                entity.getFare(),
-                entity.getNetTotal(),
-                entity.getStatus().toString()
-        );
+        return CrudUtil.execute(connection, "INSERT INTO bookings (customerId, bookingDate, pickupLocation,destination, pickupTime, releaseTime, vehicleId, status, distance, fare, discount, tax, netTotal, userId ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", entity.getCustomerId(), entity.getBookingDate(), entity.getPickupLocation(), entity.getDestination(), entity.getPickupTime(), entity.getReleaseTime(), entity.getVehicleId(), entity.getStatus().toString(), entity.getDistance(), entity.getFare(), entity.getDiscount(), entity.getTax(), entity.getNetTotal(), entity.getUserId());
     }
 
     @Override
     public boolean update(Connection connection, Booking entity) throws SQLException, ClassNotFoundException {
-        return CrudUtil.execute(connection,
-                "UPDATE bookings SET customerId=?, vehicleId=?, bookingDate=?, pickupTime=?, releaseTime=?, pickupLocation=?, destination=?, distance=?, fare=?, netTotal=?, status=?, updatedAt=? WHERE id=?",
-                entity.getCustomerId(),
-                entity.getVehicleId(),
-                entity.getBookingDate(),
-                entity.getPickupTime(),
-                entity.getReleaseTime(),
-                entity.getPickupLocation(),
-                entity.getDestination(),
-                entity.getDistance(),
-                entity.getFare(),
-                entity.getNetTotal(),
-                entity.getStatus().toString(),
-                new Date(),
-                entity.getId()
-        );
+        return CrudUtil.execute(connection, "UPDATE bookings SET customerId=?, vehicleId=?, bookingDate=?, pickupTime=?, releaseTime=?, pickupLocation=?, destination=?, distance=?, fare=?, netTotal=?, status=?, updatedAt=? WHERE id=?", entity.getCustomerId(), entity.getVehicleId(), entity.getBookingDate(), entity.getPickupTime(), entity.getReleaseTime(), entity.getPickupLocation(), entity.getDestination(), entity.getDistance(), entity.getFare(), entity.getNetTotal(), entity.getStatus().toString(), new Date(), entity.getId());
     }
 
     @Override
@@ -116,6 +87,7 @@ public class BookingDaoImpl implements BookingDAO {
 
         return bookings;
     }
+
     @Override
     public boolean existByPk(Connection connection, Object... args) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute(connection, "SELECT * FROM bookings WHERE id=?", args[0]);
@@ -126,9 +98,7 @@ public class BookingDaoImpl implements BookingDAO {
     public List<Booking> findByDate(Connection connection, LocalDate date) throws SQLException, ClassNotFoundException {
         List<Booking> bookings = new ArrayList<>();
 
-        ResultSet result = CrudUtil.execute(connection,
-                "SELECT * FROM bookings WHERE DATE(bookingDate) = ? ORDER BY pickupTime ASC",
-                date);
+        ResultSet result = CrudUtil.execute(connection, "SELECT * FROM bookings WHERE DATE(bookingDate) = ? ORDER BY pickupTime ASC", date);
 
         while (result.next()) {
             bookings.add(extractBookingFromResultSet(result));
@@ -138,23 +108,6 @@ public class BookingDaoImpl implements BookingDAO {
 
     // Helper method to extract Booking from ResultSet
     private Booking extractBookingFromResultSet(ResultSet result) throws SQLException {
-        return new Booking.BookingBuilder()
-                .id(result.getString("id"))
-                .customerId(result.getString("customerId"))
-                .vehicleId(result.getString("vehicleId"))
-                .bookingDate(result.getObject("bookingDate", LocalDate.class))
-                .pickupTime(result.getTime("pickupTime").toLocalTime())
-                .releaseTime(result.getTime("releaseTime").toLocalTime())
-                .pickupLocation(result.getString("pickupLocation"))
-                .destination(result.getString("destination"))
-                .distance(result.getDouble("distance"))
-                .fare(result.getDouble("fare"))
-                .discount(result.getDouble("discount"))
-                .tax(result.getDouble("tax"))
-                .netTotal(result.getDouble("netTotal"))
-                .status(Enum.valueOf(com.project.megacitycab.constant.BookingStatus.class, result.getString("status")))
-                .createdAt(result.getTimestamp("createdAt"))
-                .updatedAt(result.getTimestamp("updatedAt"))
-                .build();
+        return new Booking.BookingBuilder().id(result.getString("id")).customerId(result.getString("customerId")).vehicleId(result.getString("vehicleId")).bookingDate(result.getObject("bookingDate", LocalDate.class)).pickupTime(result.getTime("pickupTime").toLocalTime()).releaseTime(result.getTime("releaseTime").toLocalTime()).pickupLocation(result.getString("pickupLocation")).destination(result.getString("destination")).distance(result.getDouble("distance")).fare(result.getDouble("fare")).discount(result.getDouble("discount")).tax(result.getDouble("tax")).netTotal(result.getDouble("netTotal")).status(Enum.valueOf(com.project.megacitycab.constant.BookingStatus.class, result.getString("status"))).createdAt(result.getTimestamp("createdAt")).updatedAt(result.getTimestamp("updatedAt")).build();
     }
 }

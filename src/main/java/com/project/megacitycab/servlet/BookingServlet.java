@@ -258,7 +258,7 @@ public class BookingServlet extends HttpServlet {
         double discount = Double.parseDouble(request.getParameter("discount"));
         double tax = Double.parseDouble(request.getParameter("tax"));
         double netTotal = Double.parseDouble(request.getParameter("netTotal"));
-        BookingStatus status = BookingStatus.valueOf(request.getParameter("status").toUpperCase());
+        BookingStatus status = BookingStatus.valueOf(request.getParameter("status"));
 
         return new BookingDTO.BookingDTOBuilder().id(bookingId).customerId(customerId).vehicleId(vehicleId).bookingDate(bookingDate).pickupTime(pickupTime).releaseTime(releaseTime).pickupLocation(pickupLocation).destination(destination).distance(distance).fare(fare).discount(discount).tax(tax).netTotal(netTotal).status(status).build();
     }

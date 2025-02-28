@@ -88,7 +88,7 @@ CREATE TABLE bookings
     discount       DECIMAL(10, 2)                                                    NOT NULL,
     tax            DECIMAL(10, 2)                                                    NOT NULL,
     netTotal       DECIMAL(10, 2)                                                    NOT NULL,
-    userId         CHAR(36)                                                          NOT NULL,
+    userId         CHAR(36)                                                          NULL,
     createdAt      DATETIME                                                                               DEFAULT CURRENT_TIMESTAMP,
     updatedAt      DATETIME                                                                               DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (customerId) REFERENCES customers (id) ON DELETE CASCADE,

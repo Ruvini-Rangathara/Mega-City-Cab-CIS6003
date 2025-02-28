@@ -191,7 +191,6 @@ public class BookingServiceImpl implements BookingService {
     private boolean validateBooking(BookingDTO booking) {
         // Basic validation to ensure required fields are present
         return booking != null
-                && booking.getCustomerId() != null && !booking.getCustomerId().isEmpty()
                 && booking.getVehicleId() != null && !booking.getVehicleId().isEmpty()
                 && booking.getBookingDate() != null
                 && booking.getPickupTime() != null

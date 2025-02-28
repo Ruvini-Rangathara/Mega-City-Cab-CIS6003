@@ -230,15 +230,17 @@
     boolean isReadOnlyStatus = isEditMode && (bookingStatus.equals("completed") || bookingStatus.equals("cancelled"));
 
     // Preserve form data
-    String bookingDate = request.getAttribute("bookingDate") != null ? (String) request.getAttribute("bookingDate") : (isEditMode ? String.valueOf(booking.getBookingDate()) : "");
-    String pickupTime = request.getAttribute("pickupTime") != null ? (String) request.getAttribute("pickupTime") : (isEditMode ? String.valueOf(booking.getPickupTime()) : "");
-    String releaseTime = request.getAttribute("releaseTime") != null ? (String) request.getAttribute("releaseTime") : (isEditMode ? String.valueOf(booking.getReleaseTime()) : "");
-    String customerId = request.getAttribute("customerId") != null ? (String) request.getAttribute("customerId") : (isEditMode ? customer.getId() : "");
-    String pickupLocation = request.getAttribute("pickupLocation") != null ? (String) request.getAttribute("pickupLocation") : (isEditMode ? booking.getPickupLocation() : "");
-    String destination = request.getAttribute("destination") != null ? (String) request.getAttribute("destination") : (isEditMode ? booking.getDestination() : "");
-    String distance = request.getAttribute("distance") != null ? (String) request.getAttribute("distance") : (isEditMode ? String.valueOf(booking.getDistance()) : "");
-    String discount = request.getAttribute("discount") != null ? (String) request.getAttribute("discount") : (isEditMode ? String.valueOf(booking.getDiscount()) : "0");
-    String tax = request.getAttribute("tax") != null ? (String) request.getAttribute("tax") : (isEditMode ? String.valueOf(booking.getTax()) : "0");
+    String bookingDate = request.getParameter("bookingDate") != null ? request.getParameter("bookingDate") : (isEditMode ? String.valueOf(booking.getBookingDate()) : "");
+    String pickupTime = request.getParameter("pickupTime") != null ? request.getParameter("pickupTime") : (isEditMode ? String.valueOf(booking.getPickupTime()) : "");
+    String releaseTime = request.getParameter("releaseTime") != null ? request.getParameter("releaseTime") : (isEditMode ? String.valueOf(booking.getReleaseTime()) : "");
+    String customerId = request.getParameter("customerId") != null ? request.getParameter("customerId") : (isEditMode ? customer.getId() : "");
+    String pickupLocation = request.getParameter("pickupLocation") != null ? request.getParameter("pickupLocation") : (isEditMode ? booking.getPickupLocation() : "");
+    String destination = request.getParameter("destination") != null ? request.getParameter("destination") : (isEditMode ? booking.getDestination() : "");
+    String distance = request.getParameter("distance") != null ? request.getParameter("distance") : (isEditMode ? String.valueOf(booking.getDistance()) : "");
+    String discount = request.getParameter("discount") != null ? request.getParameter("discount") : (isEditMode ? String.valueOf(booking.getDiscount()) : "0");
+    String tax = request.getParameter("tax") != null ? request.getParameter("tax") : (isEditMode ? String.valueOf(booking.getTax()) : "0");
+    String fare = request.getParameter("fare") != null ? request.getParameter("fare") : (isEditMode ? String.valueOf(booking.getFare()) : "0");
+    String vehicleId = request.getParameter("vehicleId") != null ? request.getParameter("vehicleId") : (isEditMode && vehicle != null ? vehicle.getId() : "");
 %>
 
 <div class="container">
@@ -253,13 +255,13 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    <form id="bookingForm" action="${pageContext.request.contextPath}/booking-servlet" method="post">
+                    <form id="bookingForm" action="${pageContext.request.contextPath}/booking-servlet" method="post" onsubmit="return validateForm()">
                         <input type="hidden" id="action" name="action" value="<%=isEditMode ? "update" : "add"%>">
                         <input type="hidden" id="bookingId" name="bookingId" value="<%=isEditMode ? booking.getId() : ""%>">
-                        <input type="hidden" id="selectedVehicleId" name="vehicleId" value="<%=isEditMode && vehicle != null ? vehicle.getId() : ""%>">
+                        <input type="hidden" id="selectedVehicleId" name="vehicleId" value="<%=vehicleId%>">
                         <input type="hidden" id="userId" name="userId" value="<%=session.getAttribute("userId") != null ? session.getAttribute("userId") : ""%>">
-                        <input type="hidden" id="fare" name="fare" value="<%=isEditMode ? booking.getFare() : ""%>">
-                        <input type="hidden" id="netTotal" name="netTotal" value="<%=isEditMode ? booking.getNetTotal() : ""%>">
+                        <input type="hidden" id="fare" name="fare" value="<%=fare%>">
+                        <input type="hidden" id="netTotal" name="netTotal" value="<%=isEditMode ? booking.getNetTotal() : "0"%>">
 
                         <!-- Customer Details -->
                         <h6 class="mb-3">Customer Information</h6>
@@ -287,14 +289,19 @@
                             <% } %>
 
                             <div class="col-md-12">
-                                <div id="customerInfo" class="customer-info" style="<%=isEditMode || !customerId.isEmpty() ? "display: block;" : ""%>">
+                                <div id="customerInfo" class="customer-info" style="display: none;">
+                                    <h6 class="mb-2">Customer Details</h6>
                                     <div class="row">
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <p class="mb-1"><strong>Name:</strong> <span id="customerName"><%=isEditMode ? customer.getName() : ""%></span></p>
+                                        </div>
+                                        <div class="col-md-4">
                                             <p class="mb-1"><strong>NIC:</strong> <span id="customerNIC"><%=isEditMode ? customer.getNic() : ""%></span></p>
                                         </div>
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <p class="mb-1"><strong>Phone:</strong> <span id="customerPhone"><%=isEditMode ? customer.getMobileNo() : ""%></span></p>
+                                        </div>
+                                        <div class="col-md-4">
                                             <p class="mb-1"><strong>Email:</strong> <span id="customerEmail"><%=isEditMode ? customer.getEmail() : ""%></span></p>
                                         </div>
                                     </div>
@@ -401,19 +408,21 @@
                     <!-- Vehicle Filters -->
                     <form id="vehicleSearchForm" action="${pageContext.request.contextPath}/booking-servlet" method="post" onsubmit="return validateVehicleSearch()">
                         <input type="hidden" name="action" value="searchVehicles">
-                        <input type="hidden" name="customerId" value="<%=customerId%>">
+                        <input type="hidden" name="customerId" id="formCustomerId" value="<%=customerId%>">
                         <input type="hidden" name="bookingDate" id="formBookingDate" value="<%=bookingDate%>">
                         <input type="hidden" name="pickupTime" id="formPickupTime" value="<%=pickupTime%>">
                         <input type="hidden" name="releaseTime" id="formReleaseTime" value="<%=releaseTime%>">
-                        <input type="hidden" name="pickupLocation" value="<%=pickupLocation%>">
-                        <input type="hidden" name="destination" value="<%=destination%>">
-                        <input type="hidden" name="distance" value="<%=distance%>">
-                        <input type="hidden" name="discount" value="<%=discount%>">
-                        <input type="hidden" name="tax" value="<%=tax%>">
+                        <input type="hidden" name="pickupLocation" id="formPickupLocation" value="<%=pickupLocation%>">
+                        <input type="hidden" name="destination" id="formDestination" value="<%=destination%>">
+                        <input type="hidden" name="distance" id="formDistance" value="<%=distance%>">
+                        <input type="hidden" name="discount" id="formDiscount" value="<%=discount%>">
+                        <input type="hidden" name="tax" id="formTax" value="<%=tax%>">
+                        <input type="hidden" name="fare" id="formFare" value="<%=fare%>">
+                        <input type="hidden" name="vehicleId" id="formVehicleId" value="<%=vehicleId%>">
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="number" class="form-control" id="capacityFilter" name="capacityFilter" min="1" placeholder="Min. capacity">
+                                    <input type="number" class="form-control" id="capacityFilter" name="capacityFilter" min="1" placeholder="Min. capacity" value="<%=request.getParameter("capacityFilter") != null ? request.getParameter("capacityFilter") : ""%>">
                                     <label for="capacityFilter">Capacity</label>
                                 </div>
                             </div>
@@ -480,16 +489,16 @@
                                 data-driver-name="<%=d != null ? d.getName() : "Not Assigned"%>"
                                 data-driver-phone="<%=d != null ? d.getMobileNo() : ""%>"
                                 data-driver-license="<%=d != null ? d.getLicenseNo() : ""%>"
-                                    <%=isEditMode && v.getId().equals(vehicle.getId()) ? "class='selected'" : ""%>>
+                                    <%=vehicleId.equals(v.getId()) ? "class='selected'" : ""%>>
                                 <td><%=v.getBrand()%> <%=v.getModel()%></td>
                                 <td><%=v.getLicensePlate()%></td>
                                 <td><%=v.getCapacity()%></td>
                                 <td>Rs. <%=v.getPricePerKm()%></td>
                                 <td>
-                                    <button class="btn btn-sm <%=isEditMode && v.getId().equals(vehicle.getId()) ? "btn-success" : "btn-primary"%> select-btn"
+                                    <button class="btn btn-sm <%=vehicleId.equals(v.getId()) ? "btn-success" : "btn-primary"%> select-btn"
                                             onclick="selectVehicle('<%=v.getId()%>', <%=v.getPricePerKm()%>, this)">
-                                        <i class="bi <%=isEditMode && v.getId().equals(vehicle.getId()) ? "bi-check2-all" : "bi-check"%>"></i>
-                                        <%=isEditMode && v.getId().equals(vehicle.getId()) ? "Selected" : "Select"%>
+                                        <i class="bi <%=vehicleId.equals(v.getId()) ? "bi-check2-all" : "bi-check"%>"></i>
+                                        <%=vehicleId.equals(v.getId()) ? "Selected" : "Select"%>
                                     </button>
                                 </td>
                             </tr>
@@ -566,7 +575,7 @@
                     </div>
                     <div class="summary-item">
                         <div>Base Fare:</div>
-                        <div id="summaryFare"><%=isEditMode ? "Rs. " + booking.getFare() : "Rs. 0.00"%></div>
+                        <div id="summaryFare"><%=fare.equals("0") ? "Rs. 0.00" : "Rs. " + fare%></div>
                     </div>
                     <div class="summary-item">
                         <div>Tax:</div>
@@ -639,25 +648,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 <script>
     let selectedPricePerKm = <%=isEditMode && vehicle != null ? vehicle.getPricePerKm() : 0%>;
-    let selectedVehicleId = <%=isEditMode && vehicle != null ? "'" + vehicle.getId() + "'" : "null"%>;
+    let selectedVehicleId = <%=vehicleId.isEmpty() ? "null" : "'" + vehicleId + "'"%>;
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Initialize Select2
         const customerSelect = document.getElementById('customerSelect');
         if (customerSelect) {
-            new Select2(customerSelect, {
+            $(customerSelect).select2({
                 placeholder: "Select customer by NIC or name",
                 allowClear: true
+            }).on('select2:select', function (e) {
+                const selectedOption = e.params.data.element;
+                updateCustomerInfo({
+                    value: selectedOption.value,
+                    dataset: {
+                        name: selectedOption.getAttribute('data-name'),
+                        nic: selectedOption.getAttribute('data-nic'),
+                        phone: selectedOption.getAttribute('data-phone'),
+                        email: selectedOption.getAttribute('data-email')
+                    }
+                });
             });
-            customerSelect.addEventListener('change', function () {
-                const selectedOption = this.options[this.selectedIndex];
-                document.getElementById('customerName').textContent = selectedOption.dataset.name || '';
-                document.getElementById('customerNIC').textContent = selectedOption.dataset.nic || '';
-                document.getElementById('customerPhone').textContent = selectedOption.dataset.phone || '';
-                document.getElementById('customerEmail').textContent = selectedOption.dataset.email || '';
-                document.getElementById('customerInfo').style.display = selectedOption.value ? 'block' : 'none';
-                updateSummaryDetails();
-            });
+            // Trigger initial update for pre-selected customer
+            const initialSelected = customerSelect.querySelector('option[selected]');
+            if (initialSelected) {
+                updateCustomerInfo({
+                    value: initialSelected.value,
+                    dataset: {
+                        name: initialSelected.getAttribute('data-name'),
+                        nic: initialSelected.getAttribute('data-nic'),
+                        phone: initialSelected.getAttribute('data-phone'),
+                        email: initialSelected.getAttribute('data-email')
+                    }
+                });
+            }
         }
 
         <% if (!isEditMode && bookingDate.isEmpty()) { %>
@@ -670,13 +693,38 @@
         document.getElementById('bookingStatus')?.addEventListener('change', updateStatusBadge);
         updateStatusBadge();
 
-        ['pickupLocation', 'destination', 'bookingDate', 'pickupTime', 'releaseTime'].forEach(id => {
+        ['pickupLocation', 'destination', 'bookingDate', 'pickupTime', 'releaseTime', 'distance', 'discount', 'tax'].forEach(id => {
             const element = document.getElementById(id);
-            if (element) element.addEventListener('change', updateSummaryDetails);
+            if (element) {
+                element.addEventListener('input', updateSummaryDetails);
+                if (id === 'distance' || id === 'discount' || id === 'tax') {
+                    element.addEventListener('input', calculateFare);
+                }
+            }
         });
+
+        // Restore selected vehicle state
+        if (selectedVehicleId) {
+            const selectedRow = document.querySelector(`tr[data-vehicle-id="${selectedVehicleId}"]`);
+            if (selectedRow) {
+                selectedRow.classList.add('selected');
+                const button = selectedRow.querySelector('.select-btn');
+                button.className = 'btn btn-sm btn-success select-btn';
+                button.innerHTML = '<i class="bi bi-check2-all"></i> Selected';
+                updateVehicleInfo(selectedRow);
+            }
+        }
 
         updateSummaryDetails();
     });
+
+    function updateCustomerInfo(selectedOption) {
+        document.getElementById('customerName').textContent = selectedOption.dataset?.name || '';
+        document.getElementById('customerNIC').textContent = selectedOption.dataset?.nic || '';
+        document.getElementById('customerPhone').textContent = selectedOption.dataset?.phone || '';
+        document.getElementById('customerEmail').textContent = selectedOption.dataset?.email || '';
+        document.getElementById('customerInfo').style.display = selectedOption.value ? 'block' : 'none';
+    }
 
     function updateStatusBadge() {
         const status = document.getElementById('bookingStatus')?.value;
@@ -724,9 +772,36 @@
             return false;
         }
 
+        document.getElementById('formCustomerId').value = document.getElementById('customerSelect')?.value || '';
         document.getElementById('formBookingDate').value = bookingDate;
         document.getElementById('formPickupTime').value = pickupTime;
         document.getElementById('formReleaseTime').value = releaseTime;
+        document.getElementById('formPickupLocation').value = document.getElementById('pickupLocation').value;
+        document.getElementById('formDestination').value = document.getElementById('destination').value;
+        document.getElementById('formDistance').value = document.getElementById('distance').value;
+        document.getElementById('formDiscount').value = document.getElementById('discount').value;
+        document.getElementById('formTax').value = document.getElementById('tax').value;
+        document.getElementById('formFare').value = document.getElementById('fare').value;
+        document.getElementById('formVehicleId').value = selectedVehicleId || '';
+
+        return true;
+    }
+
+    function validateForm() {
+        const vehicleId = document.getElementById('selectedVehicleId').value;
+        const distance = parseFloat(document.getElementById('distance').value) || 0;
+
+        if (!vehicleId) {
+            alert('Please select a vehicle before submitting the booking.');
+            return false;
+        }
+
+        if (distance <= 0) {
+            alert('Please enter a valid distance greater than 0.');
+            return false;
+        }
+
+        calculateFare();
         return true;
     }
 
@@ -755,9 +830,14 @@
         button.className = 'btn btn-sm btn-success select-btn';
         button.innerHTML = '<i class="bi bi-check2-all"></i> Selected';
 
+        updateVehicleInfo(selectedRow);
+        calculateFare();
+    }
+
+    function updateVehicleInfo(selectedRow) {
         document.getElementById('vehicleBrand').textContent = selectedRow.dataset.brand;
         document.getElementById('vehicleModel').textContent = selectedRow.dataset.model;
-        document.getElementById('vehiclePricePerKm').textContent = pricePerKm;
+        document.getElementById('vehiclePricePerKm').textContent = selectedPricePerKm;
         document.getElementById('vehicleLicense').textContent = selectedRow.dataset.license;
         document.getElementById('vehicleCapacity').textContent = selectedRow.dataset.capacity;
         document.getElementById('vehicleInfo').style.display = 'block';
@@ -767,13 +847,11 @@
         document.getElementById('driverLicense').textContent = selectedRow.dataset.driverLicense;
         document.getElementById('driverInfo').style.display = selectedRow.dataset.driverName !== 'Not Assigned' ? 'block' : 'none';
 
-        document.getElementById('summaryPricePerKm').textContent = 'Rs. ' + pricePerKm;
+        document.getElementById('summaryPricePerKm').textContent = 'Rs. ' + selectedPricePerKm;
         document.getElementById('summaryVehicle').textContent = selectedRow.dataset.brand + ' ' + selectedRow.dataset.model;
         document.getElementById('summaryDriver').textContent = selectedRow.dataset.driverName;
         document.getElementById('summaryCapacity').textContent = selectedRow.dataset.capacity;
         document.getElementById('vehicleSummarySection').style.display = 'block';
-
-        calculateFare();
     }
 
     function updateSummaryDetails() {

@@ -96,3 +96,36 @@ CREATE TABLE bookings
     FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
 );
 
+
+
+DELIMITER //
+CREATE PROCEDURE GetAvailableVehicles(
+    IN p_bookingDate DATETIME,
+    IN p_pickupTime TIME,
+    IN p_releaseTime TIME,
+    OUT p_result BOOLEAN
+)
+BEGIN
+    CREATE TEMPORARY TABLE IF NOT EXISTS temp_available_vehicles AS
+    SELECT
+        v.id, v.licensePlate, v.driverId, v.model, v.brand, v.capacity, v.color, v.pricePerKm,
+        d.name AS driverName, d.mobileNo AS driverMobile, d.licenseNo AS driverLicense
+    FROM vehicles v
+             LEFT JOIN drivers d ON v.driverId = d.id
+    WHERE v.status = 'available'
+      AND v.deletedAt IS NULL
+      AND NOT EXISTS (
+        SELECT 1 FROM bookings b
+        WHERE b.vehicleId = v.id
+          AND DATE(b.bookingDate) = DATE(p_bookingDate) -- Compare only date part
+          AND b.status NOT IN ('cancelled', 'failed')
+          AND (p_pickupTime < b.releaseTime AND p_releaseTime > b.pickupTime)
+    );
+
+    SELECT * FROM temp_available_vehicles;
+
+    SET p_result = TRUE;
+
+    DROP TEMPORARY TABLE IF EXISTS temp_available_vehicles;
+END //
+DELIMITER ;

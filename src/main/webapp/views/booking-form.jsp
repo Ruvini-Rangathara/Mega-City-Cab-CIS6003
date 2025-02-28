@@ -80,7 +80,7 @@
 
         .vehicle-table {
             margin-top: 1rem;
-            display: none;
+            display: block;
         }
 
         .vehicle-table table {
@@ -228,6 +228,17 @@
     boolean isEditMode = (booking != null);
     String bookingStatus = isEditMode ? booking.getStatus().toString() : "";
     boolean isReadOnlyStatus = isEditMode && (bookingStatus.equals("completed") || bookingStatus.equals("cancelled"));
+
+    // Preserve form data
+    String bookingDate = request.getAttribute("bookingDate") != null ? (String) request.getAttribute("bookingDate") : (isEditMode ? String.valueOf(booking.getBookingDate()) : "");
+    String pickupTime = request.getAttribute("pickupTime") != null ? (String) request.getAttribute("pickupTime") : (isEditMode ? String.valueOf(booking.getPickupTime()) : "");
+    String releaseTime = request.getAttribute("releaseTime") != null ? (String) request.getAttribute("releaseTime") : (isEditMode ? String.valueOf(booking.getReleaseTime()) : "");
+    String customerId = request.getAttribute("customerId") != null ? (String) request.getAttribute("customerId") : (isEditMode ? customer.getId() : "");
+    String pickupLocation = request.getAttribute("pickupLocation") != null ? (String) request.getAttribute("pickupLocation") : (isEditMode ? booking.getPickupLocation() : "");
+    String destination = request.getAttribute("destination") != null ? (String) request.getAttribute("destination") : (isEditMode ? booking.getDestination() : "");
+    String distance = request.getAttribute("distance") != null ? (String) request.getAttribute("distance") : (isEditMode ? String.valueOf(booking.getDistance()) : "");
+    String discount = request.getAttribute("discount") != null ? (String) request.getAttribute("discount") : (isEditMode ? String.valueOf(booking.getDiscount()) : "0");
+    String tax = request.getAttribute("tax") != null ? (String) request.getAttribute("tax") : (isEditMode ? String.valueOf(booking.getTax()) : "0");
 %>
 
 <div class="container">
@@ -262,8 +273,9 @@
                                         List<CustomerDTO> customers = (List<CustomerDTO>) request.getAttribute("customers");
                                         if (customers != null) {
                                             for (CustomerDTO c : customers) {
+                                                String selected = c.getId().equals(customerId) ? "selected" : "";
                                     %>
-                                    <option value="<%=c.getId()%>" data-nic="<%=c.getNic()%>" data-name="<%=c.getName()%>" data-phone="<%=c.getMobileNo()%>" data-email="<%=c.getEmail()%>">
+                                    <option value="<%=c.getId()%>" <%=selected%> data-nic="<%=c.getNic()%>" data-name="<%=c.getName()%>" data-phone="<%=c.getMobileNo()%>" data-email="<%=c.getEmail()%>">
                                         <%=c.getNic()%> - <%=c.getName()%>
                                     </option>
                                     <% }
@@ -275,7 +287,7 @@
                             <% } %>
 
                             <div class="col-md-12">
-                                <div id="customerInfo" class="customer-info" style="<%=isEditMode ? "display: block;" : ""%>">
+                                <div id="customerInfo" class="customer-info" style="<%=isEditMode || !customerId.isEmpty() ? "display: block;" : ""%>">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <p class="mb-1"><strong>Name:</strong> <span id="customerName"><%=isEditMode ? customer.getName() : ""%></span></p>
@@ -295,49 +307,49 @@
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="date" class="form-control" id="bookingDate" name="bookingDate" value="<%=isEditMode ? booking.getBookingDate() : ""%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="date" class="form-control" id="bookingDate" name="bookingDate" value="<%=bookingDate%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Booking Date</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="time" class="form-control" id="pickupTime" name="pickupTime" value="<%=isEditMode ? booking.getPickupTime() : ""%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="time" class="form-control" id="pickupTime" name="pickupTime" value="<%=pickupTime%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Pickup Time</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="time" class="form-control" id="releaseTime" name="releaseTime" value="<%=isEditMode ? booking.getReleaseTime() : ""%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="time" class="form-control" id="releaseTime" name="releaseTime" value="<%=releaseTime%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Release Time</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="pickupLocation" name="pickupLocation" value="<%=isEditMode ? booking.getPickupLocation() : ""%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="text" class="form-control" id="pickupLocation" name="pickupLocation" value="<%=pickupLocation%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Pickup Location</label>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control" id="destination" name="destination" value="<%=isEditMode ? booking.getDestination() : ""%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="text" class="form-control" id="destination" name="destination" value="<%=destination%>" required <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Destination</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="number" class="form-control" id="distance" name="distance" value="<%=isEditMode ? booking.getDistance() : ""%>" required min="1" step="0.1" onchange="calculateFare()" <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="number" class="form-control" id="distance" name="distance" value="<%=distance%>" required min="1" step="0.1" onchange="calculateFare()" <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Distance (km)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="number" class="form-control" id="discount" name="discount" value="<%=isEditMode ? booking.getDiscount() : "0"%>" min="0" step="0.01" onchange="calculateNetTotal()" <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="number" class="form-control" id="discount" name="discount" value="<%=discount%>" min="0" step="0.01" onchange="calculateNetTotal()" <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Discount (Rs.)</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="number" class="form-control" id="tax" name="tax" value="<%=isEditMode ? booking.getTax() : "0"%>" min="0" step="0.01" onchange="calculateNetTotal()" <%=isReadOnlyStatus ? "readonly" : ""%>>
+                                    <input type="number" class="form-control" id="tax" name="tax" value="<%=tax%>" min="0" step="0.01" onchange="calculateNetTotal()" <%=isReadOnlyStatus ? "readonly" : ""%>>
                                     <label>Tax (Rs.)</label>
                                 </div>
                             </div>
@@ -380,7 +392,6 @@
 
             <!-- Vehicle and Driver Section -->
             <div class="vehicle-and-driver-section py-2">
-                <!-- Vehicle Selection Section -->
                 <% if (!isEditMode || (isEditMode && bookingStatus.equals("pending"))) { %>
                 <div class="vehicle-section pt-2 pb-2">
                     <div class="card-header">
@@ -388,49 +399,36 @@
                     </div>
 
                     <!-- Vehicle Filters -->
-                    <form id="vehicleSearchForm" class="mt-4">
+                    <form id="vehicleSearchForm" action="${pageContext.request.contextPath}/booking-servlet" method="post" onsubmit="return validateVehicleSearch()">
+                        <input type="hidden" name="action" value="searchVehicles">
+                        <input type="hidden" name="customerId" value="<%=customerId%>">
+                        <input type="hidden" name="bookingDate" id="formBookingDate" value="<%=bookingDate%>">
+                        <input type="hidden" name="pickupTime" id="formPickupTime" value="<%=pickupTime%>">
+                        <input type="hidden" name="releaseTime" id="formReleaseTime" value="<%=releaseTime%>">
+                        <input type="hidden" name="pickupLocation" value="<%=pickupLocation%>">
+                        <input type="hidden" name="destination" value="<%=destination%>">
+                        <input type="hidden" name="distance" value="<%=distance%>">
+                        <input type="hidden" name="discount" value="<%=discount%>">
+                        <input type="hidden" name="tax" value="<%=tax%>">
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <input type="number" class="form-control" id="capacityFilter" min="1" placeholder="Min. capacity">
+                                    <input type="number" class="form-control" id="capacityFilter" name="capacityFilter" min="1" placeholder="Min. capacity">
                                     <label for="capacityFilter">Capacity</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <select class="form-select" id="brandFilter">
+                                    <select class="form-select" id="brandFilter" name="brandFilter">
                                         <option value="">All</option>
-                                        <%
-                                            List<VehicleDriverDTO> availableVehicles = (List<VehicleDriverDTO>) request.getAttribute("availableVehicles");
-                                            if (availableVehicles != null && !availableVehicles.isEmpty()) {
-                                                java.util.Set<String> uniqueBrands = new java.util.HashSet<>();
-                                                for (VehicleDriverDTO vd : availableVehicles) {
-                                                    uniqueBrands.add(vd.getVehicle().getBrand());
-                                                }
-                                                for (String brand : uniqueBrands) {
-                                        %>
-                                        <option value="<%=brand%>"><%=brand%></option>
-                                        <% }
-                                        } %>
                                     </select>
                                     <label for="brandFilter">Brand</label>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="form-floating">
-                                    <select class="form-select" id="modelFilter">
+                                    <select class="form-select" id="modelFilter" name="modelFilter">
                                         <option value="">All</option>
-                                        <%
-                                            if (availableVehicles != null && !availableVehicles.isEmpty()) {
-                                                java.util.Set<String> uniqueModels = new java.util.HashSet<>();
-                                                for (VehicleDriverDTO vd : availableVehicles) {
-                                                    uniqueModels.add(vd.getVehicle().getModel());
-                                                }
-                                                for (String model : uniqueModels) {
-                                        %>
-                                        <option value="<%=model%>"><%=model%></option>
-                                        <% }
-                                        } %>
                                     </select>
                                     <label for="modelFilter">Model</label>
                                 </div>
@@ -440,7 +438,7 @@
                             <button type="button" class="btn btn-secondary" onclick="clearVehicleSearch()">
                                 <i class="bi bi-x-circle me-2"></i>Clear Filter
                             </button>
-                            <button type="button" class="btn btn-primary" onclick="searchVehicles()">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-search me-2"></i>Search
                             </button>
                         </div>
@@ -460,10 +458,18 @@
                             </thead>
                             <tbody id="vehicleTableBody">
                             <%
+                                List<VehicleDriverDTO> availableVehicles = (List<VehicleDriverDTO>) request.getAttribute("availableVehicles");
                                 if (availableVehicles != null && !availableVehicles.isEmpty()) {
+                                    String capacityFilter = request.getParameter("capacityFilter");
+                                    String brandFilter = request.getParameter("brandFilter");
+                                    String modelFilter = request.getParameter("modelFilter");
                                     for (VehicleDriverDTO vd : availableVehicles) {
                                         VehicleDTO v = vd.getVehicle();
                                         DriverDTO d = vd.getDriver();
+                                        boolean capacityMatch = capacityFilter == null || capacityFilter.isEmpty() || v.getCapacity() >= Integer.parseInt(capacityFilter);
+                                        boolean brandMatch = brandFilter == null || brandFilter.isEmpty() || v.getBrand().equals(brandFilter);
+                                        boolean modelMatch = modelFilter == null || modelFilter.isEmpty() || v.getModel().equals(modelFilter);
+                                        if (capacityMatch && brandMatch && modelMatch) {
                             %>
                             <tr data-vehicle-id="<%=v.getId()%>"
                                 data-price-per-km="<%=v.getPricePerKm()%>"
@@ -488,6 +494,7 @@
                                 </td>
                             </tr>
                             <% }
+                            }
                             } else { %>
                             <tr>
                                 <td colspan="5">Fill booking details and click Search to see available vehicles.</td>
@@ -546,7 +553,6 @@
                     <h5 class="mb-0"><i class="bi bi-clipboard-check me-2"></i>Booking Summary</h5>
                 </div>
                 <div class="card-body">
-                    <!-- Fare Summary Section -->
                     <div class="summary-title">
                         <i class="bi bi-currency-exchange me-2"></i>Fare Details
                     </div>
@@ -556,7 +562,7 @@
                     </div>
                     <div class="summary-item">
                         <div>Distance:</div>
-                        <div id="summaryDistance"><%=isEditMode ? booking.getDistance() + " km" : "0 km"%></div>
+                        <div id="summaryDistance"><%=distance.isEmpty() ? "0 km" : distance + " km"%></div>
                     </div>
                     <div class="summary-item">
                         <div>Base Fare:</div>
@@ -564,42 +570,39 @@
                     </div>
                     <div class="summary-item">
                         <div>Tax:</div>
-                        <div id="summaryTax"><%=isEditMode ? "Rs. " + booking.getTax() : "Rs. 0.00"%></div>
+                        <div id="summaryTax"><%=tax.isEmpty() ? "Rs. 0.00" : "Rs. " + tax%></div>
                     </div>
                     <div class="summary-item">
                         <div>Discount:</div>
-                        <div id="summaryDiscount"><%=isEditMode ? "Rs. " + booking.getDiscount() : "Rs. 0.00"%></div>
+                        <div id="summaryDiscount"><%=discount.isEmpty() ? "Rs. 0.00" : "Rs. " + discount%></div>
                     </div>
-
                     <div class="summary-total d-flex justify-content-between">
                         <div><i class="bi bi-cash-coin"></i> Net Total:</div>
                         <div id="summaryNetTotal"><%=isEditMode ? "Rs. " + booking.getNetTotal() : "Rs. 0.00"%></div>
                     </div>
 
-                    <!-- Booking Details Summary -->
                     <div class="booking-details-summary mt-3">
                         <div class="summary-title">
                             <i class="bi bi-info-circle me-2"></i>Booking Details
                         </div>
                         <div class="summary-item">
                             <div>Date:</div>
-                            <div id="summaryDate"><%=isEditMode ? booking.getBookingDate() : "Not selected"%></div>
+                            <div id="summaryDate"><%=bookingDate.isEmpty() ? "Not selected" : bookingDate%></div>
                         </div>
                         <div class="summary-item">
                             <div>Time:</div>
-                            <div id="summaryTime"><%=isEditMode ? booking.getPickupTime() + " - " + booking.getReleaseTime() : "Not selected"%></div>
+                            <div id="summaryTime"><%=pickupTime.isEmpty() || releaseTime.isEmpty() ? "Not selected" : pickupTime + " - " + releaseTime%></div>
                         </div>
                         <div class="summary-item">
                             <div>From:</div>
-                            <div id="summaryPickup"><%=isEditMode ? booking.getPickupLocation() : "Not specified"%></div>
+                            <div id="summaryPickup"><%=pickupLocation.isEmpty() ? "Not specified" : pickupLocation%></div>
                         </div>
                         <div class="summary-item">
                             <div>To:</div>
-                            <div id="summaryDestination"><%=isEditMode ? booking.getDestination() : "Not specified"%></div>
+                            <div id="summaryDestination"><%=destination.isEmpty() ? "Not specified" : destination%></div>
                         </div>
                     </div>
 
-                    <!-- Vehicle Details Summary -->
                     <div class="vehicle-details-summary mt-4" id="vehicleSummarySection" style="<%=isEditMode && vehicle != null ? "display: block;" : "display: none;"%>">
                         <div class="summary-title">
                             <i class="bi bi-car-front me-2"></i>Vehicle Details
@@ -638,48 +641,50 @@
     let selectedPricePerKm = <%=isEditMode && vehicle != null ? vehicle.getPricePerKm() : 0%>;
     let selectedVehicleId = <%=isEditMode && vehicle != null ? "'" + vehicle.getId() + "'" : "null"%>;
 
-    $(document).ready(function () {
-        // Initialize Select2 for customer dropdown
-        $('#customerSelect').select2({
-            placeholder: "Select customer by NIC or name",
-            allowClear: true
-        });
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize Select2
+        const customerSelect = document.getElementById('customerSelect');
+        if (customerSelect) {
+            new Select2(customerSelect, {
+                placeholder: "Select customer by NIC or name",
+                allowClear: true
+            });
+            customerSelect.addEventListener('change', function () {
+                const selectedOption = this.options[this.selectedIndex];
+                document.getElementById('customerName').textContent = selectedOption.dataset.name || '';
+                document.getElementById('customerNIC').textContent = selectedOption.dataset.nic || '';
+                document.getElementById('customerPhone').textContent = selectedOption.dataset.phone || '';
+                document.getElementById('customerEmail').textContent = selectedOption.dataset.email || '';
+                document.getElementById('customerInfo').style.display = selectedOption.value ? 'block' : 'none';
+                updateSummaryDetails();
+            });
+        }
 
-        // Show customer info when a customer is selected
-        $('#customerSelect').on('change', function () {
-            const selectedOption = $(this).find(':selected');
-            document.getElementById('customerName').textContent = selectedOption.data('name') || '';
-            document.getElementById('customerNIC').textContent = selectedOption.data('nic') || '';
-            document.getElementById('customerPhone').textContent = selectedOption.data('phone') || '';
-            document.getElementById('customerEmail').textContent = selectedOption.data('email') || '';
-            document.getElementById('customerInfo').style.display = selectedOption.val() ? 'block' : 'none';
-        });
-
-        // Initialize booking date with current date if not in edit mode
-        <% if (!isEditMode) { %>
+        <% if (!isEditMode && bookingDate.isEmpty()) { %>
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('bookingDate').value = today;
         document.getElementById('bookingDate').min = today;
         document.getElementById('bookingStatus').value = "pending";
         <% } %>
 
-        // Update status badge on status change
-        $('#bookingStatus').on('change', function () {
-            updateStatusBadge();
-        });
-
-        // Initial status badge
+        document.getElementById('bookingStatus')?.addEventListener('change', updateStatusBadge);
         updateStatusBadge();
 
-        // Update summary when inputs change
-        $('#pickupLocation, #destination, #bookingDate, #pickupTime, #releaseTime').on('change', updateSummaryDetails);
+        ['pickupLocation', 'destination', 'bookingDate', 'pickupTime', 'releaseTime'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) element.addEventListener('change', updateSummaryDetails);
+        });
+
+        updateSummaryDetails();
     });
 
     function updateStatusBadge() {
-        const status = document.getElementById('bookingStatus').value;
+        const status = document.getElementById('bookingStatus')?.value;
         const statusBadge = document.getElementById('summaryStatus');
-        statusBadge.className = "status-badge status-" + status;
-        statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        if (status && statusBadge) {
+            statusBadge.className = "status-badge status-" + status;
+            statusBadge.textContent = status.charAt(0).toUpperCase() + status.slice(1);
+        }
     }
 
     function calculateFare() {
@@ -709,46 +714,30 @@
         document.getElementById('summaryDiscount').textContent = 'Rs. ' + discount.toFixed(2);
     }
 
-    function searchVehicles() {
+    function validateVehicleSearch() {
         const bookingDate = document.getElementById('bookingDate').value;
         const pickupTime = document.getElementById('pickupTime').value;
         const releaseTime = document.getElementById('releaseTime').value;
 
         if (!bookingDate || !pickupTime || !releaseTime) {
             alert('Please fill Booking Date, Pickup Time, and Release Time before searching for vehicles.');
-            return;
+            return false;
         }
 
-        document.getElementById('vehicleTableContainer').style.display = 'block';
-        updateSummaryDetails();
-
-        const capacity = document.getElementById('capacityFilter').value;
-        const brand = document.getElementById('brandFilter').value;
-        const model = document.getElementById('modelFilter').value;
-        const rows = document.querySelectorAll('#vehicleTableBody tr');
-
-        rows.forEach(row => {
-            const rowCapacity = row.dataset.capacity;
-            const rowBrand = row.dataset.brand;
-            const rowModel = row.dataset.model;
-
-            const capacityMatch = !capacity || parseInt(rowCapacity) >= parseInt(capacity);
-            const brandMatch = !brand || rowBrand === brand;
-            const modelMatch = !model || rowModel === model;
-
-            row.style.display = (capacityMatch && brandMatch && modelMatch) ? '' : 'none';
-        });
+        document.getElementById('formBookingDate').value = bookingDate;
+        document.getElementById('formPickupTime').value = pickupTime;
+        document.getElementById('formReleaseTime').value = releaseTime;
+        return true;
     }
 
     function clearVehicleSearch() {
         document.getElementById('capacityFilter').value = '';
         document.getElementById('brandFilter').value = '';
         document.getElementById('modelFilter').value = '';
-        searchVehicles();
+        document.getElementById('vehicleSearchForm').submit();
     }
 
     function selectVehicle(vehicleId, pricePerKm, button) {
-        // Deselect previously selected vehicle
         const previouslySelected = document.querySelector('#vehicleTableBody tr.selected');
         if (previouslySelected) {
             previouslySelected.classList.remove('selected');
@@ -757,7 +746,6 @@
             prevButton.innerHTML = '<i class="bi bi-check"></i> Select';
         }
 
-        // Select new vehicle
         selectedVehicleId = vehicleId;
         selectedPricePerKm = pricePerKm;
         document.getElementById('selectedVehicleId').value = vehicleId;
@@ -767,7 +755,6 @@
         button.className = 'btn btn-sm btn-success select-btn';
         button.innerHTML = '<i class="bi bi-check2-all"></i> Selected';
 
-        // Update vehicle info section
         document.getElementById('vehicleBrand').textContent = selectedRow.dataset.brand;
         document.getElementById('vehicleModel').textContent = selectedRow.dataset.model;
         document.getElementById('vehiclePricePerKm').textContent = pricePerKm;
@@ -775,13 +762,11 @@
         document.getElementById('vehicleCapacity').textContent = selectedRow.dataset.capacity;
         document.getElementById('vehicleInfo').style.display = 'block';
 
-        // Update driver info section
         document.getElementById('driverName').textContent = selectedRow.dataset.driverName;
         document.getElementById('driverPhone').textContent = selectedRow.dataset.driverPhone;
         document.getElementById('driverLicense').textContent = selectedRow.dataset.driverLicense;
         document.getElementById('driverInfo').style.display = selectedRow.dataset.driverName !== 'Not Assigned' ? 'block' : 'none';
 
-        // Update summary section
         document.getElementById('summaryPricePerKm').textContent = 'Rs. ' + pricePerKm;
         document.getElementById('summaryVehicle').textContent = selectedRow.dataset.brand + ' ' + selectedRow.dataset.model;
         document.getElementById('summaryDriver').textContent = selectedRow.dataset.driverName;

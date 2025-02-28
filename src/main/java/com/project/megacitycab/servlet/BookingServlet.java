@@ -19,13 +19,14 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 @WebServlet(name = "bookingServlet", value = "/booking-servlet")
 public class BookingServlet extends HttpServlet {
+    private static final Logger LOGGER = Logger.getLogger(BookingServlet.class.getName());
     private BookingService bookingService;
     private CustomerService customerService;
     private VehicleDriverService vehicleDriverService;
@@ -44,14 +45,19 @@ public class BookingServlet extends HttpServlet {
                 viewBooking(request, response);
             } else if ("newForm".equals(action)) {
                 prepareNewBookingForm(request, response);
+            } else if ("searchVehicles".equals(action)) {
+                searchAvailableVehicles(request, response);
             } else {
-                // Default to listing bookings with optional filters
                 listBookings(request, response);
             }
         } catch (SQLException ex) {
+            LOGGER.severe("Database error in doGet: " + ex.getMessage());
             request.setAttribute("errorMessage", "Database error: " + ex.getMessage());
             RequestDispatcher dispatcher = request.getRequestDispatcher("/views/booking-list.jsp");
             dispatcher.forward(request, response);
+        } catch (Exception ex) {
+            LOGGER.severe("Unexpected error in doGet: " + ex.getMessage());
+            response.sendRedirect(request.getContextPath() + "/booking-servlet?error=Unexpected error: " + ex.getMessage());
         }
     }
 
@@ -64,95 +70,75 @@ public class BookingServlet extends HttpServlet {
             } else if ("update".equals(action)) {
                 updateBooking(request, response);
             } else if ("search".equals(action)) {
-                // Process search form submitted via POST
                 processSearchForm(request, response);
+            } else if ("searchVehicles".equals(action)) {
+                searchAvailableVehicles(request, response);
             } else {
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?error=Invalid action");
             }
         } catch (SQLException ex) {
+            LOGGER.severe("Database error in doPost: " + ex.getMessage());
             response.sendRedirect(request.getContextPath() + "/booking-servlet?error=" + ex.getMessage());
+        } catch (Exception ex) {
+            LOGGER.severe("Unexpected error in doPost: " + ex.getMessage());
+            response.sendRedirect(request.getContextPath() + "/booking-servlet?error=Unexpected error: " + ex.getMessage());
         }
     }
 
     private void processSearchForm(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // Get search parameters from form
         String searchDate = request.getParameter("searchDate");
         String searchCustomer = request.getParameter("searchCustomer");
         String searchStatus = request.getParameter("searchStatus");
 
-        // Build the redirect URL with search parameters
         StringBuilder redirectUrl = new StringBuilder(request.getContextPath() + "/booking-servlet?");
-
-        if (searchDate != null && !searchDate.isEmpty()) {
+        if (searchDate != null && !searchDate.isEmpty())
             redirectUrl.append("searchDate=").append(searchDate).append("&");
-        }
-
-        if (searchCustomer != null && !searchCustomer.isEmpty()) {
+        if (searchCustomer != null && !searchCustomer.isEmpty())
             redirectUrl.append("searchCustomer=").append(searchCustomer).append("&");
-        }
-
-        if (searchStatus != null && !searchStatus.isEmpty()) {
+        if (searchStatus != null && !searchStatus.isEmpty())
             redirectUrl.append("searchStatus=").append(searchStatus).append("&");
-        }
 
-        // Redirect to GET request with parameters
         response.sendRedirect(redirectUrl.toString());
     }
 
     private void listBookings(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-        // Collect search parameters from request
         Map<String, String> searchParams = new HashMap<>();
-
         String searchDate = request.getParameter("searchDate");
         String searchCustomer = request.getParameter("searchCustomer");
         String searchStatus = request.getParameter("searchStatus");
 
-        // Add parameters to map only if they're not null or empty
         if (searchDate != null && !searchDate.isEmpty()) {
             searchParams.put("searchDate", searchDate);
             request.setAttribute("searchDate", searchDate);
         }
-
         if (searchCustomer != null && !searchCustomer.isEmpty()) {
             searchParams.put("searchCustomer", searchCustomer);
             request.setAttribute("searchCustomer", searchCustomer);
         }
-
         if (searchStatus != null && !searchStatus.isEmpty()) {
             searchParams.put("searchStatus", searchStatus);
             request.setAttribute("searchStatus", searchStatus);
         }
 
-        // Call getAll with search parameters
         List<BookingDTO> bookings = bookingService.getAll(searchParams);
-
-        // Create maps for customer and vehicle details
         Map<String, CustomerDTO> customerMap = new HashMap<>();
         Map<String, VehicleDTO> vehicleMap = new HashMap<>();
 
-        // Populate maps with data
         for (BookingDTO booking : bookings) {
             if (booking.getCustomerId() != null) {
                 CustomerDTO customer = customerService.searchById(booking.getCustomerId());
-                if (customer != null) {
-                    customerMap.put(booking.getId(), customer);
-                }
+                if (customer != null) customerMap.put(booking.getId(), customer);
             }
-
             if (booking.getVehicleId() != null) {
                 VehicleDTO vehicle = vehicleDriverService.findVehicleByVehicleId(booking.getVehicleId());
-                if (vehicle != null) {
-                    vehicleMap.put(booking.getId(), vehicle);
-                }
+                if (vehicle != null) vehicleMap.put(booking.getId(), vehicle);
             }
         }
 
-        // Set attributes for request
         request.setAttribute("bookings", bookings);
         request.setAttribute("customerMap", customerMap);
         request.setAttribute("vehicleMap", vehicleMap);
 
-        // Forward request
         RequestDispatcher dispatcher = request.getRequestDispatcher("/views/booking-list.jsp");
         dispatcher.forward(request, response);
     }
@@ -165,10 +151,8 @@ public class BookingServlet extends HttpServlet {
             request.setAttribute("booking", booking);
             CustomerDTO customer = customerService.searchById(booking.getCustomerId());
             request.setAttribute("customer", customer);
-
             VehicleDTO vehicle = vehicleDriverService.findVehicleByVehicleId(booking.getVehicleId());
             request.setAttribute("vehicle", vehicle);
-
             DriverDTO driver = vehicleDriverService.findDriverByVehicleId(vehicle.getId());
             request.setAttribute("driver", driver);
 
@@ -181,24 +165,7 @@ public class BookingServlet extends HttpServlet {
 
     private void createBooking(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
         try {
-            // Extract form data
-            String customerId = request.getParameter("customerId");
-            String vehicleId = request.getParameter("vehicleId");
-            LocalDate bookingDate = LocalDate.parse(request.getParameter("bookingDate"));
-            LocalTime pickupTime = LocalTime.parse(request.getParameter("pickupTime"));
-            LocalTime releaseTime = LocalTime.parse(request.getParameter("releaseTime"));
-            String pickupLocation = request.getParameter("pickupLocation");
-            String destination = request.getParameter("destination");
-            double distance = Double.parseDouble(request.getParameter("distance"));
-            double fare = Double.parseDouble(request.getParameter("fare"));
-            double discount = Double.parseDouble(request.getParameter("discount"));
-            double tax = Double.parseDouble(request.getParameter("tax"));
-            double netTotal = Double.parseDouble(request.getParameter("netTotal"));
-            BookingStatus status = BookingStatus.valueOf(request.getParameter("status").toUpperCase());
-
-            // Build BookingDTO using builder pattern
-            BookingDTO booking = new BookingDTO.BookingDTOBuilder().customerId(customerId).vehicleId(vehicleId).bookingDate(bookingDate).pickupTime(pickupTime).releaseTime(releaseTime).pickupLocation(pickupLocation).destination(destination).distance(distance).fare(fare).discount(discount).tax(tax).netTotal(netTotal).status(status).build();
-
+            BookingDTO booking = buildBookingDTOFromRequest(request, null);
             boolean success = bookingService.add(booking);
 
             if (success) {
@@ -207,6 +174,7 @@ public class BookingServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?action=newForm&error=Failed to create booking");
             }
         } catch (Exception e) {
+            LOGGER.severe("Error in createBooking: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/booking-servlet?action=newForm&error=" + e.getMessage());
         }
     }
@@ -214,23 +182,7 @@ public class BookingServlet extends HttpServlet {
     private void updateBooking(HttpServletRequest request, HttpServletResponse response) throws SQLException, IOException {
         try {
             String bookingId = request.getParameter("bookingId");
-            String customerId = request.getParameter("customerId");
-            String vehicleId = request.getParameter("vehicleId");
-            LocalDate bookingDate = LocalDate.parse(request.getParameter("bookingDate"));
-            LocalTime pickupTime = LocalTime.parse(request.getParameter("pickupTime"));
-            LocalTime releaseTime = LocalTime.parse(request.getParameter("releaseTime"));
-            String pickupLocation = request.getParameter("pickupLocation");
-            String destination = request.getParameter("destination");
-            double distance = Double.parseDouble(request.getParameter("distance"));
-            double fare = Double.parseDouble(request.getParameter("fare"));
-            double discount = Double.parseDouble(request.getParameter("discount"));
-            double tax = Double.parseDouble(request.getParameter("tax"));
-            double netTotal = Double.parseDouble(request.getParameter("netTotal"));
-            BookingStatus status = BookingStatus.valueOf(request.getParameter("status").toUpperCase());
-
-            // Build updated BookingDTO using builder pattern
-            BookingDTO booking = new BookingDTO.BookingDTOBuilder().id(bookingId).customerId(customerId).vehicleId(vehicleId).bookingDate(bookingDate).pickupTime(pickupTime).releaseTime(releaseTime).pickupLocation(pickupLocation).destination(destination).distance(distance).fare(fare).discount(discount).tax(tax).netTotal(netTotal).status(status).build();
-
+            BookingDTO booking = buildBookingDTOFromRequest(request, bookingId);
             boolean success = bookingService.update(booking);
 
             if (success) {
@@ -239,90 +191,75 @@ public class BookingServlet extends HttpServlet {
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?action=view&id=" + bookingId + "&error=Failed to update booking");
             }
         } catch (Exception e) {
+            LOGGER.severe("Error in updateBooking: " + e.getMessage());
             String bookingId = request.getParameter("bookingId");
             response.sendRedirect(request.getContextPath() + "/booking-servlet?action=view&id=" + bookingId + "&error=" + e.getMessage());
         }
     }
 
-    /**
-     * Prepare form data for creating a new booking
-     */
-    public void prepareNewBookingForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
-        // Get current date for default booking date
-        LocalDate today = LocalDate.now();
+    private void prepareNewBookingForm(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        LocalDate bookingDate = request.getParameter("bookingDate") != null ? LocalDate.parse(request.getParameter("bookingDate")) : LocalDate.now();
+        LocalTime pickupTime = request.getParameter("pickupTime") != null ? LocalTime.parse(request.getParameter("pickupTime")) : LocalTime.of(8, 0);
+        LocalTime releaseTime = request.getParameter("releaseTime") != null ? LocalTime.parse(request.getParameter("releaseTime")) : LocalTime.of(20, 0);
 
-        // Get all customers for customer dropdown
         List<CustomerDTO> customers = customerService.getAll(null);
         request.setAttribute("customers", customers);
-
-        // Get available vehicles for today (default)
-        List<VehicleDriverDTO> availableVehicles = getAvailableVehicles(today, null, null, null);
-        request.setAttribute("availableVehicles", availableVehicles);
+        request.setAttribute("availableVehicles", null); // No vehicles initially
+        request.setAttribute("bookingDate", bookingDate.toString());
+        request.setAttribute("pickupTime", pickupTime.toString());
+        request.setAttribute("releaseTime", releaseTime.toString());
 
         RequestDispatcher dispatcher = request.getRequestDispatcher("/views/booking-form.jsp");
         dispatcher.forward(request, response);
     }
 
-    /**
-     * Get available vehicles for a specific date and time range.
-     * This is the key logic for finding vehicles that are not already booked.
-     */
-    private List<VehicleDriverDTO> getAvailableVehicles(LocalDate date, LocalTime startTime, LocalTime endTime, String excludeBookingId) throws SQLException {
-        List<VehicleDriverDTO> availableVehicleDrivers = new ArrayList<>();
+    private void searchAvailableVehicles(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+        LocalDate bookingDate = LocalDate.parse(request.getParameter("bookingDate"));
+        LocalTime pickupTime = LocalTime.parse(request.getParameter("pickupTime"));
+        LocalTime releaseTime = LocalTime.parse(request.getParameter("releaseTime"));
 
-        // If no specific time is provided, use default business hours
-        if (startTime == null) {
-            startTime = LocalTime.of(8, 0); // 8 AM
-        }
-        if (endTime == null) {
-            endTime = LocalTime.of(20, 0); // 8 PM
-        }
+        String customerId = request.getParameter("customerId");
+        String pickupLocation = request.getParameter("pickupLocation");
+        String destination = request.getParameter("destination");
+        String distance = request.getParameter("distance");
+        String discount = request.getParameter("discount");
+        String tax = request.getParameter("tax");
 
-        // Step 1: Get all vehicles
-        List<VehicleDTO> allVehicles = vehicleDriverService.getAllVehicles(null);
+        List<CustomerDTO> customers = customerService.getAll(null);
+        List<VehicleDriverDTO> availableVehicles = vehicleDriverService.getAvailableVehicles(bookingDate, pickupTime, releaseTime);
 
-        // Step 2: Get all bookings for the given date
-        List<BookingDTO> bookingsOnDate = bookingService.findByDate(date);
+        request.setAttribute("customers", customers);
+        request.setAttribute("availableVehicles", availableVehicles);
+        request.setAttribute("bookingDate", bookingDate.toString());
+        request.setAttribute("pickupTime", pickupTime.toString());
+        request.setAttribute("releaseTime", releaseTime.toString());
 
-        // Step 3: Filter out vehicles that are already booked during the requested time slot
-        for (VehicleDTO vehicle : allVehicles) {
-            boolean isAvailable = true;
+        if (customerId != null) request.setAttribute("customerId", customerId);
+        if (pickupLocation != null) request.setAttribute("pickupLocation", pickupLocation);
+        if (destination != null) request.setAttribute("destination", destination);
+        if (distance != null) request.setAttribute("distance", distance);
+        if (discount != null) request.setAttribute("discount", discount);
+        if (tax != null) request.setAttribute("tax", tax);
 
-            // Check if this vehicle is booked during the requested time
-            for (BookingDTO booking : bookingsOnDate) {
-                // Skip cancelled bookings
-                if (booking.getStatus() == BookingStatus.cancelled) {
-                    continue;
-                }
+        RequestDispatcher dispatcher = request.getRequestDispatcher("/views/booking-form.jsp");
+        dispatcher.forward(request, response);
+    }
 
-                // Skip this booking if it's the one we're updating
-                if (booking.getId() != null && booking.getId().equals(excludeBookingId)) {
-                    continue;
-                }
+    private BookingDTO buildBookingDTOFromRequest(HttpServletRequest request, String bookingId) {
+        String customerId = request.getParameter("customerId");
+        String vehicleId = request.getParameter("vehicleId");
+        LocalDate bookingDate = LocalDate.parse(request.getParameter("bookingDate"));
+        LocalTime pickupTime = LocalTime.parse(request.getParameter("pickupTime"));
+        LocalTime releaseTime = LocalTime.parse(request.getParameter("releaseTime"));
+        String pickupLocation = request.getParameter("pickupLocation");
+        String destination = request.getParameter("destination");
+        double distance = Double.parseDouble(request.getParameter("distance"));
+        double fare = Double.parseDouble(request.getParameter("fare"));
+        double discount = Double.parseDouble(request.getParameter("discount"));
+        double tax = Double.parseDouble(request.getParameter("tax"));
+        double netTotal = Double.parseDouble(request.getParameter("netTotal"));
+        BookingStatus status = BookingStatus.valueOf(request.getParameter("status").toUpperCase());
 
-                // Skip if it's not the same vehicle
-                if (!booking.getVehicleId().equals(vehicle.getId())) {
-                    continue;
-                }
-
-                // Check if there's a time overlap
-                LocalTime bookingStart = booking.getPickupTime();
-                LocalTime bookingEnd = booking.getReleaseTime();
-
-                // Time overlap check: if the requested time intersects with an existing booking
-                if (!(endTime.isBefore(bookingStart) || startTime.isAfter(bookingEnd))) {
-                    isAvailable = false;
-                    break;
-                }
-            }
-
-            if (isAvailable) {
-                // Build VehicleDriverDTO using builder pattern
-                VehicleDriverDTO vehicleDriver = new VehicleDriverDTO.VehicleDriverDTOBuilder().vehicle(vehicle).driver(vehicleDriverService.findDriverByVehicleId(vehicle.getId())).build();
-                availableVehicleDrivers.add(vehicleDriver);
-            }
-        }
-
-        return availableVehicleDrivers;
+        return new BookingDTO.BookingDTOBuilder().id(bookingId).customerId(customerId).vehicleId(vehicleId).bookingDate(bookingDate).pickupTime(pickupTime).releaseTime(releaseTime).pickupLocation(pickupLocation).destination(destination).distance(distance).fare(fare).discount(discount).tax(tax).netTotal(netTotal).status(status).build();
     }
 }

@@ -18,6 +18,8 @@ import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,17 +72,8 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             }
 
             // Set the driver ID in the vehicle entity and ensure all required fields are present
-            Vehicle vehicle = new Vehicle.VehicleBuilder()
-                    .id(vehicleDriverDTO.getVehicle().getId())
-                    .licensePlate(vehicleDriverDTO.getVehicle().getLicensePlate())
-                    .driverId(driverId)  // Using the verified driver ID
-                    .model(vehicleDriverDTO.getVehicle().getModel())
-                    .brand(vehicleDriverDTO.getVehicle().getBrand())
-                    .capacity(vehicleDriverDTO.getVehicle().getCapacity())
-                    .color(vehicleDriverDTO.getVehicle().getColor())
-                    .pricePerKm(vehicleDriverDTO.getVehicle().getPricePerKm())
-                    .status(vehicleDriverDTO.getVehicle().getStatus())
-                    .build();
+            Vehicle vehicle = new Vehicle.VehicleBuilder().id(vehicleDriverDTO.getVehicle().getId()).licensePlate(vehicleDriverDTO.getVehicle().getLicensePlate()).driverId(driverId)  // Using the verified driver ID
+                    .model(vehicleDriverDTO.getVehicle().getModel()).brand(vehicleDriverDTO.getVehicle().getBrand()).capacity(vehicleDriverDTO.getVehicle().getCapacity()).color(vehicleDriverDTO.getVehicle().getColor()).pricePerKm(vehicleDriverDTO.getVehicle().getPricePerKm()).status(vehicleDriverDTO.getVehicle().getStatus()).build();
 
             // Validate vehicle data
             if (vehicle.getLicensePlate() == null || vehicle.getDriverId() == null) {
@@ -113,6 +106,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             }
         }
     }
+
     @Override
     public boolean update(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException, SQLException {
         try {
@@ -121,15 +115,12 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_VEHICLE_DRIVER_INPUTS);
             }
 
-            if (!existsByVehicleId(vehicleDriverDTO.getVehicle().getId()) ||
-                    !existsByDriverId(vehicleDriverDTO.getDriver().getId())) {
+            if (!existsByVehicleId(vehicleDriverDTO.getVehicle().getId()) || !existsByDriverId(vehicleDriverDTO.getDriver().getId())) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.VEHICLE_DRIVER_NOT_FOUND);
             }
 
-            boolean driverUpdated = driverDAO.update(connection,
-                    DriverConverter.toEntity(vehicleDriverDTO.getDriver()));
-            boolean vehicleUpdated = vehicleDAO.update(connection,
-                    VehicleConverter.toEntity(vehicleDriverDTO.getVehicle()));
+            boolean driverUpdated = driverDAO.update(connection, DriverConverter.toEntity(vehicleDriverDTO.getDriver()));
+            boolean vehicleUpdated = vehicleDAO.update(connection, VehicleConverter.toEntity(vehicleDriverDTO.getVehicle()));
 
             if (!driverUpdated || !vehicleUpdated) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
@@ -189,10 +180,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             }
 
             DriverDTO driver = DriverConverter.toDTO(driverDAO.searchById(connection, vehicle.getDriverId()));
-            return new VehicleDriverDTO.VehicleDriverDTOBuilder()
-                    .driver(driver)
-                    .vehicle(vehicle)
-                    .build();
+            return new VehicleDriverDTO.VehicleDriverDTOBuilder().driver(driver).vehicle(vehicle).build();
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in search vehicle-driver by ID service", e);
@@ -217,10 +205,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
 
             for (VehicleDTO vehicle : vehicles) {
                 DriverDTO driver = DriverConverter.toDTO(driverDAO.searchById(connection, vehicle.getDriverId()));
-                result.add(new VehicleDriverDTO.VehicleDriverDTOBuilder()
-                        .driver(driver)
-                        .vehicle(vehicle)
-                        .build());
+                result.add(new VehicleDriverDTO.VehicleDriverDTOBuilder().driver(driver).vehicle(vehicle).build());
             }
 
             return result;
@@ -242,25 +227,11 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
     }
 
     private boolean validateDriver(DriverDTO driver) {
-        return driver != null &&
-                driver.getLicenseNo() != null &&
-                !driver.getLicenseNo().trim().isEmpty() &&
-                driver.getName() != null &&
-                !driver.getName().trim().isEmpty() &&
-                driver.getMobileNo() != null &&
-                driver.getMobileNo().matches("^(?:\\+94|0)7\\d{8}$") &&
-                driver.getEmail() != null &&
-                driver.getEmail().matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
+        return driver != null && driver.getLicenseNo() != null && !driver.getLicenseNo().trim().isEmpty() && driver.getName() != null && !driver.getName().trim().isEmpty() && driver.getMobileNo() != null && driver.getMobileNo().matches("^(?:\\+94|0)7\\d{8}$") && driver.getEmail() != null && driver.getEmail().matches("^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$");
     }
 
     private boolean validateVehicle(VehicleDTO vehicle) {
-        return vehicle != null &&
-                vehicle.getLicensePlate() != null &&
-                !vehicle.getLicensePlate().trim().isEmpty() &&
-                vehicle.getBrand() != null &&
-                !vehicle.getBrand().trim().isEmpty() &&
-                vehicle.getModel() != null &&
-                !vehicle.getModel().trim().isEmpty();
+        return vehicle != null && vehicle.getLicensePlate() != null && !vehicle.getLicensePlate().trim().isEmpty() && vehicle.getBrand() != null && !vehicle.getBrand().trim().isEmpty() && vehicle.getModel() != null && !vehicle.getModel().trim().isEmpty();
     }
 
     @Override
@@ -347,5 +318,36 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             logger.log(Level.SEVERE, "Error finding driver by ID", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public List<VehicleDriverDTO> getAvailableVehicles(LocalDate bookingDate, LocalTime pickupTime, LocalTime releaseTime) throws SQLException {
+        List<VehicleDriverDTO> availableVehicles = new ArrayList<>();
+
+        try {
+            // Fetch available vehicles from DAO
+            List<Vehicle> vehicles = vehicleDAO.getAvailableVehicles(connection, bookingDate, pickupTime, releaseTime);
+
+            // Enhance with driver details
+            for (Vehicle vehicle : vehicles) {
+                Driver driver = vehicle.getDriverId() != null ? driverDAO.searchById(connection, vehicle.getDriverId()) : null;
+
+                VehicleDTO vehicleDTO = new VehicleDTO.VehicleDTOBuilder().id(vehicle.getId()).licensePlate(vehicle.getLicensePlate()).driverId(vehicle.getDriverId()).model(vehicle.getModel()).brand(vehicle.getBrand()).capacity(vehicle.getCapacity()).color(vehicle.getColor()).pricePerKm(vehicle.getPricePerKm()).build();
+
+                DriverDTO driverDTO = driver != null ? new DriverDTO.DriverDTOBuilder().id(driver.getId()).name(driver.getName()).licenseNo(driver.getLicenseNo()).mobileNo(driver.getMobileNo()).email(driver.getEmail()).experience(driver.getExperience()).build() : null;
+
+                VehicleDriverDTO vehicleDriverDTO = new VehicleDriverDTO.VehicleDriverDTOBuilder().vehicle(vehicleDTO).driver(driverDTO).build();
+
+                availableVehicles.add(vehicleDriverDTO);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getAvailableVehicles: " + e.getMessage());
+            throw e;
+        } catch (ClassNotFoundException e) {
+            logger.log(Level.SEVERE, "Driver class not found: " + e.getMessage());
+            throw new SQLException("Driver class not found", e);
+        }
+
+        return availableVehicles;
     }
 }

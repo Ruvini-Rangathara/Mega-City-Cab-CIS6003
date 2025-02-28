@@ -1,19 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: ruvini
-  Date: 2025-02-24
-  Time: 16.31
-  To change this template use File | Settings | File Templates.
---%>
-
-<%--
-  Created by IntelliJ IDEA.
-  User: ruvini
-  Date: 2025-02-24
-  Time: 16.31
-  To change this template use File | Settings | File Templates.
---%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="java.util.Map" %>
@@ -144,7 +128,7 @@
             border-bottom: 2px solid #dee2e6;
         }
 
-        #successMessage, #errorMessage{
+        #successMessage, #errorMessage {
             margin-top: 2rem;
         }
 
@@ -199,6 +183,7 @@
     <%
         String success = request.getParameter("success");
         String error = request.getParameter("error");
+        String errorMessage = (String) request.getAttribute("errorMessage");
     %>
     <% if (success != null && !success.isEmpty()) { %>
     <div id="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
@@ -209,6 +194,11 @@
     <% if (error != null && !error.isEmpty()) { %>
     <div id="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
         <%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <% } else if (errorMessage != null && !errorMessage.isEmpty()) { %>
+    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <%= errorMessage %>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     <% } %>
@@ -292,8 +282,8 @@
                         if (bookings != null && !bookings.isEmpty()) {
                             int count = 1;
                             for (BookingDTO booking : bookings) {
-                                CustomerDTO customer = customerMap.get(booking.getId());
-                                VehicleDTO vehicle = vehicleMap.get(booking.getId());
+                                CustomerDTO customer = customerMap != null ? customerMap.get(booking.getId()) : null;
+                                VehicleDTO vehicle = vehicleMap != null ? vehicleMap.get(booking.getId()) : null;
                     %>
                     <tr>
                         <td><%= count++ %></td>
@@ -367,7 +357,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        // Auto-hide alert messages after 5 seconds
         setTimeout(function() {
             const successMessage = document.getElementById("successMessage");
             if (successMessage) {
@@ -392,4 +381,3 @@
 </script>
 </body>
 </html>
-

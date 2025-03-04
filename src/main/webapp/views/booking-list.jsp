@@ -12,30 +12,127 @@
     <title>Booking Management - Mega City Cab Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
             --background-color: #f8f9fa;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
         }
 
         body {
             background-color: var(--background-color);
             min-height: 100vh;
-            padding-top: 60px;
+            padding-top: 40px;
+            margin-left: 250px;
         }
 
-        .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding-top: 20px;
         }
 
-        .navbar-brand {
-            color: var(--primary-color);
-            font-weight: bold;
+        .sidebar-brand {
+            padding: 1rem 1.5rem;
             font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(252, 163, 17, 0.3);
         }
 
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .sidebar-nav li {
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav li:hover {
+            background-color: rgba(252, 163, 17, 0.1);
+        }
+
+        .sidebar-nav li a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-nav li a i {
+            font-size: 1.25rem;
+        }
+
+        .sidebar-nav li.active {
+            background-color: rgba(252, 163, 17, 0.2);
+        }
+
+        .sidebar-nav li.active a {
+            color: var(--primary-color);
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-details {
+            margin-left: 10px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--secondary-color);
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
+        /* Booking Management Styles */
         .top-section {
             margin-top: 2rem;
             background-color: white;
@@ -171,13 +268,73 @@
     </style>
 </head>
 <body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/">MEGA CITY CAB</a>
-    </div>
-</nav>
+<!-- Side Navigation Bar -->
+<aside class="sidebar">
+    <div class="sidebar-brand">MEGA CITY CAB</div>
+    <ul class="sidebar-nav">
+        <li>
+            <a href="${pageContext.request.contextPath}/">
+                <i class="bi bi-house-door"></i>
+                Dashboard
+            </a>
+        </li>
+        <li class="active">
+            <a href="${pageContext.request.contextPath}/booking-servlet">
+                <i class="bi bi-calendar-check"></i>
+                Bookings
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/vehicle-driver-servlet">
+                <i class="bi bi-car-front"></i>
+                Vehicles
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/drivers">
+                <i class="bi bi-person-badge"></i>
+                Drivers
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/customer-servlet">
+                <i class="bi bi-people"></i>
+                Customers
+            </a>
+        </li>
+        <div class="sidebar-divider"></div>
+        <li>
+            <a href="${pageContext.request.contextPath}/reports">
+                <i class="bi bi-bar-chart"></i>
+                Reports
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/settings">
+                <i class="bi bi-gear"></i>
+                Settings
+            </a>
+        </li>
+    </ul>
 
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">
+                <% String currentUser = (String) session.getAttribute("username");
+                    if (currentUser == null) currentUser = "User";
+//                    out.print(currentUser.substring(0, 1).toUpperCase());
+                %>
+            </div>
+            <div class="user-details">
+                <div class="user-name"><%=currentUser%></div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
 <div class="container">
     <!-- Alert Messages -->
     <%
@@ -354,22 +511,29 @@
 </div>
 
 <!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        setTimeout(function() {
-            const successMessage = document.getElementById("successMessage");
-            if (successMessage) {
+        const successMessage = document.getElementById("successMessage");
+        const errorMessage = document.getElementById("errorMessage");
+
+        if (successMessage) {
+            successMessage.classList.remove("d-none");
+            setTimeout(() => {
                 const bsAlert = new bootstrap.Alert(successMessage);
                 bsAlert.close();
-            }
+            }, 5000);
+        }
 
-            const errorMessage = document.getElementById("errorMessage");
-            if (errorMessage) {
+        if (errorMessage) {
+            errorMessage.classList.remove("d-none");
+            setTimeout(() => {
                 const bsAlert = new bootstrap.Alert(errorMessage);
                 bsAlert.close();
-            }
-        }, 5000);
+            }, 5000);
+        }
     });
 
     function clearSearch() {

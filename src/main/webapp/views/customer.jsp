@@ -9,35 +9,137 @@
     <title>Customer Management - Mega City Cab Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
             --background-color: #f8f9fa;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
         }
 
         body {
             background-color: var(--background-color);
             min-height: 100vh;
             padding-top: 60px;
+            margin-left: 250px;
         }
 
-        .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding-top: 20px;
         }
 
-        .navbar-brand {
-            color: var(--primary-color);
-            font-weight: bold;
+        .sidebar-brand {
+            padding: 1rem 1.5rem;
             font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(252, 163, 17, 0.3);
         }
 
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .sidebar-nav li {
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav li:hover {
+            background-color: rgba(252, 163, 17, 0.1);
+        }
+
+        .sidebar-nav li a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-nav li a i {
+            font-size: 1.25rem;
+        }
+
+        .sidebar-nav li.active {
+            background-color: rgba(252, 163, 17, 0.2);
+        }
+
+        .sidebar-nav li.active a {
+            color: var(--primary-color);
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-details {
+            margin-left: 10px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--secondary-color);
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
+        /* Customer Management Styles */
         .top-section {
-            margin-top: 2rem;
+            margin-top: 0.7rem;
+            background-color: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
         }
 
-        #successMessage, #errorMessage{
+        #successMessage, #errorMessage {
             margin-top: 2rem;
         }
 
@@ -45,14 +147,6 @@
             border: none;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
             border-radius: 1rem;
-        }
-
-        .top-section {
-            background-color: white;
-            border-radius: 1rem;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
         }
 
         .section-header {
@@ -128,19 +222,91 @@
             color: #000;
         }
 
+        .btn-view {
+            background-color: #cce5ff;
+            border-color: #cce5ff;
+            color: #000;
+        }
+
+        .btn-view:hover {
+            background-color: #99ccff;
+            border-color: #99ccff;
+            color: #000;
+        }
+
         .alert {
             border-radius: 0.5rem;
         }
     </style>
 </head>
 <body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/">MEGA CITY CAB</a>
-    </div>
-</nav>
+<!-- Side Navigation Bar -->
+<aside class="sidebar">
+    <div class="sidebar-brand">MEGA CITY CAB</div>
+    <ul class="sidebar-nav">
+        <li>
+            <a href="${pageContext.request.contextPath}/">
+                <i class="bi bi-house-door"></i>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/booking-servlet">
+                <i class="bi bi-calendar-check"></i>
+                Bookings
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/vehicle-driver-servlet">
+                <i class="bi bi-car-front"></i>
+                Vehicles
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/drivers">
+                <i class="bi bi-person-badge"></i>
+                Drivers
+            </a>
+        </li>
+        <li class="active">
+            <a href="${pageContext.request.contextPath}/customer-servlet">
+                <i class="bi bi-people"></i>
+                Customers
+            </a>
+        </li>
+        <div class="sidebar-divider"></div>
+        <li>
+            <a href="${pageContext.request.contextPath}/reports">
+                <i class="bi bi-bar-chart"></i>
+                Reports
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/settings">
+                <i class="bi bi-gear"></i>
+                Settings
+            </a>
+        </li>
+    </ul>
 
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">
+                <% String currentUser = (String) session.getAttribute("username");
+                    if (currentUser == null) currentUser = "User";
+//                    out.print(currentUser.substring(0, 1).toUpperCase());
+                %>
+            </div>
+            <div class="user-details">
+                <div class="user-name"><%=currentUser%></div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
 <div class="container">
     <!-- Alert Messages -->
     <div id="successMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
@@ -237,6 +403,18 @@
                         <td><%= customer.getMobileNo() %></td>
                         <td>
                             <div class="d-flex gap-2">
+                                <button class="btn btn-view btn-sm" onclick="viewCustomer(
+                                        '<%= customer.getId() %>',
+                                        '<%= customer.getRegistrationNo() %>',
+                                        '<%= customer.getName() %>',
+                                        '<%= customer.getEmail() %>',
+                                        '<%= customer.getAddress() %>',
+                                        '<%= customer.getNic() %>',
+                                        '<%= customer.getMobileNo() %>',
+                                        '<%= customer.getDob() != null ? new java.text.SimpleDateFormat("yyyy-MM-dd").format(customer.getDob()) : "" %>'
+                                        )">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
                                 <button class="btn btn-edit btn-sm" onclick="editCustomer(
                                         '<%= customer.getId() %>',
                                         '<%= customer.getRegistrationNo() %>',
@@ -265,7 +443,7 @@
                     } else {
                     %>
                     <tr>
-                        <td colspan="6" class="text-center">No customers found</td>
+                        <td colspan="7" class="text-center">No customers found</td>
                     </tr>
                     <%
                         }
@@ -298,7 +476,6 @@
                                 <label for="registrationNo">Registration No</label>
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="name" name="name"
@@ -306,7 +483,6 @@
                                 <label for="name">Name</label>
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="email" class="form-control" id="email" name="email"
@@ -314,7 +490,6 @@
                                 <label for="email">Email</label>
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="address" name="address"
@@ -322,7 +497,6 @@
                                 <label for="address">Address</label>
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="nic" name="nic"
@@ -330,7 +504,6 @@
                                 <label for="nic">NIC</label>
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="text" class="form-control" id="mobileNo" name="mobileNo"
@@ -338,7 +511,6 @@
                                 <label for="mobileNo">Mobile Number</label>
                             </div>
                         </div>
-
                         <div class="col-md-6">
                             <div class="form-floating">
                                 <input type="date" class="form-control" id="dob" name="dob" required>
@@ -348,7 +520,7 @@
                     </div>
 
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelButton">
                             <i class="bi bi-x-circle me-2"></i>Cancel
                         </button>
                         <button type="submit" class="btn btn-primary" id="submitButton">
@@ -362,7 +534,9 @@
 </div>
 
 <!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         // Show alert messages if they exist
@@ -380,8 +554,6 @@
 
         // Form validation
         const customerForm = document.getElementById("customerForm");
-
-
         customerForm.addEventListener("submit", function(e) {
             const email = document.getElementById("email").value;
             const nic = document.getElementById("nic").value;
@@ -416,7 +588,9 @@
             customerForm.reset();
             document.getElementById("action").value = "add";
             document.getElementById("submitButton").innerHTML = '<i class="bi bi-person-plus-fill me-2"></i>Add Customer';
+            document.getElementById("submitButton").style.display = "block";
             document.getElementById("registrationNo").readOnly = false;
+            enableFormInputs(false);
         });
     });
 
@@ -429,7 +603,6 @@
     }
 
     function editCustomer(id, regNo, name, email, address, nic, mobile, dob) {
-        // Set form values
         document.getElementById("id").value = id;
         document.getElementById("registrationNo").value = regNo;
         document.getElementById("name").value = name;
@@ -439,13 +612,40 @@
         document.getElementById("mobileNo").value = mobile;
         document.getElementById("dob").value = dob;
 
-        // Update form for edit mode
         document.getElementById("action").value = "update";
         document.getElementById("submitButton").innerHTML = '<i class="bi bi-check-lg me-2"></i>Update Customer';
+        document.getElementById("submitButton").style.display = "block";
+        document.getElementById("customerModalLabel").innerText = "Edit Customer";
         document.getElementById("registrationNo").readOnly = true;
+        enableFormInputs(false);
 
-        // Show modal
         new bootstrap.Modal(document.getElementById('customerModal')).show();
+    }
+
+    function viewCustomer(id, regNo, name, email, address, nic, mobile, dob) {
+        document.getElementById("id").value = id;
+        document.getElementById("registrationNo").value = regNo;
+        document.getElementById("name").value = name;
+        document.getElementById("email").value = email;
+        document.getElementById("address").value = address;
+        document.getElementById("nic").value = nic;
+        document.getElementById("mobileNo").value = mobile;
+        document.getElementById("dob").value = dob;
+
+        document.getElementById("action").value = "view"; // No form submission for view
+        document.getElementById("submitButton").style.display = "none";
+        document.getElementById("customerModalLabel").innerText = "View Customer Details";
+        document.getElementById("registrationNo").readOnly = true;
+        enableFormInputs(true);
+
+        new bootstrap.Modal(document.getElementById('customerModal')).show();
+    }
+
+    function enableFormInputs(disable) {
+        const inputs = document.querySelectorAll('#customerForm input');
+        inputs.forEach(input => {
+            input.disabled = disable;
+        });
     }
 </script>
 </body>

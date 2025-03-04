@@ -5,7 +5,6 @@
   Time: 12.38
   To change this template use File | Settings | File Templates.
 --%>
-
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.project.megacitycab.dto.VehicleDriverDTO" %>
@@ -17,30 +16,127 @@
     <title>Vehicle-Driver Management - Mega City Cab Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
             --background-color: #f8f9fa;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
         }
 
         body {
             background-color: var(--background-color);
             min-height: 100vh;
             padding-top: 60px;
+            margin-left: 250px;
         }
 
-        .navbar {
-            background-color: #fff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            padding-top: 20px;
         }
 
-        .navbar-brand {
-            color: var(--primary-color);
-            font-weight: bold;
+        .sidebar-brand {
+            padding: 1rem 1.5rem;
             font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            border-bottom: 2px solid rgba(252, 163, 17, 0.3);
         }
 
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .sidebar-nav li {
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav li:hover {
+            background-color: rgba(252, 163, 17, 0.1);
+        }
+
+        .sidebar-nav li a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-nav li a i {
+            font-size: 1.25rem;
+        }
+
+        .sidebar-nav li.active {
+            background-color: rgba(252, 163, 17, 0.2);
+        }
+
+        .sidebar-nav li.active a {
+            color: var(--primary-color);
+        }
+
+        .sidebar-footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px 20px;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            background-color: white;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .user-details {
+            margin-left: 10px;
+        }
+
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--secondary-color);
+        }
+
+        .sidebar-divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
+        /* Vehicle-Driver Management Styles */
         .top-section {
             margin-top: 1rem;
             background-color: white;
@@ -50,7 +146,7 @@
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
         }
 
-        #successMessage, #errorMessage{
+        #successMessage, #errorMessage {
             margin-top: 2rem;
         }
 
@@ -58,7 +154,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            /*margin-bottom: 1.5rem;*/
         }
 
         .section-title {
@@ -114,7 +209,7 @@
             background-color: #ffeb99;
             border-color: #ffeb99;
             color: #000;
-            margin-right: 10px;
+            margin-right: 5px;
         }
 
         .btn-edit:hover {
@@ -127,6 +222,7 @@
             background-color: #ff9999;
             border-color: #ff9999;
             color: #000;
+            margin-left: 5px;
         }
 
         .btn-delete:hover {
@@ -134,16 +230,111 @@
             border-color: #ff6666;
             color: #000;
         }
+
+        .btn-view {
+            background-color: #cce5ff;
+            border-color: #cce5ff;
+            color: #000;
+            margin-right: 5px;
+        }
+
+        .btn-view:hover {
+            background-color: #99ccff;
+            border-color: #99ccff;
+            color: #000;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: none;
+        }
+
+        .table-responsive {
+            border-radius: 0.5rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+        }
     </style>
 </head>
 <body>
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/">MEGA CITY CAB</a>
-    </div>
-</nav>
+<!-- Side Navigation Bar -->
+<aside class="sidebar">
+    <div class="sidebar-brand">MEGA CITY CAB</div>
+    <ul class="sidebar-nav">
+        <li>
+            <a href="${pageContext.request.contextPath}/">
+                <i class="bi bi-house-door"></i>
+                Dashboard
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/booking-servlet">
+                <i class="bi bi-calendar-check"></i>
+                Bookings
+            </a>
+        </li>
+        <li class="active">
+            <a href="${pageContext.request.contextPath}/vehicle-driver-servlet">
+                <i class="bi bi-car-front"></i>
+                Vehicles
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/drivers">
+                <i class="bi bi-person-badge"></i>
+                Drivers
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/customer-servlet">
+                <i class="bi bi-people"></i>
+                Customers
+            </a>
+        </li>
+        <div class="sidebar-divider"></div>
+        <li>
+            <a href="${pageContext.request.contextPath}/reports">
+                <i class="bi bi-bar-chart"></i>
+                Reports
+            </a>
+        </li>
+        <li>
+            <a href="${pageContext.request.contextPath}/settings">
+                <i class="bi bi-gear"></i>
+                Settings
+            </a>
+        </li>
+    </ul>
 
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+        <div class="user-info">
+            <div class="user-avatar">
+                <% String currentUser = (String) session.getAttribute("username");
+                    if (currentUser == null) currentUser = "User";
+//                    out.print(currentUser.substring(0, 1).toUpperCase());
+                %>
+            </div>
+            <div class="user-details">
+                <div class="user-name"><%=currentUser%></div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- Main Content -->
 <div class="container">
     <!-- Alert Messages -->
     <div id="successMessage" class="alert alert-success alert-dismissible fade show d-none" role="alert">
@@ -166,7 +357,6 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#vehicleDriverModal">
                 <i class="bi bi-plus-circle me-2"></i>New Vehicle & Driver
             </button>
-
         </div>
 
         <form id="searchForm" action="${pageContext.request.contextPath}/vehicle-driver-servlet" method="get">
@@ -230,7 +420,7 @@
     <!-- Vehicle-Driver List -->
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-1 mt-1">Vehicle-Driver Details</h5>
+            <h5 class="mb-1 mt-1 pt-2">Vehicle-Driver Details</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -271,11 +461,29 @@
                         </td>
                         <td>
                             <span class="status-<%= vd.getVehicle().getStatus().toString().toLowerCase() %>">
-                                        <%= vd.getVehicle().getStatus() %>
-                                    </span>
+                                <%= vd.getVehicle().getStatus() %>
+                            </span>
                         </td>
                         <td>
                             <div class="btn-group">
+                                <button class="btn btn-view btn-sm" onclick="viewVehicleDriver(
+                                        '<%= vd.getVehicle().getId() %>',
+                                        '<%= vd.getDriver().getId() %>',
+                                        '<%= vd.getVehicle().getLicensePlate() %>',
+                                        '<%= vd.getDriver().getLicenseNo() %>',
+                                        '<%= vd.getDriver().getName() %>',
+                                        '<%= vd.getDriver().getMobileNo() %>',
+                                        '<%= vd.getDriver().getEmail() %>',
+                                        '<%= vd.getDriver().getExperience() %>',
+                                        '<%= vd.getVehicle().getBrand() %>',
+                                        '<%= vd.getVehicle().getModel() %>',
+                                        '<%= vd.getVehicle().getColor() %>',
+                                        '<%= vd.getVehicle().getCapacity() %>',
+                                        '<%= vd.getVehicle().getPricePerKm() %>',
+                                        '<%= vd.getVehicle().getStatus() %>'
+                                        )">
+                                    <i class="bi bi-eye-fill"></i>
+                                </button>
                                 <button class="btn btn-edit btn-sm" onclick="editVehicleDriver(
                                         '<%= vd.getVehicle().getId() %>',
                                         '<%= vd.getDriver().getId() %>',
@@ -308,7 +516,7 @@
                     } else {
                     %>
                     <tr>
-                        <td colspan="7" class="text-center">No vehicle & driver found</td>
+                        <td colspan="8" class="text-center">No vehicle & driver found</td>
                     </tr>
                     <%
                         }
@@ -325,7 +533,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Manage Vehicle & Driver</h5>
+                <h5 class="modal-title" id="vehicleDriverModalLabel">Manage Vehicle & Driver</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
@@ -425,7 +633,7 @@
 
                     <!-- Form Actions -->
                     <div class="d-flex justify-content-end gap-2 mt-4">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="cancelButton">
                             <i class="bi bi-x-circle me-2"></i>Cancel
                         </button>
                         <button type="submit" class="btn btn-primary" id="submitButton">
@@ -439,7 +647,9 @@
 </div>
 
 <!-- Scripts -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         // Show alert messages if they exist
@@ -460,9 +670,12 @@
         vehicleDriverModal.addEventListener('hidden.bs.modal', function () {
             document.getElementById("vehicleDriverForm").reset();
             document.getElementById("action").value = "add";
-            document.getElementById("submitButton").innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add Record';
+            document.getElementById("submitButton").innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add';
+            document.getElementById("submitButton").style.display = "block";
             document.getElementById("licenseNo").readOnly = false;
             document.getElementById("licensePlate").readOnly = false;
+            enableFormInputs(false);
+            document.getElementById("vehicleDriverModalLabel").innerText = "Manage Vehicle & Driver";
         });
     });
 
@@ -477,7 +690,7 @@
     }
 
     function editVehicleDriver(vehicleId, driverId, licensePlate, licenseNo, driverName, driverMobile, driverEmail,
-                               experience, brand, model, color, pricePerKm, capacity, vehicleStatus) {
+                               experience, brand, model, color, capacity, pricePerKm, vehicleStatus) {
         document.getElementById("vehicleId").value = vehicleId;
         document.getElementById("driverId").value = driverId;
         document.getElementById("licensePlate").value = licensePlate;
@@ -489,14 +702,44 @@
         document.getElementById("brand").value = brand;
         document.getElementById("model").value = model;
         document.getElementById("color").value = color;
-        document.getElementById("pricePerKm").value = pricePerKm;
         document.getElementById("capacity").value = capacity;
-        document.getElementById("vehicleStatus").value = vehicleStatus;
+        document.getElementById("pricePerKm").value = pricePerKm;
+        document.getElementById("vehicleStatus").value = vehicleStatus.toLowerCase();
 
         document.getElementById("action").value = "update";
         document.getElementById("submitButton").innerHTML = '<i class="bi bi-check-lg me-2"></i>Update';
+        document.getElementById("submitButton").style.display = "block";
         document.getElementById("licenseNo").readOnly = true;
         document.getElementById("licensePlate").readOnly = true;
+        document.getElementById("vehicleDriverModalLabel").innerText = "Edit Vehicle & Driver";
+        enableFormInputs(false);
+
+        new bootstrap.Modal(document.getElementById('vehicleDriverModal')).show();
+    }
+
+    function viewVehicleDriver(vehicleId, driverId, licensePlate, licenseNo, driverName, driverMobile, driverEmail,
+                               experience, brand, model, color, capacity, pricePerKm, vehicleStatus) {
+        document.getElementById("vehicleId").value = vehicleId;
+        document.getElementById("driverId").value = driverId;
+        document.getElementById("licensePlate").value = licensePlate;
+        document.getElementById("licenseNo").value = licenseNo;
+        document.getElementById("driverName").value = driverName;
+        document.getElementById("driverMobile").value = driverMobile;
+        document.getElementById("driverEmail").value = driverEmail;
+        document.getElementById("experience").value = experience;
+        document.getElementById("brand").value = brand;
+        document.getElementById("model").value = model;
+        document.getElementById("color").value = color;
+        document.getElementById("capacity").value = capacity;
+        document.getElementById("pricePerKm").value = pricePerKm;
+        document.getElementById("vehicleStatus").value = vehicleStatus.toLowerCase();
+
+        document.getElementById("action").value = "view"; // No form submission for view
+        document.getElementById("submitButton").style.display = "none";
+        document.getElementById("licenseNo").readOnly = true;
+        document.getElementById("licensePlate").readOnly = true;
+        document.getElementById("vehicleDriverModalLabel").innerText = "View Vehicle & Driver Details";
+        enableFormInputs(true);
 
         new bootstrap.Modal(document.getElementById('vehicleDriverModal')).show();
     }
@@ -554,6 +797,13 @@
         }
 
         return true;
+    }
+
+    function enableFormInputs(disable) {
+        const inputs = document.querySelectorAll('#vehicleDriverForm input, #vehicleDriverForm select');
+        inputs.forEach(input => {
+            input.disabled = disable;
+        });
     }
 </script>
 </body>

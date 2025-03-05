@@ -1,62 +1,78 @@
-name: CI/CD Pipeline (Simulated)
-
+name: CI/CD Pipeline
 on:
-  push:
-    branches:
-      - dev
-      - stage
-      - release
-      - main
   pull_request:
     branches:
       - stage
       - release
       - main
-
 jobs:
-  build-and-test:
+  test-user-dao:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK 17  # Assuming Java 17; adjust if needed
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'temurin'  # Eclipse Temurin distribution
-      - name: Simulate build
-        run: echo "Building the app..."  # Replace with actual build command if needed
-      - name: Run UserDAOImplTest
+          distribution: 'temurin'
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Run UserDaoImplTest
         run: |
-          # Assuming Maven; adjust for Gradle or other build tools
+          # Assuming Maven; adjust for your project structure
+          mvn clean test -Dtest=UserDaoImplTest
+      - name: Check Test Results
+        run: |
+          # More reliable way to check test results
           mvn test -Dtest=UserDaoImplTest
-        # If using Gradle, replace with: gradle test --tests "UserDAOImplTest"
-
-  merge-dev-to-stage:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/dev'  # Only run when pushing to dev
+  merge-validation:
+    needs: test-user-dao
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
     steps:
       - uses: actions/checkout@v3
         with:
-          token: ${{ secrets.PAT_TOKEN }}  # Required for pushing changes
-      - name: Configure Git
+          fetch-depth: 0
+      - name: Validate Merge Target
         run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-      - name: Merge dev into stage
-        run: |
-          git fetch origin
-          git checkout stage
-          git merge origin/dev --no-ff --no-edit
-          git push origin stage
-        env:
-          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-
-  deploy:
-    needs: build-and-test
-    if: github.ref == 'refs/heads/main'  # Only run when pushing to main
+          # Ensure PR is from dev to stage
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "Error: Pull requests to stage must be from the dev branch"
+            exit 1
+          fi
+  build:
+    needs: [test-user-dao, merge-validation]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Simulate deployment
-        run: echo "Simulating deployment to production... Done!"
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build Project
+        run: mvn clean package -DskipTests
+      - name: Archive Build Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: package
+          path: target/*.jar
+  deployment:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: package
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production environment"
+          # Add your actual deployment commands here

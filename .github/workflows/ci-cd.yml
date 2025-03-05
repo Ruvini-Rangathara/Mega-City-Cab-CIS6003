@@ -28,7 +28,7 @@ jobs:
       - name: Run UserDAOImplTest
         run: |
           # Assuming Maven; adjust for Gradle or other build tools
-          mvn test -Dtest=UserDAOImplTest
+          mvn test -Dtest=UserDaoImplTest
         # If using Gradle, replace with: gradle test --tests "UserDAOImplTest"
 
   merge-dev-to-stage:

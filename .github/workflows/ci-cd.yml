@@ -64,10 +64,12 @@ jobs:
           fi
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: surefire-reports.tar.gz
+          retention-days: 7
+
   merge-validation:
     needs: test-user-dao
     runs-on: ubuntu-latest
@@ -82,6 +84,7 @@ jobs:
             echo "Error: Pull requests to stage must be from the dev branch"
             exit 1
           fi
+
   build:
     needs: [test-user-dao, merge-validation]
     runs-on: ubuntu-latest
@@ -95,10 +98,12 @@ jobs:
       - name: Build Project
         run: mvn clean package -DskipTests
       - name: Archive Build Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: package
           path: target/*.jar
+          retention-days: 7
+
   deployment:
     needs: build
     runs-on: ubuntu-latest
@@ -106,9 +111,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: package
       - name: Deploy to Production
         run: |
           echo "Deploying to production environment"
+          # Add your actual deployment commands here

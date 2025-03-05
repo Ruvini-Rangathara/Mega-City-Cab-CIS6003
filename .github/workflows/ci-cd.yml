@@ -9,6 +9,20 @@ on:
 jobs:
   test-user-dao:
     runs-on: ubuntu-latest
+    timeout-minutes: 15  # Fail if the job takes longer than 15 minutes
+    services:
+      mysql:
+        image: mysql:8.0.36  # Specific version for consistency and faster pulls
+        env:
+          MYSQL_ROOT_PASSWORD: 1234
+          MYSQL_DATABASE: mega_city_cab
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -23,12 +37,6 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Set up MySQL
-        uses: ankitvgupta/setup-mysql@v1
-        with:
-          mysql-version: '8.0'
-          mysql-root-password: '1234'
-          mysql-database: 'mega_city_cab'
       - name: Initialize Database Schema
         run: |
           # Wait for MySQL to be ready
@@ -47,20 +55,21 @@ jobs:
       - name: Run UserDaoImplTest
         run: mvn clean test -Dtest=UserDaoImplTest
       - name: Check Test Results
-        if: always()
+        if: always()  # Run even if tests fail for debugging
         run: |
           mvn test -Dtest=UserDaoImplTest
+          # Archive test reports
           if [ -d "target/surefire-reports" ]; then
             tar -czf surefire-reports.tar.gz target/surefire-reports/
             echo "Test reports archived as surefire-reports.tar.gz"
           fi
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: test-reports
           path: surefire-reports.tar.gz
-          retention-days: 7
+          retention-days: 7  # Retain artifacts for 7 days
 
   merge-validation:
     needs: test-user-dao
@@ -90,11 +99,11 @@ jobs:
       - name: Build Project
         run: mvn clean package -DskipTests
       - name: Archive Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # Updated to v4
         with:
           name: package
           path: target/*.jar
-          retention-days: 7
+          retention-days: 7  # Retain artifacts for 7 days
 
   deployment:
     needs: build
@@ -103,7 +112,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4  # Updated to v4
         with:
           name: package
       - name: Deploy to Production

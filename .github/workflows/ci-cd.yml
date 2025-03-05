@@ -1,0 +1,33 @@
+name: CI/CD Pipeline (Simulated)
+
+on:
+  push:
+    branches:
+      - dev
+      - stage
+      - release
+      - main
+  pull_request:
+    branches:
+      - stage
+      - release
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Simulate build
+        run: echo "Building the app..."
+      - name: Simulate tests
+        run: echo "Running tests..."
+
+  deploy:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Simulate deployment
+        run: echo "Simulating deployment to production... Done!"

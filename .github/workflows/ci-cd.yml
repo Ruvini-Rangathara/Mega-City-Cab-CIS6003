@@ -15,7 +15,7 @@ jobs:
         image: mysql:8.0.36  # Specific version for consistency and faster pulls
         env:
           MYSQL_ROOT_PASSWORD: 1234
-          MYSQL_DATABASE: mega_city_cab
+          MYSQL_DATABASE: mega_city_cab_test
         ports:
           - 3306:3306
         options: >-
@@ -46,7 +46,7 @@ jobs:
           done
           # Initialize the schema
           if [ -f "src/test/resources/schema.sql" ]; then
-            mysql -h 127.0.0.1 -u root -p1234 mega_city_cab < src/test/resources/schema.sql
+            mysql -h 127.0.0.1 -u root -p1234 mega_city_cab_test < src/test/resources/schema.sql
             echo "Database schema initialized successfully"
           else
             echo "Error: schema.sql not found in src/test/resources"
@@ -65,7 +65,7 @@ jobs:
           fi
       - name: Upload Test Reports
         if: always()
-        uses: actions/upload-artifact@v4  # Updated to v4
+        uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: surefire-reports.tar.gz
@@ -99,7 +99,7 @@ jobs:
       - name: Build Project
         run: mvn clean package -DskipTests
       - name: Archive Build Artifacts
-        uses: actions/upload-artifact@v4  # Updated to v4
+        uses: actions/upload-artifact@v4
         with:
           name: package
           path: target/*.jar
@@ -112,7 +112,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v4  # Updated to v4
+        uses: actions/download-artifact@v4
         with:
           name: package
       - name: Deploy to Production

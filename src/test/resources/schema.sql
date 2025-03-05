@@ -1,9 +1,9 @@
 DROP
-DATABASE IF EXISTS `mega_city_cab`;
+DATABASE IF EXISTS `mega_city_cab_test`;
 CREATE
-DATABASE IF NOT EXISTS `mega_city_cab`;
+DATABASE IF NOT EXISTS `mega_city_cab_test`;
 
-USE `mega_city_cab`;
+USE `mega_city_cab_test`;
 
 
 CREATE TABLE users

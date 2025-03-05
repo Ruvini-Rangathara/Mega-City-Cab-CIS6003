@@ -13,10 +13,10 @@ import java.util.logging.Logger;
 
 public class DBUtil {
     private static final Logger logger = Logger.getLogger(DBUtil.class.getName());
-    private static String URL;
-    private static String USERNAME;
-    private static String PASSWORD;
-    private static String DRIVER;
+    private static final String URL;
+    private static final String USERNAME;
+    private static final String PASSWORD;
+    private static final String DRIVER;
 
     static {
         try (InputStream input = DBUtil.class.getClassLoader().getResourceAsStream("db.properties")) {

@@ -1,5 +1,4 @@
-USE `mega_city_cab`;
-
+USE `mega_city_cab_test`;
 -- Users table data
 INSERT INTO users (name, email, passwordHash, salt, role)
 VALUES ('John Doe', 'johndoe@megacitycab.com', SHA2(CONCAT('admin123', 'randomSalt1'), 256), 'randomSalt1', 'admin'),

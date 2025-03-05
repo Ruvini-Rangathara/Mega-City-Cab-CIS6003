@@ -46,7 +46,7 @@ jobs:
           done
           # Initialize the schema
           if [ -f "src/test/resources/schema.sql" ]; then
-            mysql -h 127.0.0.1 -u root -p1234 mega_city_cab_test < src/test/resources/schema.sql
+            mysql -h 127.0.0.1 -u root -p1234 mega_city_cab < src/test/resources/schema.sql
             echo "Database schema initialized successfully"
           else
             echo "Error: schema.sql not found in src/test/resources"

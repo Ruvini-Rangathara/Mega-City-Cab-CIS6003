@@ -18,14 +18,43 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set up JDK 17  # Assuming Java 17; adjust if needed
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'  # Eclipse Temurin distribution
       - name: Simulate build
-        run: echo "Building the app..."
-      - name: Simulate tests
-        run: echo "Running tests..."
+        run: echo "Building the app..."  # Replace with actual build command if needed
+      - name: Run UserDAOImplTest
+        run: |
+          # Assuming Maven; adjust for Gradle or other build tools
+          mvn test -Dtest=UserDAOImplTest
+        # If using Gradle, replace with: gradle test --tests "UserDAOImplTest"
+
+  merge-dev-to-stage:
+    needs: build-and-test
+    if: github.ref == 'refs/heads/dev'  # Only run when pushing to dev
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.PAT_TOKEN }}  # Required for pushing changes
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+      - name: Merge dev into stage
+        run: |
+          git fetch origin
+          git checkout stage
+          git merge origin/dev --no-ff --no-edit
+          git push origin stage
+        env:
+          GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
 
   deploy:
     needs: build-and-test
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'  # Only run when pushing to main
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

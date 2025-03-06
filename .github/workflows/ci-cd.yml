@@ -57,7 +57,7 @@ jobs:
   test-user-dao:
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    if: github.event_name == 'pull_request' || github.event_name == 'push'  # Run on both PR and push
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     services:
       mysql:
         image: mysql:8.0.36
@@ -118,8 +118,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    needs: test-user-dao
-    if: github.event_name == 'pull_request' || github.event_name == 'push'  # Run on both PR and push
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
       - uses: actions/checkout@v3
       - name: Set up JDK 17
@@ -128,7 +127,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build Project
-        run: mvn clean package -DskipTests
+        run: |
+          mvn clean package -DskipTests
+          ls -la target/  # Debug: List files to ensure JAR exists
       - name: Archive Build Artifacts
         uses: actions/upload-artifact@v4
         with:

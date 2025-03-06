@@ -9,10 +9,10 @@ on:
 jobs:
   test-user-dao:
     runs-on: ubuntu-latest
-    timeout-minutes: 15  # Fail if the job takes longer than 15 minutes
+    timeout-minutes: 15
     services:
       mysql:
-        image: mysql:8.0.36  # Specific version for consistency and faster pulls
+        image: mysql:8.0.36
         env:
           MYSQL_ROOT_PASSWORD: 1234
           MYSQL_DATABASE: mega_city_cab_test
@@ -39,12 +39,10 @@ jobs:
             ${{ runner.os }}-maven-
       - name: Initialize Database Schema
         run: |
-          # Wait for MySQL to be ready
           until mysql -h 127.0.0.1 -u root -p1234 -e "SELECT 1"; do
             echo "Waiting for MySQL to be ready..."
             sleep 2
           done
-          # Initialize the schema
           if [ -f "src/test/resources/schema.sql" ]; then
             mysql -h 127.0.0.1 -u root -p1234 mega_city_cab_test < src/test/resources/schema.sql
             echo "Database schema initialized successfully"
@@ -55,10 +53,9 @@ jobs:
       - name: Run UserDaoImplTest
         run: mvn clean test -Dtest=UserDaoImplTest
       - name: Check Test Results
-        if: always()  # Run even if tests fail for debugging
+        if: always()
         run: |
           mvn test -Dtest=UserDaoImplTest
-          # Archive test reports
           if [ -d "target/surefire-reports" ]; then
             tar -czf surefire-reports.tar.gz target/surefire-reports/
             echo "Test reports archived as surefire-reports.tar.gz"
@@ -69,9 +66,9 @@ jobs:
         with:
           name: test-reports
           path: surefire-reports.tar.gz
-          retention-days: 7  # Retain artifacts for 7 days
+          retention-days: 7
 
-  merge-validation:
+  merge-validation-stage:
     needs: test-user-dao
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'stage'
@@ -79,15 +76,30 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - name: Validate Merge Target
+      - name: Validate Merge to Stage
         run: |
           if [[ "${{ github.head_ref }}" != "dev" ]]; then
             echo "Error: Pull requests to stage must be from the dev branch"
             exit 1
           fi
 
+  merge-validation-release:
+    needs: test-user-dao
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'release'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Release
+        run: |
+          if [[ "${{ github.head_ref }}" != "stage" ]]; then
+            echo "Error: Pull requests to release must be from the stage branch"
+            exit 1
+          fi
+
   build:
-    needs: [test-user-dao, merge-validation]
+    needs: [test-user-dao, merge-validation-stage, merge-validation-release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -103,7 +115,18 @@ jobs:
         with:
           name: package
           path: target/*.jar
-          retention-days: 7  # Retain artifacts for 7 days
+          retention-days: 7
+
+  release-approval:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'release'
+    steps:
+      - name: Request Manual Approval
+        run: |
+          echo "This pull request to 'release' requires manual approval to proceed."
+          echo "Please approve in the GitHub PR interface under 'Checks' or contact a reviewer (e.g., Ruvini-Rangathara)."
+          exit 1
 
   deployment:
     needs: build

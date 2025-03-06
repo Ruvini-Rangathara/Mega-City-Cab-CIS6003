@@ -5,8 +5,55 @@ on:
       - stage
       - release
       - main
+  push:
+    branches:
+      - stage
+      - release
+      - main
 
 jobs:
+  merge-validation-main:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Main
+        run: |
+          if [[ "${{ github.head_ref }}" != "release" ]]; then
+            echo "Error: Pull requests to main must be from the release branch"
+            exit 1
+          fi
+
+  merge-validation-stage:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Stage
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "Error: Pull requests to stage must be from the dev branch"
+            exit 1
+          fi
+
+  merge-validation-release:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'release'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Release
+        run: |
+          if [[ "${{ github.head_ref }}" != "stage" ]]; then
+            echo "Error: Pull requests to release must be from the stage branch"
+            exit 1
+          fi
+
   test-user-dao:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -68,38 +115,8 @@ jobs:
           path: surefire-reports.tar.gz
           retention-days: 7
 
-  merge-validation-stage:
-    needs: test-user-dao
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Validate Merge to Stage
-        run: |
-          if [[ "${{ github.head_ref }}" != "dev" ]]; then
-            echo "Error: Pull requests to stage must be from the dev branch"
-            exit 1
-          fi
-
-  merge-validation-release:
-    needs: test-user-dao
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'release'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Validate Merge to Release
-        run: |
-          if [[ "${{ github.head_ref }}" != "stage" ]]; then
-            echo "Error: Pull requests to release must be from the stage branch"
-            exit 1
-          fi
-
   build:
-    needs: [test-user-dao, merge-validation-stage, merge-validation-release]
+    needs: test-user-dao
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -117,21 +134,43 @@ jobs:
           path: target/*.jar
           retention-days: 7
 
-  release-approval:
+  deploy-to-staging:
     needs: build
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'release'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/stage'
+    environment: staging
     steps:
-      - name: Request Manual Approval
+      - uses: actions/checkout@v3
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+      - name: Deploy to Staging Environment
         run: |
-          echo "This pull request to 'release' requires manual approval to proceed."
-          echo "Please approve in the GitHub PR interface under 'Checks' or contact a reviewer (e.g., Ruvini-Rangathara)."
-          exit 1
+          echo "Deploying to staging environment from stage branch"
+          # Add staging deployment commands here (e.g., scp target/*.jar user@staging-server:/path)
 
-  deployment:
+  deploy-to-preprod:
     needs: build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    environment: preprod
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+      - name: Deploy to Pre-Production Environment
+        run: |
+          echo "Deploying to pre-production environment from release branch"
+          # Add pre-production deployment commands here (e.g., scp target/*.jar user@preprod-server:/path)
+
+  main-deployment:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
     steps:
       - uses: actions/checkout@v3
       - name: Download Build Artifacts
@@ -140,4 +179,5 @@ jobs:
           name: package
       - name: Deploy to Production
         run: |
-          echo "Deploying to production environment"
+          echo "Deploying to production environment from main branch"
+          # Add production deployment commands here (e.g., scp target/*.jar user@prod-server:/path)

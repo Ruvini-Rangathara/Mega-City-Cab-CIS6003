@@ -156,15 +156,28 @@ jobs:
     environment: development
     steps:
       - uses: actions/checkout@v3
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-package
-          path: target/
-      - name: List Downloaded Artifacts
+      - name: Build for Deployment
         run: |
-          echo "Listing downloaded artifacts:"
-          ls -la target/
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
       - name: Deploy to Development Environment
         run: |
           echo "Deploying to development environment from dev branch"
@@ -178,15 +191,28 @@ jobs:
     environment: staging
     steps:
       - uses: actions/checkout@v3
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-package
-          path: target/
-      - name: List Downloaded Artifacts
+      - name: Build for Deployment
         run: |
-          echo "Listing downloaded artifacts:"
-          ls -la target/
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
       - name: Deploy to Staging Environment
         run: |
           echo "Deploying to staging environment from stage branch"
@@ -200,15 +226,28 @@ jobs:
     environment: preprod
     steps:
       - uses: actions/checkout@v3
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-package
-          path: target/
-      - name: List Downloaded Artifacts
+      - name: Build for Deployment
         run: |
-          echo "Listing downloaded artifacts:"
-          ls -la target/
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
       - name: Deploy to Pre-Production Environment
         run: |
           echo "Deploying to pre-production environment from release branch"
@@ -222,15 +261,28 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v3
-      - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: build-package
-          path: target/
-      - name: List Downloaded Artifacts
+      - name: Build for Deployment
         run: |
-          echo "Listing downloaded artifacts:"
-          ls -la target/
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
       - name: Deploy to Production
         run: |
           echo "Deploying to production environment from main branch"

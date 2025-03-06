@@ -1,0 +1,143 @@
+name: CI/CD Pipeline
+on:
+  pull_request:
+    branches:
+      - stage
+      - release
+      - main
+
+jobs:
+  test-user-dao:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.0.36
+        env:
+          MYSQL_ROOT_PASSWORD: 1234
+          MYSQL_DATABASE: mega_city_cab_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Initialize Database Schema
+        run: |
+          until mysql -h 127.0.0.1 -u root -p1234 -e "SELECT 1"; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 2
+          done
+          if [ -f "src/test/resources/schema.sql" ]; then
+            mysql -h 127.0.0.1 -u root -p1234 mega_city_cab_test < src/test/resources/schema.sql
+            echo "Database schema initialized successfully"
+          else
+            echo "Error: schema.sql not found in src/test/resources"
+            exit 1
+          fi
+      - name: Run UserDaoImplTest
+        run: mvn clean test -Dtest=UserDaoImplTest
+      - name: Check Test Results
+        if: always()
+        run: |
+          mvn test -Dtest=UserDaoImplTest
+          if [ -d "target/surefire-reports" ]; then
+            tar -czf surefire-reports.tar.gz target/surefire-reports/
+            echo "Test reports archived as surefire-reports.tar.gz"
+          fi
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: surefire-reports.tar.gz
+          retention-days: 7
+
+  merge-validation-stage:
+    needs: test-user-dao
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Stage
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "Error: Pull requests to stage must be from the dev branch"
+            exit 1
+          fi
+
+  merge-validation-release:
+    needs: test-user-dao
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'release'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Release
+        run: |
+          if [[ "${{ github.head_ref }}" != "stage" ]]; then
+            echo "Error: Pull requests to release must be from the stage branch"
+            exit 1
+          fi
+
+  build:
+    needs: [test-user-dao, merge-validation-stage, merge-validation-release]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build Project
+        run: mvn clean package -DskipTests
+      - name: Archive Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: package
+          path: target/*.jar
+          retention-days: 7
+
+  release-approval:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'release'
+    steps:
+      - name: Request Manual Approval
+        run: |
+          echo "This pull request to 'release' requires manual approval to proceed."
+          echo "Please approve in the GitHub PR interface under 'Checks' or contact a reviewer (e.g., Ruvini-Rangathara)."
+          exit 1
+
+  deployment:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production environment"

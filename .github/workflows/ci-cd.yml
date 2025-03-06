@@ -1,0 +1,289 @@
+name: CI/CD Pipeline
+on:
+  pull_request:
+    branches:
+      - stage
+      - release
+      - main
+  push:
+    branches:
+      - dev
+      - stage
+      - release
+      - main
+
+jobs:
+  # Validate merges to main branch
+  merge-validation-main:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Main
+        run: |
+          if [[ "${{ github.head_ref }}" != "release" ]]; then
+            echo "Error: Pull requests to main must be from the release branch"
+            exit 1
+          fi
+
+  # Validate merges to release branch
+  merge-validation-release:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'release'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Release
+        run: |
+          if [[ "${{ github.head_ref }}" != "stage" ]]; then
+            echo "Error: Pull requests to release must be from the stage branch"
+            exit 1
+          fi
+
+  # Validate merges to stage branch
+  merge-validation-stage:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Stage
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "Error: Pull requests to stage must be from the dev branch"
+            exit 1
+          fi
+
+  # Run unit tests for UserDaoImpl
+  test-user-dao:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    services:
+      mysql:
+        image: mysql:8.0.36
+        env:
+          MYSQL_ROOT_PASSWORD: 1234
+          MYSQL_DATABASE: mega_city_cab_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Initialize Database Schema
+        run: |
+          until mysql -h 127.0.0.1 -u root -p1234 -e "SELECT 1"; do
+            echo "Waiting for MySQL to be ready..."
+            sleep 2
+          done
+          if [ -f "src/test/resources/schema.sql" ]; then
+            mysql -h 127.0.0.1 -u root -p1234 mega_city_cab_test < src/test/resources/schema.sql
+            echo "Database schema initialized successfully"
+          else
+            echo "Error: schema.sql not found in src/test/resources"
+            exit 1
+          fi
+      - name: Run UserDaoImplTest
+        run: mvn clean test -Dtest=UserDaoImplTest
+      - name: Check Test Results
+        if: always()
+        run: |
+          if [ -d "target/surefire-reports" ]; then
+            tar -czf surefire-reports.tar.gz target/surefire-reports/
+            echo "Test reports archived as surefire-reports.tar.gz"
+          else
+            echo "Error: Test reports directory not found"
+            exit 1
+          fi
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: surefire-reports.tar.gz
+          retention-days: 7
+
+  # Build the project
+  build:
+    runs-on: ubuntu-latest
+    needs: test-user-dao
+    if: github.event_name == 'pull_request' || github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Build Project
+        run: mvn clean package -DskipTests
+      - name: List Target Directory
+        run: |
+          echo "Listing files in target directory:"
+          ls -la target/
+      - name: Archive Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-package
+          path: target/*.jar
+          retention-days: 7
+
+  # Deploy to development environment
+  deploy-to-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    environment: development
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build for Deployment
+        run: |
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
+      - name: Deploy to Development Environment
+        run: |
+          echo "Deploying to development environment from dev branch"
+          # Add dev deployment commands here (e.g., scp target/*.jar user@dev-server:/path)
+
+  # Deploy to staging environment
+  deploy-to-staging:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/stage'
+    environment: staging
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build for Deployment
+        run: |
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
+      - name: Deploy to Staging Environment
+        run: |
+          echo "Deploying to staging environment from stage branch"
+          # Add staging deployment commands here (e.g., scp target/*.jar user@staging-server:/path)
+
+  # Deploy to pre-production environment
+  deploy-to-preprod:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release'
+    environment: preprod
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build for Deployment
+        run: |
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
+      - name: Deploy to Pre-Production Environment
+        run: |
+          echo "Deploying to pre-production environment from release branch"
+          # Add pre-production deployment commands here (e.g., scp target/*.jar user@preprod-server:/path)
+
+  # Deploy to production environment
+  deploy-to-production:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build for Deployment
+        run: |
+          # Instead of relying on artifacts, rebuild the project
+          if [ -f "pom.xml" ]; then
+            # Set up JDK 17
+            echo "Setting up JDK 17"
+            java_version=$(java -version 2>&1 | awk -F '"' '/version/ {print $2}')
+            if [[ ! $java_version == 17* ]]; then
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+            fi
+          
+            # Run build
+            echo "Building project for deployment"
+            mvn clean package -DskipTests
+          
+            echo "Build completed. Files in target directory:"
+            ls -la target/
+          else
+            echo "Error: pom.xml not found. Not a Maven project?"
+            exit 1
+          fi
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production environment from main branch"
+          # Add production deployment commands here (e.g., scp target/*.jar user@prod-server:/path)

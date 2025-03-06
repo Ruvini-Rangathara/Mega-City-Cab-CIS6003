@@ -14,7 +14,7 @@ on:
 
 jobs:
   # Validate merges to main branch
-  merge-validation-release:  # Renamed job to match the expected check name
+  merge-validation-release:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
     steps:
@@ -44,7 +44,7 @@ jobs:
           fi
 
   # Validate merges to stage branch
-  merge-validation-dev:  # Updated job name
+  merge-validation-dev:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'stage'
     steps:

@@ -5,6 +5,9 @@ on:
       - stage
       - release
       - main
+  push:
+    branches:
+      - main
 
 jobs:
   test-user-dao:
@@ -127,6 +130,31 @@ jobs:
           echo "This pull request to 'release' requires manual approval to proceed."
           echo "Please approve in the GitHub PR interface under 'Checks' or contact a reviewer (e.g., Ruvini-Rangathara)."
           exit 1
+
+  main-approval:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production-approval  # New environment for main approval
+    steps:
+      - name: Request Production Approval
+        run: echo "This push to 'main' requires manual approval for production deployment."
+
+  main-deployment:
+    needs: main-approval
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment: production  # New environment for production deployment
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: package
+      - name: Deploy to Production
+        run: |
+          echo "Deploying to production environment"
+          # Add real deployment commands here (e.g., scp target/*.jar user@prod-server:/path)
 
   deployment:
     needs: build

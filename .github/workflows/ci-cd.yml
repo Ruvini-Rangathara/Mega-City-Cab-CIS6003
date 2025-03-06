@@ -134,17 +134,6 @@ jobs:
           path: target/*.jar
           retention-days: 7
 
-  stage-approval:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
-    steps:
-      - name: Request Approval for Stage
-        run: |
-          echo "This pull request to 'stage' requires manual approval to proceed."
-          echo "Please approve in the GitHub PR interface under 'Checks' or contact a reviewer (e.g., Ruvini-Rangathara)."
-          exit 1
-
   deploy-to-staging:
     needs: build
     runs-on: ubuntu-latest
@@ -161,18 +150,6 @@ jobs:
           echo "Deploying to staging environment from stage branch"
           # Add staging deployment commands here (e.g., scp target/*.jar user@staging-server:/path)
 
-  release-approval:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'release'
-    environment: release-approval
-    steps:
-      - name: Request Approval for Release
-        run: |
-          echo "This pull request to 'release' requires manual approval to proceed."
-          echo "Please approve in the GitHub PR interface under 'Checks' or contact a reviewer (e.g., Ruvini-Rangathara)."
-          exit 1
-
   deploy-to-preprod:
     needs: build
     runs-on: ubuntu-latest
@@ -188,18 +165,6 @@ jobs:
         run: |
           echo "Deploying to pre-production environment from release branch"
           # Add pre-production deployment commands here (e.g., scp target/*.jar user@preprod-server:/path)
-
-  main-approval:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
-    environment: production-approval
-    steps:
-      - name: Request Approval for Main
-        run: |
-          echo "This pull request to 'main' requires manual approval to proceed."
-          echo "Please approve in the GitHub PR interface under 'Checks' or contact a reviewer (e.g., Ruvini-Rangathara)."
-          exit 1
 
   main-deployment:
     needs: build

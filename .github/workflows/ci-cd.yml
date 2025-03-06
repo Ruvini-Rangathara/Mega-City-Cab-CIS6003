@@ -10,7 +10,22 @@ on:
       - main
 
 jobs:
+  merge-validation-main:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Main
+        run: |
+          if [[ "${{ github.head_ref }}" != "release" ]]; then
+            echo "Error: Pull requests to main must be from the release branch"
+            exit 1
+          fi
+
   test-user-dao:
+    needs: merge-validation-main
     runs-on: ubuntu-latest
     timeout-minutes: 15
     services:
@@ -102,7 +117,7 @@ jobs:
           fi
 
   build:
-    needs: [test-user-dao, merge-validation-stage, merge-validation-release]
+    needs: [merge-validation-main, test-user-dao, merge-validation-stage, merge-validation-release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -135,7 +150,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: production-approval  # New environment for main approval
+    environment: production-approval
     steps:
       - name: Request Production Approval
         run: echo "This push to 'main' requires manual approval for production deployment."
@@ -144,7 +159,7 @@ jobs:
     needs: main-approval
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    environment: production  # New environment for production deployment
+    environment: production
     steps:
       - uses: actions/checkout@v3
       - name: Download Build Artifacts

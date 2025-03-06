@@ -7,6 +7,7 @@ on:
       - main
   push:
     branches:
+      - dev
       - stage
       - release
       - main
@@ -27,21 +28,6 @@ jobs:
             exit 1
           fi
 
-  # Validate merges to stage branch
-  merge-validation-stage:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Validate Merge to Stage
-        run: |
-          if [[ "${{ github.head_ref }}" != "dev" ]]; then
-            echo "Error: Pull requests to stage must be from the dev branch"
-            exit 1
-          fi
-
   # Validate merges to release branch
   merge-validation-release:
     runs-on: ubuntu-latest
@@ -54,6 +40,21 @@ jobs:
         run: |
           if [[ "${{ github.head_ref }}" != "stage" ]]; then
             echo "Error: Pull requests to release must be from the stage branch"
+            exit 1
+          fi
+
+  # Validate merges to stage branch
+  merge-validation-stage:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Validate Merge to Stage
+        run: |
+          if [[ "${{ github.head_ref }}" != "dev" ]]; then
+            echo "Error: Pull requests to stage must be from the dev branch"
             exit 1
           fi
 
@@ -146,6 +147,28 @@ jobs:
           name: build-package
           path: target/*.jar
           retention-days: 7
+
+  # Deploy to development environment
+  deploy-to-dev:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    environment: development
+    steps:
+      - uses: actions/checkout@v3
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-package
+          path: target/
+      - name: List Downloaded Artifacts
+        run: |
+          echo "Listing downloaded artifacts:"
+          ls -la target/
+      - name: Deploy to Development Environment
+        run: |
+          echo "Deploying to development environment from dev branch"
+          # Add dev deployment commands here (e.g., scp target/*.jar user@dev-server:/path)
 
   # Deploy to staging environment
   deploy-to-staging:

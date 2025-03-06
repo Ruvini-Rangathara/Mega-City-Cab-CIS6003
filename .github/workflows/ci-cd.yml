@@ -29,7 +29,7 @@ jobs:
           fi
 
   # Validate merges to release branch
-  merge-validation-stage:  # Updated job name
+  merge-validation-stage:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'release'
     steps:

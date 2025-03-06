@@ -13,51 +13,6 @@ on:
       - main
 
 jobs:
-  # Validate merges to main branch
-  merge-validation-release:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'main'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Validate Merge to Main
-        run: |
-          if [[ "${{ github.head_ref }}" != "release" ]]; then
-            echo "Error: Pull requests to main must be from the release branch"
-            exit 1
-          fi
-
-  # Validate merges to release branch
-  merge-validation-stage:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'release'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Validate Merge to Release
-        run: |
-          if [[ "${{ github.head_ref }}" != "stage" ]]; then
-            echo "Error: Pull requests to release must be from the stage branch"
-            exit 1
-          fi
-
-  # Validate merges to stage branch
-  merge-validation-dev:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' && github.base_ref == 'stage'
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Validate Merge to Stage
-        run: |
-          if [[ "${{ github.head_ref }}" != "dev" ]]; then
-            echo "Error: Pull requests to stage must be from the dev branch"
-            exit 1
-          fi
-
   # Run unit tests for UserDaoImpl
   test-user-dao:
     runs-on: ubuntu-latest

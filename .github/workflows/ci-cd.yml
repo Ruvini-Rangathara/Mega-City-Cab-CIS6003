@@ -12,6 +12,7 @@ on:
       - main
 
 jobs:
+  # Validate merges to main branch
   merge-validation-main:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'main'
@@ -26,6 +27,7 @@ jobs:
             exit 1
           fi
 
+  # Validate merges to stage branch
   merge-validation-stage:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'stage'
@@ -40,6 +42,7 @@ jobs:
             exit 1
           fi
 
+  # Validate merges to release branch
   merge-validation-release:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request' && github.base_ref == 'release'
@@ -54,6 +57,7 @@ jobs:
             exit 1
           fi
 
+  # Run unit tests for UserDaoImpl
   test-user-dao:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -103,10 +107,12 @@ jobs:
       - name: Check Test Results
         if: always()
         run: |
-          mvn test -Dtest=UserDaoImplTest
           if [ -d "target/surefire-reports" ]; then
             tar -czf surefire-reports.tar.gz target/surefire-reports/
             echo "Test reports archived as surefire-reports.tar.gz"
+          else
+            echo "Error: Test reports directory not found"
+            exit 1
           fi
       - name: Upload Test Reports
         if: always()
@@ -116,8 +122,10 @@ jobs:
           path: surefire-reports.tar.gz
           retention-days: 7
 
+  # Build the project
   build:
     runs-on: ubuntu-latest
+    needs: test-user-dao
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
       - uses: actions/checkout@v3
@@ -127,9 +135,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Build Project
+        run: mvn clean package -DskipTests
+      - name: List Target Directory
         run: |
-          mvn clean package -DskipTests
-          ls -la target/  # Debug: List files to ensure JAR exists
+          echo "Listing files in target directory:"
+          ls -la target/
       - name: Archive Build Artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -137,6 +147,7 @@ jobs:
           path: target/*.jar
           retention-days: 7
 
+  # Deploy to staging environment
   deploy-to-staging:
     needs: build
     runs-on: ubuntu-latest
@@ -148,11 +159,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package
+          path: target/
+      - name: List Downloaded Artifacts
+        run: |
+          echo "Listing downloaded artifacts:"
+          ls -la target/
       - name: Deploy to Staging Environment
         run: |
           echo "Deploying to staging environment from stage branch"
           # Add staging deployment commands here (e.g., scp target/*.jar user@staging-server:/path)
 
+  # Deploy to pre-production environment
   deploy-to-preprod:
     needs: build
     runs-on: ubuntu-latest
@@ -164,11 +181,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package
+          path: target/
+      - name: List Downloaded Artifacts
+        run: |
+          echo "Listing downloaded artifacts:"
+          ls -la target/
       - name: Deploy to Pre-Production Environment
         run: |
           echo "Deploying to pre-production environment from release branch"
           # Add pre-production deployment commands here (e.g., scp target/*.jar user@preprod-server:/path)
 
+  # Deploy to production environment
   main-deployment:
     needs: build
     runs-on: ubuntu-latest
@@ -180,6 +203,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: package
+          path: target/
+      - name: List Downloaded Artifacts
+        run: |
+          echo "Listing downloaded artifacts:"
+          ls -la target/
       - name: Deploy to Production
         run: |
           echo "Deploying to production environment from main branch"

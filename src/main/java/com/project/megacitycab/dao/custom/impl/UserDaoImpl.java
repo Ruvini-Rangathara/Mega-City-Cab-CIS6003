@@ -125,6 +125,16 @@ public class UserDaoImpl implements UserDAO {
         }
     }
 
+    @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT id FROM users ORDER BY createdAt DESC LIMIT 1";
+        ResultSet rs = CrudUtil.execute(connection, sql);
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        throw new SQLException("Failed to get last inserted ID");
+    }
+
     private User mapResultSetToUser(ResultSet result) throws SQLException {
         return new User.UserBuilder()
                 .id(result.getString("id"))

@@ -6,6 +6,9 @@
     <file url="file://$PROJECT_DIR$/src/test/java/com/project/megacitycab/dao/custom/impl/CustomerDaoImplTest.java" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/test/java/com/project/megacitycab/dao/custom/impl/UserDaoImplTest.java" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/src/test/java/com/project/megacitycab/dao/custom/impl/VehicleDaoImplTest.java" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/test/java/com/project/megacitycab/service/custom/impl/BookingServiceImplTest.java" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/test/java/com/project/megacitycab/service/custom/impl/CustomerServiceImplTest.java" dialect="MySQL" />
+    <file url="file://$PROJECT_DIR$/src/test/java/com/project/megacitycab/service/custom/impl/VehicleDriverServiceImplTest.java" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/test/resources/sample_data_test.sql" dialect="MySQL" />
     <file url="file://$PROJECT_DIR$/src/test/resources/schema.sql" dialect="MySQL" />
   </component>

@@ -39,7 +39,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
     }
 
     @Override
-    public boolean add(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException, SQLException {
+    public boolean add(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException, SQLException, ClassNotFoundException {
         try {
             if (!validateVehicleDriver(vehicleDriverDTO)) {
                 throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_VEHICLE_DRIVER_INPUTS);
@@ -92,14 +92,6 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             connection.commit();
             return true;
 
-        } catch (SQLException e) {
-            connection.rollback();
-            logger.log(Level.SEVERE, "SQL Error in add vehicle-driver service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.DATABASE_ERROR);
-        } catch (Exception e) {
-            connection.rollback();
-            logger.log(Level.SEVERE, "Error in add vehicle-driver service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         } finally {
             if (connection != null) {
                 connection.setAutoCommit(true);
@@ -108,7 +100,7 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
     }
 
     @Override
-    public boolean update(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException, SQLException {
+    public boolean update(VehicleDriverDTO vehicleDriverDTO) throws MegaCityCabException, SQLException, ClassNotFoundException {
         try {
             connection.setAutoCommit(false);
             if (!validateVehicleDriver(vehicleDriverDTO)) {
@@ -129,17 +121,13 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             connection.commit();
             return true;
 
-        } catch (Exception e) {
-            connection.rollback();
-            logger.log(Level.SEVERE, "Error in update vehicle-driver service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         } finally {
             connection.setAutoCommit(true);
         }
     }
 
     @Override
-    public boolean delete(Object... args) throws MegaCityCabException, SQLException {
+    public boolean delete(Object... args) throws MegaCityCabException, SQLException, ClassNotFoundException {
 
         try {
             connection.setAutoCommit(false);
@@ -161,31 +149,22 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
             connection.commit();
             return true;
 
-        } catch (Exception e) {
-            connection.rollback();
-            logger.log(Level.SEVERE, "Error in delete vehicle-driver service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         } finally {
             connection.setAutoCommit(true);
         }
     }
 
     @Override
-    public VehicleDriverDTO searchById(Object... args) throws MegaCityCabException {
-        try {
-            VehicleDTO vehicle = VehicleConverter.toDTO(vehicleDAO.searchById(connection, args));
+    public VehicleDriverDTO searchById(Object... args) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        VehicleDTO vehicle = VehicleConverter.toDTO(vehicleDAO.searchById(connection, args));
 
-            if (vehicle == null) {
-                return null;
-            }
-
-            DriverDTO driver = DriverConverter.toDTO(driverDAO.searchById(connection, vehicle.getDriverId()));
-            return new VehicleDriverDTO.VehicleDriverDTOBuilder().driver(driver).vehicle(vehicle).build();
-
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in search vehicle-driver by ID service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        if (vehicle == null) {
+            return null;
         }
+
+        DriverDTO driver = DriverConverter.toDTO(driverDAO.searchById(connection, vehicle.getDriverId()));
+        return new VehicleDriverDTO.VehicleDriverDTOBuilder().driver(driver).vehicle(vehicle).build();
+
     }
 
     @Override
@@ -330,14 +309,12 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
 
             // Enhance with driver details
             for (Vehicle vehicle : vehicles) {
-                Driver driver = vehicle.getDriverId() != null ? driverDAO.searchById(connection, vehicle.getDriverId()) : null;
-
+                String driverId = vehicle.getDriverId();
+                Driver driver = driverId != null ? driverDAO.searchById(connection, vehicle.getDriverId()) : null;
                 VehicleDTO vehicleDTO = new VehicleDTO.VehicleDTOBuilder().id(vehicle.getId()).licensePlate(vehicle.getLicensePlate()).driverId(vehicle.getDriverId()).model(vehicle.getModel()).brand(vehicle.getBrand()).capacity(vehicle.getCapacity()).color(vehicle.getColor()).pricePerKm(vehicle.getPricePerKm()).build();
-
                 DriverDTO driverDTO = driver != null ? new DriverDTO.DriverDTOBuilder().id(driver.getId()).name(driver.getName()).licenseNo(driver.getLicenseNo()).mobileNo(driver.getMobileNo()).email(driver.getEmail()).experience(driver.getExperience()).build() : null;
 
                 VehicleDriverDTO vehicleDriverDTO = new VehicleDriverDTO.VehicleDriverDTOBuilder().vehicle(vehicleDTO).driver(driverDTO).build();
-
                 availableVehicles.add(vehicleDriverDTO);
             }
         } catch (SQLException e) {
@@ -349,5 +326,11 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
         }
 
         return availableVehicles;
+    }
+
+    @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
+        return vehicleDAO.getLastInsertedId(connection);
+
     }
 }

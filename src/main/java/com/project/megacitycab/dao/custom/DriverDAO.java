@@ -8,6 +8,4 @@ import java.sql.SQLException;
 
 public interface DriverDAO extends CrudDAO<Driver> {
     boolean existByLicenseNo(Connection connection, Object... args) throws SQLException, ClassNotFoundException;
-    String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException;
-
 }

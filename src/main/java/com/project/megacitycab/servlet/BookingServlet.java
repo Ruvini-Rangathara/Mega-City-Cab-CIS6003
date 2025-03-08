@@ -101,7 +101,7 @@ public class BookingServlet extends HttpServlet {
         response.sendRedirect(redirectUrl.toString());
     }
 
-    private void listBookings(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+    private void listBookings(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException, ClassNotFoundException {
         Map<String, String> searchParams = new HashMap<>();
         String searchDate = request.getParameter("searchDate");
         String searchCustomer = request.getParameter("searchCustomer");
@@ -143,7 +143,7 @@ public class BookingServlet extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
-    private void viewBooking(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException {
+    private void viewBooking(HttpServletRequest request, HttpServletResponse response) throws SQLException, ServletException, IOException, ClassNotFoundException {
         String bookingId = request.getParameter("id");
         BookingDTO booking = bookingService.searchById(bookingId);
 

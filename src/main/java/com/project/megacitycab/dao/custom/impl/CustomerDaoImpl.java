@@ -126,4 +126,14 @@ public class CustomerDaoImpl implements CustomerDAO {
         ResultSet result = CrudUtil.execute(connection,"SELECT * FROM customers WHERE nic=? AND deletedAt IS NULL", args[0]);
         return result.next();
     }
+
+    @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT id FROM customers ORDER BY createdAt DESC LIMIT 1";
+        ResultSet rs = CrudUtil.execute(connection, sql);
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        throw new SQLException("Failed to get last inserted ID");
+    }
 }

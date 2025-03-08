@@ -21,4 +21,6 @@ public interface CrudDAO<T extends SuperEntity> extends SuperDAO {
 
     boolean existByPk(Connection connection, Object... args) throws SQLException, ClassNotFoundException;
 
+    String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException;
+
 }

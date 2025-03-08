@@ -17,7 +17,6 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -54,78 +53,49 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public boolean update(BookingDTO bookingDTO) throws MegaCityCabException {
-        try {
-            if (!validateBooking(bookingDTO)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_BOOKING_INPUTS);
-            }
+    public boolean update(BookingDTO bookingDTO) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        if (!validateBooking(bookingDTO)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_BOOKING_INPUTS);
+        }
 
-            if (!bookingDAO.existByPk(connection, bookingDTO.getId())) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.BOOKING_NOT_FOUND);
-            }
+        if (!bookingDAO.existByPk(connection, bookingDTO.getId())) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.BOOKING_NOT_FOUND);
+        }
 
-            boolean isUpdated = bookingDAO.update(connection, BookingConverter.toEntity(bookingDTO));
-            if (!isUpdated) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.ERROR_UPDATING_BOOKING);
-            }
-
-            return true;
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error in update booking service", e);
+        boolean isUpdated = bookingDAO.update(connection, BookingConverter.toEntity(bookingDTO));
+        if (!isUpdated) {
             throw new MegaCityCabException(MegaCityCabExceptionType.ERROR_UPDATING_BOOKING);
-        } catch (MegaCityCabException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected error in update booking service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
+
+        return true;
     }
 
     @Override
-    public boolean delete(Object... args) throws MegaCityCabException {
-        try {
-            if (args.length == 0 || args[0] == null) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_BOOKING_INPUTS);
-            }
-
-            if (!bookingDAO.existByPk(connection, args[0])) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.BOOKING_NOT_FOUND);
-            }
-
-            return bookingDAO.delete(connection, args);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error in delete booking service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.ERROR_DELETING_BOOKING);
-        } catch (MegaCityCabException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected error in delete booking service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+    public boolean delete(Object... args) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        if (args.length == 0 || args[0] == null) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_BOOKING_INPUTS);
         }
+
+        if (!bookingDAO.existByPk(connection, args[0])) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.BOOKING_NOT_FOUND);
+        }
+
+        return bookingDAO.delete(connection, args);
+
     }
 
     @Override
-    public BookingDTO searchById(Object... args) throws MegaCityCabException {
-        try {
-            if (args.length == 0 || args[0] == null) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_BOOKING_INPUTS);
-            }
-
-            Booking booking = bookingDAO.searchById(connection, args);
-
-            // Return null if not found
-            if (booking == null) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.BOOKING_NOT_FOUND);
-            }
-
-            return BookingConverter.toDTO(booking);
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error in search booking by ID service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Unexpected error in search booking by ID service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+    public BookingDTO searchById(Object... args) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        if (args.length == 0 || args[0] == null) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_BOOKING_INPUTS);
         }
+        Booking booking = bookingDAO.searchById(connection, args);
+
+        // Return null if not found
+        if (booking == null) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.BOOKING_NOT_FOUND);
+        }
+        return BookingConverter.toDTO(booking);
     }
 
     @Override
@@ -151,6 +121,7 @@ public class BookingServiceImpl implements BookingService {
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
     }
+
     @Override
     public boolean existByPk(Object... args) throws MegaCityCabException {
         try {
@@ -166,6 +137,11 @@ public class BookingServiceImpl implements BookingService {
             logger.log(Level.SEVERE, "Unexpected error in exist by PK service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
+        return bookingDAO.getLastInsertedId(connection);
     }
 
     @Override
@@ -190,16 +166,6 @@ public class BookingServiceImpl implements BookingService {
     // Helper method to validate booking data
     private boolean validateBooking(BookingDTO booking) {
         // Basic validation to ensure required fields are present
-        return booking != null
-                && booking.getVehicleId() != null && !booking.getVehicleId().isEmpty()
-                && booking.getBookingDate() != null
-                && booking.getPickupTime() != null
-                && booking.getReleaseTime() != null
-                && booking.getPickupLocation() != null && !booking.getPickupLocation().isEmpty()
-                && booking.getDestination() != null && !booking.getDestination().isEmpty()
-                && booking.getDistance() > 0
-                && booking.getFare() > 0
-                && booking.getNetTotal() > 0
-                && booking.getStatus() != null;
+        return booking != null && booking.getVehicleId() != null && !booking.getVehicleId().isEmpty() && booking.getBookingDate() != null && booking.getPickupTime() != null && booking.getReleaseTime() != null && booking.getPickupLocation() != null && !booking.getPickupLocation().isEmpty() && booking.getDestination() != null && !booking.getDestination().isEmpty() && booking.getDistance() > 0 && booking.getFare() > 0 && booking.getNetTotal() > 0 && booking.getStatus() != null;
     }
 }

@@ -55,7 +55,7 @@ public class DriverDaoImpl implements DriverDAO {
         String sql = "SELECT * FROM drivers WHERE id=? AND deletedAt IS NULL";
         ResultSet result = CrudUtil.execute(connection,sql, args[0]);
         if (result.next()) {
-            return new Driver.DriverBuilder()
+            Driver driver = new Driver.DriverBuilder()
                     .id(result.getString("id"))
                     .name(result.getString("name"))
                     .licenseNo(result.getString("licenseNo"))
@@ -66,6 +66,7 @@ public class DriverDaoImpl implements DriverDAO {
                     .updatedAt(result.getString("updatedAt"))
                     .deletedAt(result.getString("deletedAt"))
                     .build();
+            return driver;
         }
         return null;
     }

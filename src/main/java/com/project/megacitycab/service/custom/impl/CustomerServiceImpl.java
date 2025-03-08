@@ -11,6 +11,7 @@ import com.project.megacitycab.util.exception.MegaCityCabException;
 import com.project.megacitycab.util.exception.MegaCityCabExceptionType;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,100 +29,84 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean add(CustomerDTO entity) throws MegaCityCabException {
-        try {
-            if (!validateCustomer(entity)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_CUSTOMER_INPUTS);
-            }
+    public boolean add(CustomerDTO entity) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        if (!validateCustomer(entity)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_CUSTOMER_INPUTS);
+        }
 
-            if (customerDAO.existByRegNo(connection, entity)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_ALREADY_EXISTS);
-            }
+        if (customerDAO.existByRegNo(connection, entity)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_ALREADY_EXISTS);
+        }
 
-            if (customerDAO.existByEmail(connection, entity)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_EMAIL_ALREADY_EXISTS);
-            }
+        if (customerDAO.existByEmail(connection, entity)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_EMAIL_ALREADY_EXISTS);
+        }
 
-            if (customerDAO.existByNic(connection, entity)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NIC_ALREADY_EXISTS);
-            }
+        if (customerDAO.existByNic(connection, entity)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NIC_ALREADY_EXISTS);
+        }
 
-            boolean isAdded = customerDAO.add(connection, CustomerConverter.toEntity(entity));
-            if (!isAdded) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-            }
-
-            return true;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in add customer service", e);
+        boolean isAdded = customerDAO.add(connection, CustomerConverter.toEntity(entity));
+        if (!isAdded) {
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
+
+        return true;
+
     }
 
     @Override
-    public boolean update(CustomerDTO entity) throws MegaCityCabException {
-        try {
-            if (!validateCustomer(entity)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_CUSTOMER_INPUTS);
-            }
+    public boolean update(CustomerDTO entity) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        if (!validateCustomer(entity)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.INVALID_CUSTOMER_INPUTS);
+        }
 
-            if (!customerDAO.existByPk(connection, entity.getId())) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NOT_FOUND);
-            }
+        if (!customerDAO.existByPk(connection, entity.getId())) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NOT_FOUND);
+        }
 
-            CustomerDTO originalCustomer = CustomerConverter.toDTO(customerDAO.searchById(connection, entity.getId()));
+        CustomerDTO originalCustomer = CustomerConverter.toDTO(customerDAO.searchById(connection, entity.getId()));
 
-            if (!Objects.equals(originalCustomer.getRegistrationNo(), entity.getRegistrationNo())) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CANNOT_CHANGE_REG_NO);
-            }
+        if (!Objects.equals(originalCustomer.getRegistrationNo(), entity.getRegistrationNo())) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CANNOT_CHANGE_REG_NO);
+        }
 
-            // Check email uniqueness only if email is being changed
-            if (!originalCustomer.getEmail().equals(entity.getEmail()) && customerDAO.existByEmail(connection, entity)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_EMAIL_ALREADY_EXISTS);
-            }
+        // Check email uniqueness only if email is being changed
+        if (!originalCustomer.getEmail().equals(entity.getEmail()) && customerDAO.existByEmail(connection, entity)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_EMAIL_ALREADY_EXISTS);
+        }
 
-            // Check NIC uniqueness only if NIC is being changed
-            if (!originalCustomer.getNic().equals(entity.getNic()) && customerDAO.existByNic(connection, entity)) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NIC_ALREADY_EXISTS);
-            }
+        // Check NIC uniqueness only if NIC is being changed
+        if (!originalCustomer.getNic().equals(entity.getNic()) && customerDAO.existByNic(connection, entity)) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NIC_ALREADY_EXISTS);
+        }
 
-            boolean isUpdated = customerDAO.update(connection, CustomerConverter.toEntity(entity));
-            if (!isUpdated) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
-            }
-            return true;
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in update customer service", e);
+        boolean isUpdated = customerDAO.update(connection, CustomerConverter.toEntity(entity));
+        if (!isUpdated) {
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
+        return true;
     }
 
     @Override
-    public boolean delete(Object... args) throws MegaCityCabException {
-        try {
-            if (!customerDAO.existByPk(connection, args[0])) {
-                throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NOT_FOUND);
-            }
-
-            return customerDAO.delete(connection, args);
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in delete customer service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+    public boolean delete(Object... args) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        if (!customerDAO.existByPk(connection, args[0])) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NOT_FOUND);
         }
+        return customerDAO.delete(connection, args);
     }
 
     @Override
-    public CustomerDTO searchById(Object... args) throws MegaCityCabException {
-        try {
-            return CustomerConverter.toDTO(customerDAO.searchById(connection, args));
-        } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in search customer by ID service", e);
-            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+    public CustomerDTO searchById(Object... args) throws MegaCityCabException, SQLException, ClassNotFoundException {
+        CustomerDTO customerDTO = CustomerConverter.toDTO(customerDAO.searchById(connection, args));
+        if (customerDTO == null) {
+            throw new MegaCityCabException(MegaCityCabExceptionType.CUSTOMER_NOT_FOUND);
         }
+        return customerDTO;
     }
 
     @Override
-    public List<CustomerDTO> getAll(Map<String, String> searchParams) throws MegaCityCabException {
+    public List<CustomerDTO> getAll(Map<String, String> searchParams) throws MegaCityCabException, SQLException {
         try {
             // Validate and clean search parameters
             Map<String, String> cleanParams = new HashMap<>();
@@ -141,13 +126,19 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public boolean existByPk(Object... args) throws MegaCityCabException {
+    public boolean existByPk(Object... args) throws MegaCityCabException, SQLException {
         try {
             return customerDAO.existByPk(connection, args);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in exist by PK service", e);
             throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, MegaCityCabException, ClassNotFoundException {
+        return customerDAO.getLastInsertedId(connection);
+
     }
 
     private boolean validateCustomer(CustomerDTO customer) {

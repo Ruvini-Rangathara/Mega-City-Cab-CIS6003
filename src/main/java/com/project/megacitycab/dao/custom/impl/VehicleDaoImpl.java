@@ -96,6 +96,16 @@ public class VehicleDaoImpl implements VehicleDAO {
     }
 
     @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT id FROM vehicles ORDER BY createdAt DESC LIMIT 1";
+        ResultSet rs = CrudUtil.execute(connection, sql);
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        throw new SQLException("Failed to get last inserted ID");
+    }
+
+    @Override
     public boolean existByLicensePlate(Connection connection, Object... args) throws SQLException, ClassNotFoundException {
         ResultSet result = CrudUtil.execute(connection, "SELECT * FROM vehicles WHERE licensePlate=? AND deletedAt IS NULL", args[0]);
         return result.next();

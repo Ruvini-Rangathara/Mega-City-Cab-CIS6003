@@ -10,4 +10,5 @@ public interface UserDAO extends CrudDAO<User> {
     boolean existByEmail(Connection connection, Object... args) throws SQLException, ClassNotFoundException;
 
     User findByEmail(Connection connection, Object... args) throws SQLException, ClassNotFoundException;
-}
+
+    }

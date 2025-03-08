@@ -110,4 +110,14 @@ public class BookingDaoImpl implements BookingDAO {
     private Booking extractBookingFromResultSet(ResultSet result) throws SQLException {
         return new Booking.BookingBuilder().id(result.getString("id")).customerId(result.getString("customerId")).vehicleId(result.getString("vehicleId")).bookingDate(result.getObject("bookingDate", LocalDate.class)).pickupTime(result.getTime("pickupTime").toLocalTime()).releaseTime(result.getTime("releaseTime").toLocalTime()).pickupLocation(result.getString("pickupLocation")).destination(result.getString("destination")).distance(result.getDouble("distance")).fare(result.getDouble("fare")).discount(result.getDouble("discount")).tax(result.getDouble("tax")).netTotal(result.getDouble("netTotal")).status(Enum.valueOf(com.project.megacitycab.constant.BookingStatus.class, result.getString("status"))).createdAt(result.getTimestamp("createdAt")).updatedAt(result.getTimestamp("updatedAt")).build();
     }
+
+    @Override
+    public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
+        String sql = "SELECT id FROM bookings ORDER BY createdAt DESC LIMIT 1";
+        ResultSet rs = CrudUtil.execute(connection, sql);
+        if (rs.next()) {
+            return rs.getString(1);
+        }
+        throw new SQLException("Failed to get last inserted ID");
+    }
 }

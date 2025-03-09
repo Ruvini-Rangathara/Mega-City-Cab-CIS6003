@@ -263,7 +263,7 @@
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/drivers">
+            <a href="${pageContext.request.contextPath}/driver-servlet">
                 <i class="bi bi-person-badge"></i>
                 Drivers
             </a>
@@ -276,7 +276,7 @@
         </li>
         <div class="sidebar-divider"></div>
         <li>
-            <a href="${pageContext.request.contextPath}/reports">
+            <a href="${pageContext.request.contextPath}/views/reports.jsp">
                 <i class="bi bi-bar-chart"></i>
                 Reports
             </a>

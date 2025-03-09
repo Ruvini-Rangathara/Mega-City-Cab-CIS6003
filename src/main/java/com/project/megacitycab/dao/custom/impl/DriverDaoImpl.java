@@ -76,32 +76,34 @@ public class DriverDaoImpl implements DriverDAO {
         List<Driver> drivers = new ArrayList<>();
         List<Object> params = new ArrayList<>();
 
+        // Base SQL query
         StringBuilder sql = new StringBuilder("SELECT * FROM drivers WHERE deletedAt IS NULL");
 
-        // Add search filters if provided
-        if (searchParams != null) {
-            if (searchParams.containsKey("name")) {
+        // Add search filters only if searchParams is not null and contains meaningful values
+        if (searchParams != null && !searchParams.isEmpty()) {
+            if (searchParams.containsKey("name") && searchParams.get("name") != null && !searchParams.get("name").trim().isEmpty()) {
                 sql.append(" AND name LIKE ?");
-                params.add("%" + searchParams.get("name") + "%");
+                params.add("%" + searchParams.get("name").trim() + "%");
             }
-            if (searchParams.containsKey("licenseNo")) {
+            if (searchParams.containsKey("licenseNo") && searchParams.get("licenseNo") != null && !searchParams.get("licenseNo").trim().isEmpty()) {
                 sql.append(" AND licenseNo LIKE ?");
-                params.add("%" + searchParams.get("licenseNo") + "%");
+                params.add("%" + searchParams.get("licenseNo").trim() + "%");
             }
-            if (searchParams.containsKey("mobileNo")) {
+            if (searchParams.containsKey("mobileNo") && searchParams.get("mobileNo") != null && !searchParams.get("mobileNo").trim().isEmpty()) {
                 sql.append(" AND mobileNo LIKE ?");
-                params.add("%" + searchParams.get("mobileNo") + "%");
+                params.add("%" + searchParams.get("mobileNo").trim() + "%");
             }
-            if (searchParams.containsKey("email")) {
+            if (searchParams.containsKey("email") && searchParams.get("email") != null && !searchParams.get("email").trim().isEmpty()) {
                 sql.append(" AND email LIKE ?");
-                params.add("%" + searchParams.get("email") + "%");
+                params.add("%" + searchParams.get("email").trim() + "%");
             }
         }
 
         // Order by creation date descending
         sql.append(" ORDER BY createdAt DESC");
 
-        ResultSet result = CrudUtil.execute(connection,sql.toString(), params.toArray());
+        // Execute query
+        ResultSet result = CrudUtil.execute(connection, sql.toString(), params.toArray());
         while (result.next()) {
             Driver driver = new Driver.DriverBuilder()
                     .id(result.getString("id"))
@@ -116,9 +118,9 @@ public class DriverDaoImpl implements DriverDAO {
                     .build();
             drivers.add(driver);
         }
+
         return drivers;
     }
-
     @Override
     public boolean existByPk(Connection connection,Object... args) throws SQLException, ClassNotFoundException {
         String sql = "SELECT * FROM drivers WHERE id=? AND deletedAt IS NULL";

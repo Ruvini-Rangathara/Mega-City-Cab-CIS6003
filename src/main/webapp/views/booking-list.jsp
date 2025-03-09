@@ -291,7 +291,7 @@
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/drivers">
+            <a href="${pageContext.request.contextPath}/driver-servlet">
                 <i class="bi bi-person-badge"></i>
                 Drivers
             </a>

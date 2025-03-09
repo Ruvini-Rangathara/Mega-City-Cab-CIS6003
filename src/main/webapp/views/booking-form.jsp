@@ -23,12 +23,12 @@
         body {
             background-color: var(--background-color);
             min-height: 100vh;
-            padding-top: 60px;
+            /*padding-top: 60px;*/
         }
 
         .summary-card {
             position: sticky;
-            top: 80px;
+            top: 20px;
             margin-top: 2rem;
             width: 100%;
         }
@@ -209,16 +209,16 @@
 </head>
 <body>
 <!-- Navbar -->
-<nav class="navbar navbar-expand-lg fixed-top">
-    <div class="container">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/">MEGA CITY CAB</a>
-        <div class="ms-auto d-flex align-items-center">
-            <% String currentUser = (String) session.getAttribute("username");
-                if (currentUser == null) currentUser = "User"; %>
-            <span class="me-3"><i class="bi bi-person-circle me-2"></i><%=currentUser%></span>
-        </div>
-    </div>
-</nav>
+<%--<nav class="navbar navbar-expand-lg fixed-top">--%>
+<%--    <div class="container">--%>
+<%--        <a class="navbar-brand" href="${pageContext.request.contextPath}/">MEGA CITY CAB</a>--%>
+<%--        <div class="ms-auto d-flex align-items-center">--%>
+<%--            <% String currentUser = (String) session.getAttribute("username");--%>
+<%--                if (currentUser == null) currentUser = "User"; %>--%>
+<%--            <span class="me-3"><i class="bi bi-person-circle me-2"></i><%=currentUser%></span>--%>
+<%--        </div>--%>
+<%--    </div>--%>
+<%--</nav>--%>
 
 <%
     BookingDTO booking = (BookingDTO) request.getAttribute("booking");

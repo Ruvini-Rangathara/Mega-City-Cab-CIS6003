@@ -2,6 +2,8 @@ package com.project.megacitycab.servlet;
 
 import com.project.megacitycab.constant.BookingStatus;
 import com.project.megacitycab.dto.*;
+import com.project.megacitycab.service.ServiceFactory;
+import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.BookingService;
 import com.project.megacitycab.service.custom.CustomerService;
 import com.project.megacitycab.service.custom.VehicleDriverService;
@@ -32,9 +34,9 @@ public class BookingServlet extends HttpServlet {
     private VehicleDriverService vehicleDriverService;
 
     public void init() {
-        bookingService = new BookingServiceImpl();
-        customerService = new CustomerServiceImpl();
-        vehicleDriverService = new VehicleDriverServiceImpl();
+        bookingService = ServiceFactory.getInstance().getService(ServiceType.BOOKING_SERVICE_IMPL);
+        customerService = ServiceFactory.getInstance().getService(ServiceType.CUSTOMER_SERVICE_IMPL);
+        vehicleDriverService = ServiceFactory.getInstance().getService(ServiceType.VEHICLE_DRIVER_SERVICE_IMPL);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

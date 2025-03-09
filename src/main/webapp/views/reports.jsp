@@ -19,22 +19,27 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
     <style>
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            scrollbar-width: none;
+        }
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
             --background-color: #f8f9fa;
             --success-color: #28a745;
             --danger-color: #dc3545;
-            --text-color: #212529;
         }
 
         body {
             background-color: var(--background-color);
             min-height: 100vh;
-            padding-top: 60px;
+            padding-top: 40px;
             margin-left: 250px;
-            font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: var(--text-color);
         }
 
         /* Sidebar Styles */
@@ -42,7 +47,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 250px;
+            width: 300px;
             height: 100vh;
             background-color: white;
             box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
@@ -140,9 +145,9 @@
             margin: 30px 0;
         }
 
-        /* Report Section Styles */
+        /* Booking Management Styles */
         .top-section {
-            margin-top: 0.7rem;
+            margin-top: 2rem;
             background-color: white;
             border-radius: 1rem;
             padding: 1.5rem;
@@ -158,87 +163,124 @@
         }
 
         .section-title {
-            color: var(--text-color);
+            color: #212529;
             font-weight: 600;
             font-size: 1.25rem;
             margin: 0;
         }
 
-        /* Tab Navigation Styling */
-        .nav-tabs {
-            display: flex;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 1.5rem;
-        }
-
-        .nav-tabs .nav-item {
-            margin-right: 10px;
-        }
-
-        .nav-tabs .nav-link {
-            color: var(--secondary-color);
-            background-color: transparent;
+        .card {
             border: none;
-            padding: 0.5rem 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 0.25rem 0.25rem 0 0;
-            transition: all 0.3s ease;
-        }
-
-        .nav-tabs .nav-link:hover {
-            background-color: rgba(252, 163, 17, 0.1);
-            color: var(--primary-color);
-        }
-
-        .nav-tabs .nav-link.active {
-            color: var(--primary-color);
-            background-color: rgba(252, 163, 17, 0.2);
-            border-bottom: 2px solid var(--primary-color);
-        }
-
-        .tab-content {
-            padding: 1rem;
-            background-color: white;
-            /*border-radius: 1rem;*/
-            /*box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);*/
-        }
-
-        .tab-pane {
-            display: none;
-        }
-
-        .tab-pane.active {
-            display: block;
-        }
-
-        /* Filter Form Styling */
-        .filter-form {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .filter-form label {
-            font-weight: 500;
-            color: var(--text-color);
-        }
-
-        .filter-form select, .filter-form input {
-            padding: 0.5rem;
-            border: 1px solid #ced4da;
-            border-radius: 0.25rem;
-            font-family: inherit;
-            color: var(--text-color);
-            background-color: white;
-            -webkit-appearance: auto;
-            -moz-appearance: auto;
-            appearance: auto;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+            border-radius: 1rem;
         }
 
         .btn-primary {
             background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-primary:hover {
+            background-color: #e59100;
+            border-color: #e59100;
+        }
+
+        .status-pending {
+            color: #fd7e14;
+            background-color: #fff3cd;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .status-confirmed {
+            color: #198754;
+            background-color: #d1e7dd;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .status-cancelled {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .status-completed {
+            color: #0dcaf0;
+            background-color: #cff4fc;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+        }
+
+        .btn-view {
+            background-color: #ffeb99;
+            border-color: #ffeb99;
+            color: #000;
+        }
+
+        .btn-view:hover {
+            background-color: #ffe066;
+            border-color: #ffe066;
+            color: #000;
+        }
+
+        .table-responsive {
+            border-radius: 0.5rem;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        #successMessage, #errorMessage {
+            margin-top: 2rem;
+        }
+
+        .alert {
+            border-radius: 0.5rem;
+        }
+
+        .time-info {
+            font-size: 0.85rem;
+        }
+
+        .time-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .customer-info {
+            font-size: 0.9rem;
+        }
+
+        .customer-name {
+            font-weight: 500;
+        }
+
+        .customer-mobile {
+            color: #6c757d;
+        }
+
+        .vehicle-info {
+            font-size: 0.9rem;
+        }
+
+        .vehicle-brand {
+            font-weight: 500;
+        }
+
+        .vehicle-model {
+            color: #6c757d;
+        }
+
+        .export-btn {
+            background-color: #17a2b8;
             border: none;
             color: white;
             padding: 0.5rem 1rem;
@@ -246,13 +288,10 @@
             cursor: pointer;
             font-family: inherit;
             font-weight: 500;
+            margin-left: 1rem;
         }
 
-        .btn-primary:hover {
-            background-color: #e59100;
-        }
-
-        .btn-secondary {
+        .print-btn {
             background-color: #6c757d;
             border: none;
             color: white;
@@ -261,66 +300,18 @@
             cursor: pointer;
             font-family: inherit;
             font-weight: 500;
+            margin-left: 1rem;
         }
 
-        .btn-secondary:hover {
-            background-color: #5a6268;
+
+        .export-btn:hover {
+            background-color: #138496;
         }
 
-        /* Table Styling */
-        .card {
-            border: none;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
-            border-radius: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card-body {
-            padding: 1rem;
-        }
-
-        .table-responsive {
-            border-radius: 0.5rem;
-        }
-
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 0;
-        }
-
-        .table thead th {
-            background-color: #f8f9fa;
-            border-bottom: 2px solid #dee2e6;
-            font-weight: 600;
-            color: var(--text-color);
-        }
-
-        .table td, .table th {
-            padding: 0.75rem;
-            text-align: left;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 0.9rem;
-        }
-
-        .table td {
-            color: var(--text-color);
-        }
-
-        /* Print Button Styling */
-        .print-btn {
-            background-color: var(--success-color);
-            border: none;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-family: inherit;
-            font-weight: 500;
-        }
-
-        .print-btn:hover {
-            background-color: #218838;
+        .button-group {
+            margin-top: 1rem;
+            display: flex;
+            gap: 1rem;
         }
     </style>
 </head>
@@ -330,7 +321,7 @@
     <div class="sidebar-brand">MEGA CITY CAB</div>
     <ul class="sidebar-nav">
         <li>
-            <a href="${pageContext.request.contextPath}/">
+            <a href="${pageContext.request.contextPath}/dashboard.jsp">
                 <i class="bi bi-house-door"></i>
                 Dashboard
             </a>
@@ -380,16 +371,17 @@
             <div class="user-avatar">
                 <% String currentUser = (String) session.getAttribute("username");
                     if (currentUser == null) currentUser = "User";
+//                    out.print(currentUser.substring(0, 1).toUpperCase());
                 %>
-                <%= currentUser.substring(0, 1).toUpperCase() %>
             </div>
             <div class="user-details">
-                <div class="user-name"><%= currentUser %></div>
+                <div class="user-name"><%=currentUser%></div>
                 <div class="user-role">Administrator</div>
             </div>
         </div>
     </div>
 </aside>
+
 
 <!-- Main Content -->
 <div class="container">
@@ -417,21 +409,21 @@
         <div class="tab-content" id="reportTabsContent">
             <!-- Customer Reports -->
             <div class="tab-pane fade show active" id="customerReports" role="tabpanel" aria-labelledby="customer-tab">
-                <div class="filter-form">
-                    <label for="customerDuration">Duration:</label>
-                    <select id="customerDuration" name="customerDuration" onchange="toggleCustomDates('customerDuration', 'customerStartDate', 'customerEndDate')">
-                        <option value="all">All Time</option>
-                        <option value="last7days">Last 7 Days</option>
-                        <option value="last30days">Last 30 Days</option>
-                    </select>
-                    <input type="date" id="customerStartDate" name="customerStartDate" style="display: none;">
-                    <input type="date" id="customerEndDate" name="customerEndDate" style="display: none;">
-                    <button class="btn-primary" onclick="filterCustomerReports()">Generate Report</button>
-                </div>
+<%--                <div class="filter-form">--%>
+<%--                    <label for="customerDuration">Duration:</label>--%>
+<%--                    <select id="customerDuration" name="customerDuration" onchange="toggleCustomDates('customerDuration', 'customerStartDate', 'customerEndDate')">--%>
+<%--                        <option value="all">All Time</option>--%>
+<%--                        <option value="last7days">Last 7 Days</option>--%>
+<%--                        <option value="last30days">Last 30 Days</option>--%>
+<%--                    </select>--%>
+<%--                    <input type="date" id="customerStartDate" name="customerStartDate" style="display: none;">--%>
+<%--                    <input type="date" id="customerEndDate" name="customerEndDate" style="display: none;">--%>
+<%--                    <button class="btn-primary" onclick="filterCustomerReports()">Generate Report</button>--%>
+<%--                </div>--%>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover" id="customerReportsTable">
+                            <table class="table table-hover" id="customerTable">
                                 <thead>
                                 <tr>
                                     <th>Reg. No</th>
@@ -463,7 +455,7 @@
                                 } else {
                                 %>
                                 <tr>
-                                    <td colspan="4" class="text-center">No customer reports found</td>
+                                    <td colspan="6" class="text-center">No customer reports found</td>
                                 </tr>
                                 <%
                                     }
@@ -473,26 +465,29 @@
                         </div>
                     </div>
                 </div>
-                <button class="print-btn" onclick="printReport('customerReportsTable')">Print Report</button>
+                <div class="button-group">
+                    <button class="print-btn" onclick="printCustomerList()">Print Report</button>
+                    <button class="export-btn" onclick="exportToCSV('customerTable')">Export to CSV</button>
+                </div>
             </div>
 
             <!-- Vehicle Driver Reports -->
             <div class="tab-pane fade" id="vehicleDriverReports" role="tabpanel" aria-labelledby="vehicleDriver-tab">
-                <div class="filter-form">
-                    <label for="vehicleDriverDuration">Duration:</label>
-                    <select id="vehicleDriverDuration" name="vehicleDriverDuration" onchange="toggleCustomDates('vehicleDriverDuration', 'vehicleDriverStartDate', 'vehicleDriverEndDate')">
-                        <option value="all">All Time</option>
-                        <option value="last7days">Last 7 Days</option>
-                        <option value="last30days">Last 30 Days</option>
-                    </select>
-                    <input type="date" id="vehicleDriverStartDate" name="vehicleDriverStartDate" style="display: none;">
-                    <input type="date" id="vehicleDriverEndDate" name="vehicleDriverEndDate" style="display: none;">
-                    <button class="btn-primary" onclick="filterVehicleDriverReports()">Generate Report</button>
-                </div>
+<%--                <div class="filter-form">--%>
+<%--                    <label for="vehicleDriverDuration">Duration:</label>--%>
+<%--                    <select id="vehicleDriverDuration" name="vehicleDriverDuration" onchange="toggleCustomDates('vehicleDriverDuration', 'vehicleDriverStartDate', 'vehicleDriverEndDate')">--%>
+<%--                        <option value="all">All Time</option>--%>
+<%--                        <option value="last7days">Last 7 Days</option>--%>
+<%--                        <option value="last30days">Last 30 Days</option>--%>
+<%--                    </select>--%>
+<%--                    <input type="date" id="vehicleDriverStartDate" name="vehicleDriverStartDate" style="display: none;">--%>
+<%--                    <input type="date" id="vehicleDriverEndDate" name="vehicleDriverEndDate" style="display: none;">--%>
+<%--                    <button class="btn-primary" onclick="filterVehicleDriverReports()">Generate Report</button>--%>
+<%--                </div>--%>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover" id="vehicleDriverReportsTable">
+                            <table class="table table-hover" id="vehicleDriverTable">
                                 <thead>
                                 <tr>
                                     <th>License Plate</th>
@@ -530,9 +525,9 @@
                                         <small class="text-muted"><%= vd.getDriver().getEmail() %></small>
                                     </td>
                                     <td>
-                            <span class="status-<%= vd.getVehicle().getStatus().toString().toLowerCase() %>">
-                                <%= vd.getVehicle().getStatus() %>
-                            </span>
+                                        <span class="status-<%= vd.getVehicle().getStatus().toString().toLowerCase() %>">
+                                            <%= vd.getVehicle().getStatus() %>
+                                        </span>
                                     </td>
                                     <td><%= vd.getVehicle().getCreatedAt() != null ? vd.getVehicle().getCreatedAt() : "N/A" %></td>
                                     <td><%= vd.getVehicle().getUpdatedAt() != null ? vd.getVehicle().getUpdatedAt() : "N/A" %></td>
@@ -552,26 +547,29 @@
                         </div>
                     </div>
                 </div>
-                <button class="print-btn" onclick="printReport('vehicleDriverReportsTable')">Print Report</button>
+                <div class="button-group">
+                    <button class="print-btn" onclick="printVehicleDriverList()">Print Report</button>
+                    <button class="export-btn" onclick="exportToCSV('vehicleDriverTable')">Export to CSV</button>
+                </div>
             </div>
 
             <!-- Booking Reports -->
             <div class="tab-pane fade" id="bookingReports" role="tabpanel" aria-labelledby="booking-tab">
-                <div class="filter-form">
-                    <label for="bookingDuration">Duration:</label>
-                    <select id="bookingDuration" name="bookingDuration" onchange="toggleCustomDates('bookingDuration', 'bookingStartDate', 'bookingEndDate')">
-                        <option value="all">All Time</option>
-                        <option value="last7days">Last 7 Days</option>
-                        <option value="last30days">Last 30 Days</option>
-                    </select>
-                    <input type="date" id="bookingStartDate" name="bookingStartDate" style="display: none;">
-                    <input type="date" id="bookingEndDate" name="bookingEndDate" style="display: none;">
-                    <button class="btn-primary" onclick="filterBookingReports()">Generate Report</button>
-                </div>
+<%--                <div class="filter-form">--%>
+<%--                    <label for="bookingDuration">Duration:</label>--%>
+<%--                    <select id="bookingDuration" name="bookingDuration" onchange="toggleCustomDates('bookingDuration', 'bookingStartDate', 'bookingEndDate')">--%>
+<%--                        <option value="all">All Time</option>--%>
+<%--                        <option value="last7days">Last 7 Days</option>--%>
+<%--                        <option value="last30days">Last 30 Days</option>--%>
+<%--                    </select>--%>
+<%--                    <input type="date" id="bookingStartDate" name="bookingStartDate" style="display: none;">--%>
+<%--                    <input type="date" id="bookingEndDate" name="bookingEndDate" style="display: none;">--%>
+<%--                    <button class="btn-primary" onclick="filterBookingReports()">Generate Report</button>--%>
+<%--                </div>--%>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table table-hover" id="bookingReportsTable">
+                            <table class="table table-hover" id="bookingTable">
                                 <thead>
                                 <tr>
                                     <th>Booking ID</th>
@@ -610,7 +608,10 @@
                         </div>
                     </div>
                 </div>
-                <button class="print-btn" onclick="printReport('bookingReportsTable')">Print Report</button>
+                <div class="button-group">
+                    <button class="print-btn" onclick="printBookingList()">Print Report</button>
+                    <button class="export-btn" onclick="exportToCSV('bookingTable')">Export to CSV</button>
+                </div>
             </div>
         </div>
     </div>
@@ -635,39 +636,70 @@
     // Filter functions (placeholder - to be implemented with server-side logic)
     function filterCustomerReports() {
         toggleCustomDates('customerDuration', 'customerStartDate', 'customerEndDate');
-        // Add server-side filtering logic here (e.g., submit form to servlet)
         alert('Filtering customer reports... (Implement server-side logic)');
     }
 
     function filterVehicleDriverReports() {
         toggleCustomDates('vehicleDriverDuration', 'vehicleDriverStartDate', 'vehicleDriverEndDate');
-        // Add server-side filtering logic here
         alert('Filtering vehicle driver reports... (Implement server-side logic)');
     }
 
     function filterBookingReports() {
         toggleCustomDates('bookingDuration', 'bookingStartDate', 'bookingEndDate');
-        // Add server-side filtering logic here
         alert('Filtering booking reports... (Implement server-side logic)');
     }
 
-    // Print function
-    function printReport(tableId) {
-        const printWindow = window.open('', '', 'height=600,width=800');
-        printWindow.document.write('<html><head><title>Print Report</title>');
-        printWindow.document.write('<style>table { border-collapse: collapse; width: 100%; font-family: "Open Sans", sans-serif; } th, td { border: 1px solid #ddd; padding: 8px; text-align: left; } th { background-color: #f2f2f2; }</style>');
-        const table = document.querySelector(`#${tableId} table`);
-        printWindow.document.write('</head><body>');
-        printWindow.document.write(table.outerHTML);
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.print();
+    // Print functions for each table
+    function printCustomerList() {
+        const printContents = document.getElementById('customerTable').outerHTML;
+        const originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    }
+
+    function printVehicleDriverList() {
+        const printContents = document.getElementById('vehicleDriverTable').outerHTML;
+        const originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    }
+
+    function printBookingList() {
+        const printContents = document.getElementById('bookingTable').outerHTML;
+        const originalContents = document.body.innerHTML;
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+        window.location.reload();
+    }
+
+    // Function to export table to CSV
+    function exportToCSV(tableId) {
+        const table = document.getElementById(tableId);
+        const rows = table.querySelectorAll('tr');
+        let csvContent = '';
+
+        rows.forEach(row => {
+            const rowData = [];
+            row.querySelectorAll('th, td').forEach(cell => {
+                if (!cell.querySelector('button')) { // Exclude action buttons
+                    let text = cell.innerText.replace(/,/g, ''); // Remove commas to avoid CSV conflicts
+                    rowData.push('"' + text + '"'); // Wrap in quotes to handle spaces
+                }
+            });
+            csvContent += rowData.join(',') + '\n';
+        });
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = tableId + '_report_' + new Date().toISOString().slice(0,10) + '.csv';
+        link.click();
     }
 </script>
 </body>
 </html>
-
-
-
-
-

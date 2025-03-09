@@ -12,6 +12,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            scrollbar-width: none;
+        }
+
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;

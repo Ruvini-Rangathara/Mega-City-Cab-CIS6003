@@ -17,6 +17,14 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
   <style>
+    ::-webkit-scrollbar {
+      display: none;
+    }
+
+    * {
+      scrollbar-width: none;
+    }
+
     :root {
       --primary-color: #fca311;
       --secondary-color: #6c757d;
@@ -186,7 +194,7 @@
   <div class="sidebar-brand">MEGA CITY CAB</div>
   <ul class="sidebar-nav">
     <li>
-      <a href="${pageContext.request.contextPath}/">
+      <a href="${pageContext.request.contextPath}/dashboard.jsp">
         <i class="bi bi-house-door"></i>
         Dashboard
       </a>
@@ -203,13 +211,13 @@
         Vehicles
       </a>
     </li>
-    <li>
+    <li class="active">
       <a href="${pageContext.request.contextPath}/driver-servlet">
         <i class="bi bi-person-badge"></i>
         Drivers
       </a>
     </li>
-    <li class="active">
+    <li>
       <a href="${pageContext.request.contextPath}/customer-servlet">
         <i class="bi bi-people"></i>
         Customers
@@ -217,7 +225,7 @@
     </li>
     <div class="sidebar-divider"></div>
     <li>
-      <a href="${pageContext.request.contextPath}/reports">
+      <a href="${pageContext.request.contextPath}/views/reports.jsp">
         <i class="bi bi-bar-chart"></i>
         Reports
       </a>

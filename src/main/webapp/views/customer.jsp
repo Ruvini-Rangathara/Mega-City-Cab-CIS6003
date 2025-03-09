@@ -11,6 +11,14 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        * {
+            scrollbar-width: none;
+        }
+
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
@@ -245,7 +253,7 @@
     <div class="sidebar-brand">MEGA CITY CAB</div>
     <ul class="sidebar-nav">
         <li>
-            <a href="${pageContext.request.contextPath}/">
+            <a href="${pageContext.request.contextPath}/dashboard.jsp">
                 <i class="bi bi-house-door"></i>
                 Dashboard
             </a>
@@ -647,6 +655,21 @@
             input.disabled = disable;
         });
     }
+</script>
+<script>
+    // Dynamic navigation highlighting
+    document.addEventListener("DOMContentLoaded", function() {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.sidebar-nav li a');
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            // Check if the current path matches or contains the href
+            if (currentPath === href || currentPath.includes(href.split('/').pop())) {
+                link.parentElement.classList.add('active');
+            }
+        });
+    });
 </script>
 </body>
 </html>

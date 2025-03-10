@@ -3,12 +3,8 @@
 <%@ page import="com.project.megacitycab.dto.CustomerDTO" %>
 <%@ page import="com.project.megacitycab.dto.VehicleDriverDTO" %>
 <%@ page import="com.project.megacitycab.dto.BookingDTO" %>
-<%@ page import="com.project.megacitycab.service.custom.impl.CustomerServiceImpl" %>
-<%@ page import="com.project.megacitycab.service.custom.impl.VehicleDriverServiceImpl" %>
-<%@ page import="com.project.megacitycab.service.custom.impl.BookingServiceImpl" %>
-<%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.Map" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="com.project.megacitycab.dto.VehicleDTO" %>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports - Mega City Cab Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
     <style>
 
         ::-webkit-scrollbar {
@@ -27,6 +24,7 @@
         * {
             scrollbar-width: none;
         }
+
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
@@ -313,6 +311,38 @@
             display: flex;
             gap: 1rem;
         }
+
+        .filter-form {
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-form label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .filter-form select, .filter-form input[type="date"] {
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            border: 1px solid #ced4da;
+        }
+
+        .filter-form button {
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            background-color: var(--primary-color);
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .filter-form button:hover {
+            background-color: #e59100;
+        }
     </style>
 </head>
 <body>
@@ -321,7 +351,7 @@
     <div class="sidebar-brand">MEGA CITY CAB</div>
     <ul class="sidebar-nav">
         <li>
-            <a href="${pageContext.request.contextPath}/dashboard.jsp">
+            <a href="${pageContext.request.contextPath}/dashboard">
                 <i class="bi bi-house-door"></i>
                 Dashboard
             </a>
@@ -352,7 +382,7 @@
         </li>
         <div class="sidebar-divider"></div>
         <li class="active">
-            <a href="${pageContext.request.contextPath}/views/reports.jsp">
+            <a href="${pageContext.request.contextPath}/report-servlet">
                 <i class="bi bi-bar-chart"></i>
                 Reports
             </a>
@@ -375,13 +405,13 @@
                 %>
             </div>
             <div class="user-details">
-                <div class="user-name"><%=currentUser%></div>
+                <div class="user-name"><%=currentUser%>
+                </div>
                 <div class="user-role">Administrator</div>
             </div>
         </div>
     </div>
 </aside>
-
 
 <!-- Main Content -->
 <div class="container">
@@ -395,31 +425,42 @@
         <!-- Tab Navigation -->
         <ul class="nav nav-tabs" id="reportTabs" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="customer-tab" data-bs-toggle="tab" data-bs-target="#customerReports" type="button" role="tab" aria-controls="customerReports" aria-selected="true">Customer Reports</button>
+                <button class="nav-link <%= "customer".equals(request.getParameter("type")) ? "active" : "" %>"
+                        id="customer-tab" data-bs-toggle="tab" data-bs-target="#customerReports"
+                        type="button" role="tab" aria-controls="customerReports" aria-selected="true">
+                    Customer Reports
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="vehicleDriver-tab" data-bs-toggle="tab" data-bs-target="#vehicleDriverReports" type="button" role="tab" aria-controls="vehicleDriverReports" aria-selected="false">Vehicle Driver Reports</button>
+                <button class="nav-link <%= "vehicleDriver".equals(request.getParameter("type")) ? "active" : "" %>"
+                        id="vehicleDriver-tab" data-bs-toggle="tab" data-bs-target="#vehicleDriverReports"
+                        type="button" role="tab" aria-controls="vehicleDriverReports" aria-selected="false">
+                    Vehicle Driver Reports
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link" id="booking-tab" data-bs-toggle="tab" data-bs-target="#bookingReports" type="button" role="tab" aria-controls="bookingReports" aria-selected="false">Booking Reports</button>
+                <button class="nav-link <%= "booking".equals(request.getParameter("type")) ? "active" : "" %>"
+                        id="booking-tab" data-bs-toggle="tab" data-bs-target="#bookingReports"
+                        type="button" role="tab" aria-controls="bookingReports" aria-selected="false">
+                    Booking Reports
+                </button>
             </li>
         </ul>
 
         <!-- Tab Content -->
         <div class="tab-content" id="reportTabsContent">
             <!-- Customer Reports -->
-            <div class="tab-pane fade show active" id="customerReports" role="tabpanel" aria-labelledby="customer-tab">
-<%--                <div class="filter-form">--%>
-<%--                    <label for="customerDuration">Duration:</label>--%>
-<%--                    <select id="customerDuration" name="customerDuration" onchange="toggleCustomDates('customerDuration', 'customerStartDate', 'customerEndDate')">--%>
-<%--                        <option value="all">All Time</option>--%>
-<%--                        <option value="last7days">Last 7 Days</option>--%>
-<%--                        <option value="last30days">Last 30 Days</option>--%>
-<%--                    </select>--%>
-<%--                    <input type="date" id="customerStartDate" name="customerStartDate" style="display: none;">--%>
-<%--                    <input type="date" id="customerEndDate" name="customerEndDate" style="display: none;">--%>
-<%--                    <button class="btn-primary" onclick="filterCustomerReports()">Generate Report</button>--%>
-<%--                </div>--%>
+            <div class="tab-pane fade <%= "customer".equals(request.getParameter("type")) ? "show active" : "" %>"
+                 id="customerReports" role="tabpanel" aria-labelledby="customer-tab">
+                <div class="filter-form">
+                    <label for="customerDuration">Duration:</label>
+                    <select id="customerDuration" name="customerDuration">
+                        <option value="all" <%= "all".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>All Time</option>
+                        <option value="7days" <%= "7days".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>Last 7 Days</option>
+                        <option value="30days" <%= "30days".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>Last 30 Days</option>
+                    </select>
+                    <button class="btn-primary" onclick="filterCustomerReports()">Generate Report</button>
+                </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -436,19 +477,23 @@
                                 </thead>
                                 <tbody>
                                 <%
-                                    CustomerServiceImpl customerService = new CustomerServiceImpl();
-                                    Map<String, String> params = new HashMap<>();
-                                    List<CustomerDTO> customers = customerService.getAll(params);
+                                    List<CustomerDTO> customers = (List<CustomerDTO>) request.getAttribute("customers");
                                     if (customers != null && !customers.isEmpty()) {
                                         for (CustomerDTO customer : customers) {
                                 %>
                                 <tr>
-                                    <td><%= customer.getRegistrationNo() %></td>
-                                    <td><%= customer.getName() %></td>
-                                    <td><%= customer.getEmail() %></td>
-                                    <td><%= customer.getMobileNo() %></td>
-                                    <td><%= customer.getCreatedAt() %></td>
-                                    <td><%= customer.getUpdatedAt() %></td>
+                                    <td><%= customer.getRegistrationNo() %>
+                                    </td>
+                                    <td><%= customer.getName() %>
+                                    </td>
+                                    <td><%= customer.getEmail() %>
+                                    </td>
+                                    <td><%= customer.getMobileNo() %>
+                                    </td>
+                                    <td><%= customer.getCreatedAt() %>
+                                    </td>
+                                    <td><%= customer.getUpdatedAt() %>
+                                    </td>
                                 </tr>
                                 <%
                                     }
@@ -472,18 +517,17 @@
             </div>
 
             <!-- Vehicle Driver Reports -->
-            <div class="tab-pane fade" id="vehicleDriverReports" role="tabpanel" aria-labelledby="vehicleDriver-tab">
-<%--                <div class="filter-form">--%>
-<%--                    <label for="vehicleDriverDuration">Duration:</label>--%>
-<%--                    <select id="vehicleDriverDuration" name="vehicleDriverDuration" onchange="toggleCustomDates('vehicleDriverDuration', 'vehicleDriverStartDate', 'vehicleDriverEndDate')">--%>
-<%--                        <option value="all">All Time</option>--%>
-<%--                        <option value="last7days">Last 7 Days</option>--%>
-<%--                        <option value="last30days">Last 30 Days</option>--%>
-<%--                    </select>--%>
-<%--                    <input type="date" id="vehicleDriverStartDate" name="vehicleDriverStartDate" style="display: none;">--%>
-<%--                    <input type="date" id="vehicleDriverEndDate" name="vehicleDriverEndDate" style="display: none;">--%>
-<%--                    <button class="btn-primary" onclick="filterVehicleDriverReports()">Generate Report</button>--%>
-<%--                </div>--%>
+            <div class="tab-pane fade <%= "vehicleDriver".equals(request.getParameter("type")) ? "show active" : "" %>"
+                 id="vehicleDriverReports" role="tabpanel" aria-labelledby="vehicleDriver-tab">
+                <div class="filter-form">
+                    <label for="vehicleDriverDuration">Duration:</label>
+                    <select id="vehicleDriverDuration" name="vehicleDriverDuration">
+                        <option value="all" <%= "all".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>All Time</option>
+                        <option value="7days" <%= "7days".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>Last 7 Days</option>
+                        <option value="30days" <%= "30days".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>Last 30 Days</option>
+                    </select>
+                    <button class="btn-primary" onclick="filterVehicleDriverReports()">Generate Report</button>
+                </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
@@ -503,15 +547,17 @@
                                 </thead>
                                 <tbody>
                                 <%
-                                    VehicleDriverServiceImpl vehicleDriverService = new VehicleDriverServiceImpl();
-                                    List<VehicleDriverDTO> vehicleDrivers = vehicleDriverService.getAll(new HashMap<>());
+                                    List<VehicleDriverDTO> vehicleDrivers = (List<VehicleDriverDTO>) request.getAttribute("vehicleDrivers");
                                     if (vehicleDrivers != null && !vehicleDrivers.isEmpty()) {
                                         for (VehicleDriverDTO vd : vehicleDrivers) {
                                 %>
                                 <tr>
-                                    <td><%= vd.getVehicle().getLicensePlate() %></td>
-                                    <td><%= vd.getDriver().getName() %></td>
-                                    <td><%= vd.getDriver().getLicenseNo() %></td>
+                                    <td><%= vd.getVehicle().getLicensePlate() %>
+                                    </td>
+                                    <td><%= vd.getDriver().getName() %>
+                                    </td>
+                                    <td><%= vd.getDriver().getLicenseNo() %>
+                                    </td>
                                     <td>
                                         <%= vd.getVehicle().getBrand() %> <%= vd.getVehicle().getModel() %><br>
                                         <small class="text-muted">
@@ -519,18 +565,22 @@
                                             Capacity: <%= vd.getVehicle().getCapacity() %>
                                         </small>
                                     </td>
-                                    <td>Rs. <%= vd.getVehicle().getPricePerKm() %></td>
+                                    <td>Rs. <%= vd.getVehicle().getPricePerKm() %>
+                                    </td>
                                     <td>
                                         <%= vd.getDriver().getMobileNo() %><br>
-                                        <small class="text-muted"><%= vd.getDriver().getEmail() %></small>
+                                        <small class="text-muted"><%= vd.getDriver().getEmail() %>
+                                        </small>
                                     </td>
                                     <td>
                                         <span class="status-<%= vd.getVehicle().getStatus().toString().toLowerCase() %>">
                                             <%= vd.getVehicle().getStatus() %>
                                         </span>
                                     </td>
-                                    <td><%= vd.getVehicle().getCreatedAt() != null ? vd.getVehicle().getCreatedAt() : "N/A" %></td>
-                                    <td><%= vd.getVehicle().getUpdatedAt() != null ? vd.getVehicle().getUpdatedAt() : "N/A" %></td>
+                                    <td><%= vd.getVehicle().getCreatedAt() != null ? vd.getVehicle().getCreatedAt() : "N/A" %>
+                                    </td>
+                                    <td><%= vd.getVehicle().getUpdatedAt() != null ? vd.getVehicle().getUpdatedAt() : "N/A" %>
+                                    </td>
                                 </tr>
                                 <%
                                     }
@@ -554,44 +604,96 @@
             </div>
 
             <!-- Booking Reports -->
-            <div class="tab-pane fade" id="bookingReports" role="tabpanel" aria-labelledby="booking-tab">
-<%--                <div class="filter-form">--%>
-<%--                    <label for="bookingDuration">Duration:</label>--%>
-<%--                    <select id="bookingDuration" name="bookingDuration" onchange="toggleCustomDates('bookingDuration', 'bookingStartDate', 'bookingEndDate')">--%>
-<%--                        <option value="all">All Time</option>--%>
-<%--                        <option value="last7days">Last 7 Days</option>--%>
-<%--                        <option value="last30days">Last 30 Days</option>--%>
-<%--                    </select>--%>
-<%--                    <input type="date" id="bookingStartDate" name="bookingStartDate" style="display: none;">--%>
-<%--                    <input type="date" id="bookingEndDate" name="bookingEndDate" style="display: none;">--%>
-<%--                    <button class="btn-primary" onclick="filterBookingReports()">Generate Report</button>--%>
-<%--                </div>--%>
+            <div class="tab-pane fade <%= "booking".equals(request.getParameter("type")) ? "show active" : "" %>"
+                 id="bookingReports" role="tabpanel" aria-labelledby="booking-tab">
+                <div class="filter-form">
+                    <label for="bookingDuration">Duration:</label>
+                    <select id="bookingDuration" name="bookingDuration">
+                        <option value="all" <%= "all".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>All Time</option>
+                        <option value="7days" <%= "7days".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>Last 7 Days</option>
+                        <option value="30days" <%= "30days".equals(request.getParameter("timeFilter")) ? "selected" : "" %>>Last 30 Days</option>
+                    </select>
+                    <button class="btn-primary" onclick="filterBookingReports()">Generate Report</button>
+                </div>
                 <div class="card">
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover" id="bookingTable">
                                 <thead>
                                 <tr>
-                                    <th>Booking ID</th>
-                                    <th>Vehicle ID</th>
-                                    <th>Pickup Location</th>
-                                    <th>Destination</th>
-                                    <th>Booking Date</th>
+                                    <th>#</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Vehicle Schedule</th>
+                                    <th>Route</th>
+                                    <th>Vehicle</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <%
-                                    BookingServiceImpl bookingService = new BookingServiceImpl();
-                                    List<BookingDTO> bookings = bookingService.getAll(new HashMap<>());
+                                    List<BookingDTO> bookings = (List<BookingDTO>) request.getAttribute("bookings");
+                                    Map<String, CustomerDTO> customerMap = (Map<String, CustomerDTO>) request.getAttribute("customerMap");
+                                    Map<String, VehicleDTO> vehicleMap = (Map<String, VehicleDTO>) request.getAttribute("vehicleMap");
                                     if (bookings != null && !bookings.isEmpty()) {
+                                        int count = 1;
                                         for (BookingDTO booking : bookings) {
+                                            CustomerDTO customer = customerMap != null ? customerMap.get(booking.getId()) : null;
+                                            VehicleDTO vehicle = vehicleMap != null ? vehicleMap.get(booking.getId()) : null;
                                 %>
                                 <tr>
-                                    <td><%= booking.getId() != null ? booking.getId() : "N/A" %></td>
-                                    <td><%= booking.getVehicleId() != null ? booking.getVehicleId() : "N/A" %></td>
-                                    <td><%= booking.getPickupLocation() != null ? booking.getPickupLocation() : "N/A" %></td>
-                                    <td><%= booking.getDestination() != null ? booking.getDestination() : "N/A" %></td>
-                                    <td><%= booking.getBookingDate() != null ? booking.getBookingDate() : "N/A" %></td>
+                                    <td><%= count++ %>
+                                    </td>
+                                    <td>
+                                        <div class="customer-info">
+                                            <% if (customer != null) { %>
+                                            <div class="customer-name"><%= customer.getName() %>
+                                            </div>
+                                            <div class="customer-mobile"><i
+                                                    class="bi bi-telephone"></i> <%= customer.getMobileNo() %>
+                                            </div>
+                                            <% } else { %>
+                                            <span class="text-muted">ID: <%= booking.getCustomerId() %></span>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                    <td><%= booking.getBookingDate() %>
+                                    </td>
+                                    <td>
+                                        <div class="time-info">
+                                            <span class="time-label"><i
+                                                    class="bi bi-clock"></i> Pickup:</span> <%= booking.getPickupTime() %>
+                                            <br>
+                                            <span class="time-label"><i
+                                                    class="bi bi-clock-history"></i> Release:</span> <%= booking.getReleaseTime() %>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        From: <%= booking.getPickupLocation() %><br>
+                                        To: <%= booking.getDestination() %>
+                                    </td>
+                                    <td>
+                                        <div class="vehicle-info">
+                                            <% if (vehicle != null) { %>
+                                            <div class="vehicle-brand"><%= vehicle.getBrand() %>
+                                            </div>
+                                            <div class="vehicle-model"><%= vehicle.getModel() %>
+                                            </div>
+                                            <% } else { %>
+                                            <span class="text-muted">ID: <%= booking.getVehicleId() %></span>
+                                            <% } %>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        Net Total: Rs. <%= booking.getNetTotal() %><br>
+                                        <small class="text-muted">Distance: <%= booking.getDistance() %> km</small>
+                                    </td>
+                                    <td>
+                            <span class="status-<%= booking.getStatus().toString().toLowerCase() %>">
+                                <%= booking.getStatus() %>
+                            </span>
+                                    </td>
                                 </tr>
                                 <%
                                     }
@@ -694,12 +796,29 @@
             csvContent += rowData.join(',') + '\n';
         });
 
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob([csvContent], {type: 'text/csv;charset=utf-8;'});
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
-        link.download = tableId + '_report_' + new Date().toISOString().slice(0,10) + '.csv';
+        link.download = tableId + '_report_' + new Date().toISOString().slice(0, 10) + '.csv';
         link.click();
     }
+</script>
+<script>
+    // Function to handle tab clicks and redirect to the servlet with appropriate parameters
+    document.getElementById('customer-tab').addEventListener('click', function () {
+        const timeFilter = document.getElementById('customerDuration').value; // Get selected time filter
+        window.location.href = "${pageContext.request.contextPath}/report-servlet?type=customer&timeFilter=" + timeFilter;
+    });
+
+    document.getElementById('vehicleDriver-tab').addEventListener('click', function () {
+        const timeFilter = document.getElementById('vehicleDriverDuration').value; // Get selected time filter
+        window.location.href = "${pageContext.request.contextPath}/report-servlet?type=vehicleDriver&timeFilter=" + timeFilter;
+    });
+
+    document.getElementById('booking-tab').addEventListener('click', function () {
+        const timeFilter = document.getElementById('bookingDuration').value; // Get selected time filter
+        window.location.href = "${pageContext.request.contextPath}/report-servlet?type=booking&timeFilter=" + timeFilter;
+    });
 </script>
 </body>
 </html>

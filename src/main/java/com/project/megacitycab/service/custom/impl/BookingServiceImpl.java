@@ -3,8 +3,10 @@ package com.project.megacitycab.service.custom.impl;
 import com.project.megacitycab.dao.DaoFactory;
 import com.project.megacitycab.dao.DaoTypes;
 import com.project.megacitycab.dao.custom.BookingDAO;
+import com.project.megacitycab.dao.custom.CustomerDAO;
 import com.project.megacitycab.dto.BookingDTO;
 import com.project.megacitycab.entity.Booking;
+import com.project.megacitycab.entity.Customer;
 import com.project.megacitycab.service.custom.BookingService;
 import com.project.megacitycab.util.DBUtil;
 import com.project.megacitycab.util.converter.BookingConverter;
@@ -19,14 +21,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class BookingServiceImpl implements BookingService {
     private static final Logger logger = Logger.getLogger(BookingServiceImpl.class.getName());
     private final Connection connection = DBUtil.getConnection();
     private final BookingDAO bookingDAO;
+    private final CustomerDAO customerDAO;
 
     public BookingServiceImpl() {
         this.bookingDAO = DaoFactory.getInstance().getDao(DaoTypes.BOOKING_DAO_IMPL);
+        this.customerDAO = DaoFactory.getInstance().getDao(DaoTypes.CUSTOMER_DAO_IMPL);
     }
 
     @Override
@@ -168,4 +173,100 @@ public class BookingServiceImpl implements BookingService {
         // Basic validation to ensure required fields are present
         return booking != null && booking.getVehicleId() != null && !booking.getVehicleId().isEmpty() && booking.getBookingDate() != null && booking.getPickupTime() != null && booking.getReleaseTime() != null && booking.getPickupLocation() != null && !booking.getPickupLocation().isEmpty() && booking.getDestination() != null && !booking.getDestination().isEmpty() && booking.getDistance() > 0 && booking.getFare() > 0 && booking.getNetTotal() > 0 && booking.getStatus() != null;
     }
+
+    @Override
+    public double getTotalRevenue() throws MegaCityCabException, ClassNotFoundException {
+        try {
+            List<Booking> bookings = bookingDAO.getAll(connection, Map.of("status", "completed"));
+            return bookings.stream()
+                    .mapToDouble(Booking::getNetTotal)
+                    .sum();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getTotalRevenue", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public double getTotalVehicleEarnings() throws MegaCityCabException, ClassNotFoundException {
+        try {
+            List<Booking> bookings = bookingDAO.getAll(connection, Map.of("status", "completed"));
+            return bookings.stream()
+                    .mapToDouble(Booking::getFare)
+                    .sum();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getTotalVehicleEarnings", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public double getTotalDriverEarnings() throws MegaCityCabException, ClassNotFoundException {
+        try {
+            List<Booking> bookings = bookingDAO.getAll(connection, Map.of("status", "completed"));
+            return bookings.stream()
+                    .mapToDouble(b -> b.getFare() * 0.2) // Assuming 20% of fare goes to drivers
+                    .sum();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getTotalDriverEarnings", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public long getTotalCustomers() throws MegaCityCabException, ClassNotFoundException {
+        try {
+            List<Customer> customers = customerDAO.getAll(connection, new HashMap<>());
+            return customers.size();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getTotalCustomers", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public long getTotalBookings() throws MegaCityCabException, ClassNotFoundException {
+        try {
+            List<Booking> bookings = bookingDAO.getAll(connection, new HashMap<>());
+            return bookings.size();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getTotalBookings", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<BookingDTO> getRecentBookings(int limit) throws MegaCityCabException, ClassNotFoundException {
+        try {
+            List<Booking> bookings = bookingDAO.getAll(connection, new HashMap<>());
+            return BookingConverter.toDTOList(
+                    bookings.stream()
+                            .sorted((b1, b2) -> {
+                                int dateCompare = b2.getBookingDate().compareTo(b1.getBookingDate());
+                                if (dateCompare != 0) return dateCompare;
+                                return b2.getPickupTime().compareTo(b1.getPickupTime());
+                            })
+                            .limit(limit)
+                            .collect(Collectors.toList())
+            );
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getRecentBookings", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public double getTotalExpenses() throws MegaCityCabException, ClassNotFoundException {
+        try {
+            List<Booking> bookings = bookingDAO.getAll(connection, Map.of("status", "completed"));
+            return bookings.stream()
+                    .mapToDouble(b -> b.getFare() * 0.1) // 10% of fare as expense (placeholder)
+                    .sum();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error in getTotalExpenses", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 }

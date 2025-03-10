@@ -280,7 +280,7 @@
     <div class="sidebar-brand">MEGA CITY CAB</div>
     <ul class="sidebar-nav">
         <li>
-            <a href="${pageContext.request.contextPath}/dashboard.jsp">
+            <a href="${pageContext.request.contextPath}/dashboard">
                 <i class="bi bi-house-door"></i>
                 Dashboard
             </a>

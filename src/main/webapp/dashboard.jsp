@@ -103,6 +103,7 @@
     .user-info {
       display: flex;
       align-items: center;
+      cursor: pointer;
     }
 
     .user-avatar {
@@ -115,6 +116,23 @@
       justify-content: center;
       font-weight: bold;
       color: white;
+      transition: transform 0.2s ease;
+    }
+
+    .user-avatar:hover {
+      transform: scale(1.1);
+    }
+
+    .modal-header {
+      background-color: var(--primary-color);
+      color: white;
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+    }
+
+    .modal-content {
+      border-radius: 1rem;
+      border: none;
     }
 
     .user-details {
@@ -202,7 +220,7 @@
     }
 
     .standing-orders {
-      background-color: #28a745;
+      background-color: mediumseagreen;
       color: white;
       border-radius: 1rem;
       padding: 1rem;
@@ -271,7 +289,7 @@
 
   <!-- Sidebar Footer -->
   <div class="sidebar-footer">
-    <div class="user-info">
+    <div class="user-info" data-bs-toggle="modal" data-bs-target="#logoutModal">
       <div class="user-avatar">
         <% String currentUser = (String) session.getAttribute("username");
           if (currentUser == null) currentUser = "User";
@@ -279,7 +297,7 @@
         %>
       </div>
       <div class="user-details">
-        <div class="user-name"><%=currentUser%></div>
+        <div class="user-name">Logout</div>
         <div class="user-role">Administrator</div>
       </div>
     </div>
@@ -456,6 +474,32 @@
             <span class="badge bg-info">Salaries</span>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Logout Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="logoutModalLabel">Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to logout?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle me-2"></i>Cancel
+        </button>
+        <form action="${pageContext.request.contextPath}/auth/logout" method="post" class="d-inline">
+          <button type="submit" class="btn btn-danger">
+            <i class="bi bi-box-arrow-right me-2"></i>Logout
+          </button>
+        </form>
       </div>
     </div>
   </div>

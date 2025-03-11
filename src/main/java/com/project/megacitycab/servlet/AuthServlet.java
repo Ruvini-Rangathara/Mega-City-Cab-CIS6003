@@ -40,7 +40,9 @@ public class AuthServlet extends HttpServlet {
                 break;
             case "/register":
                 register(request, response);
-
+                break;
+            case "/logout":
+                logout(request, response);
                 break;
             default:
                 logger.log(Level.SEVERE, "Error : Invalid Action");
@@ -140,6 +142,43 @@ public class AuthServlet extends HttpServlet {
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error during registration: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/auth/register?error=" + e.getMessage());
+        }
+    }
+
+    private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            logger.log(Level.INFO, "Initiating user logout");
+
+            // Get the current session, if it exists, without creating a new one
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                // Optionally log user details before invalidation (for auditing)
+                String userEmail = (String) session.getAttribute("userEmail");
+                if (userEmail != null) {
+                    logger.log(Level.INFO, "Logging out user with email: {0}", userEmail);
+                } else {
+                    logger.log(Level.INFO, "Logging out an unidentified session");
+                }
+
+                // Invalidate the session to remove all attributes
+                session.invalidate();
+                logger.log(Level.INFO, "Session invalidated successfully");
+            } else {
+                logger.log(Level.WARNING, "No active session found for logout request");
+            }
+
+            // Set a success status before redirecting (optional)
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            // Redirect to the login page with a success message
+            response.sendRedirect(request.getContextPath() + "/auth/login?success=logged_out");
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "IO Error during logout: {0}", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/auth/login?error=logout_failed");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error during logout: {0}", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/auth/login?error=system_error");
         }
     }
 

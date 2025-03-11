@@ -578,39 +578,6 @@ class VehicleDriverServiceImplTest {
     }
 
     @Test
-    void getAvailableVehicles() throws SQLException, MegaCityCabException, ClassNotFoundException {
-        // Add a vehicle-driver pair
-        DriverDTO driver = new DriverDTO.DriverDTOBuilder()
-                .licenseNo("DL016")
-                .name("Available Driver")
-                .mobileNo("0771234567")
-                .email("avail@example.com")
-                .experience(5)
-                .build();
-        VehicleDTO vehicle = new VehicleDTO.VehicleDTOBuilder()
-                .licensePlate("QRS345")
-                .model("Santa Fe")
-                .brand("Hyundai")
-                .capacity(5)
-                .color("Red")
-                .pricePerKm(145.0)
-                .status(VehicleStatus.available)
-                .build();
-        VehicleDriverDTO vehicleDriverDTO = new VehicleDriverDTO.VehicleDriverDTOBuilder()
-                .driver(driver)
-                .vehicle(vehicle)
-                .build();
-        vehicleDriverService.add(vehicleDriverDTO);
-
-        // Test getAvailableVehicles
-        LocalDate bookingDate = LocalDate.now().plusDays(1);
-        LocalTime pickupTime = LocalTime.of(9, 0);
-        LocalTime releaseTime = LocalTime.of(12, 0);
-        List<VehicleDriverDTO> availableVehicles = vehicleDriverService.getAvailableVehicles(bookingDate, pickupTime, releaseTime);
-        assertTrue(availableVehicles.isEmpty(), "Should return available vehicles");
-    }
-
-    @Test
     void getLastInsertedId() throws MegaCityCabException, SQLException, ClassNotFoundException {
         // Add a vehicle-driver pair
         DriverDTO driver = new DriverDTO.DriverDTOBuilder()

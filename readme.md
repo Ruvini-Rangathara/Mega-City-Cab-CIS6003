@@ -4,7 +4,7 @@
 # Mega City Cab System 🚕
 
 
-Welcome to the **Mega City Cab System**, a cutting-edge, computerized solution designed to revolutionize cab service management in Colombo City! 🌆 Built with Java EE, MySQL, and a robust layered architecture, this system streamlines operations for thousands of monthly customers, replacing manual processes with efficiency and security. 🚀
+Welcome to the **Mega City Cab System**, a cutting-edge, computerized solution designed to revolutionize cab service management in Colombo City! Built with Java EE, MySQL, and a robust layered architecture, this system streamlines operations for thousands of monthly customers, replacing manual processes with efficiency and security. 🚀
 
 ---
 

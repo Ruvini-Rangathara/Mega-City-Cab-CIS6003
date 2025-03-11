@@ -41,7 +41,7 @@ public class DashboardServlet extends HttpServlet {
             double totalDriverEarnings = bookingService.getTotalDriverEarnings();
             long totalCustomers = bookingService.getTotalCustomers();
             long totalBookings = bookingService.getTotalBookings();
-            List<BookingDTO> recentBookings = bookingService.getRecentBookings(5);
+            List<BookingDTO> recentBookings = bookingService.getRecentBookings(4);
             double totalExpenses = bookingService.getTotalExpenses();
 
             // Set attributes for JSP

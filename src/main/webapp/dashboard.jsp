@@ -31,7 +31,7 @@
     body {
       background-color: var(--background-color);
       min-height: 100vh;
-      padding-top: 40px;
+      padding-top: 20px;
       margin-left: 250px;
     }
 
@@ -166,7 +166,7 @@
       border-radius: 1rem;
       padding: 1.5rem;
       box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1rem;
     }
 
     .account-balance {

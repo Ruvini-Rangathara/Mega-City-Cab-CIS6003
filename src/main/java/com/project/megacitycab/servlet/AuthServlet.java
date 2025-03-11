@@ -5,6 +5,7 @@ import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.service.ServiceFactory;
 import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.UserService;
+import com.project.megacitycab.util.EmailUtil;
 import com.project.megacitycab.util.security.PasswordUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -39,7 +40,9 @@ public class AuthServlet extends HttpServlet {
                 break;
             case "/register":
                 register(request, response);
-
+                break;
+            case "/logout":
+                logout(request, response);
                 break;
             default:
                 logger.log(Level.SEVERE, "Error : Invalid Action");
@@ -102,7 +105,7 @@ public class AuthServlet extends HttpServlet {
             session.setAttribute("userEmail", user.getEmail());
 
             // Redirect to the dashboard after successful login
-            response.sendRedirect(request.getContextPath() + "/customer-servlet");
+            response.sendRedirect(request.getContextPath() + "/dashboard");
 //            response.sendRedirect(request.getContextPath() + "/views/customer.jsp");
 
         } catch (Exception e) {
@@ -127,12 +130,55 @@ public class AuthServlet extends HttpServlet {
 
             userService.add(userDTO);
 
+            // Send generic email
+            String recipientEmail = userDTO.getEmail();
+            String recipientName = userDTO.getName();
+            String emailBody = "Welcome to Mega City Cab!\n\n" + "Your account has been successfully registered with the following details:\n" + "  Name:  " + userDTO.getName() + "\n" + "  Email: " + userDTO.getEmail() + "\n" + "You can now log in using your email and password.\n";
+            EmailUtil.printGenericEmail(recipientEmail, "Welcome to Mega City Cab", emailBody, recipientName);
+
             // Redirect to the login page after successful registration
             response.sendRedirect(request.getContextPath() + "/auth/register?success=true");
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error during registration: " + e.getMessage());
             response.sendRedirect(request.getContextPath() + "/auth/register?error=" + e.getMessage());
+        }
+    }
+
+    private void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        try {
+            logger.log(Level.INFO, "Initiating user logout");
+
+            // Get the current session, if it exists, without creating a new one
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                // Optionally log user details before invalidation (for auditing)
+                String userEmail = (String) session.getAttribute("userEmail");
+                if (userEmail != null) {
+                    logger.log(Level.INFO, "Logging out user with email: {0}", userEmail);
+                } else {
+                    logger.log(Level.INFO, "Logging out an unidentified session");
+                }
+
+                // Invalidate the session to remove all attributes
+                session.invalidate();
+                logger.log(Level.INFO, "Session invalidated successfully");
+            } else {
+                logger.log(Level.WARNING, "No active session found for logout request");
+            }
+
+            // Set a success status before redirecting (optional)
+            response.setStatus(HttpServletResponse.SC_OK);
+
+            // Redirect to the login page with a success message
+            response.sendRedirect(request.getContextPath() + "/auth/login?success=logged_out");
+
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "IO Error during logout: {0}", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/auth/login?error=logout_failed");
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error during logout: {0}", e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/auth/login?error=system_error");
         }
     }
 

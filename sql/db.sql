@@ -74,28 +74,27 @@ CREATE TABLE vehicles
 
 CREATE TABLE bookings
 (
-    id             CHAR(36)                                                          NOT NULL PRIMARY KEY DEFAULT (UUID()),
-    customerId     CHAR(36)                                                          NOT NULL,
-    bookingDate    DATETIME                                                          NOT NULL,
-    pickupLocation VARCHAR(255)                                                      NOT NULL,
-    destination    VARCHAR(255)                                                      NOT NULL,
-    pickupTime     TIME                                                              NOT NULL,
-    releaseTime    TIME                                                              NOT NULL,
-    vehicleID      CHAR(36)                                                          NOT NULL,
-    status         ENUM ('pending', 'confirmed', 'cancelled', 'completed', 'failed') NOT NULL             DEFAULT 'pending',
-    distance       DECIMAL(10, 2)                                                    NOT NULL,
-    fare           DECIMAL(10, 2)                                                    NOT NULL,
-    discount       DECIMAL(10, 2)                                                    NOT NULL,
-    tax            DECIMAL(10, 2)                                                    NOT NULL,
-    netTotal       DECIMAL(10, 2)                                                    NOT NULL,
-    userId         CHAR(36)                                                          NULL,
-    createdAt      DATETIME                                                                               DEFAULT CURRENT_TIMESTAMP,
-    updatedAt      DATETIME                                                                               DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    id             CHAR(36)                                                NOT NULL PRIMARY KEY DEFAULT (UUID()),
+    customerId     CHAR(36)                                                NOT NULL,
+    bookingDate    DATETIME                                                NOT NULL,
+    pickupLocation VARCHAR(255)                                            NOT NULL,
+    destination    VARCHAR(255)                                            NOT NULL,
+    pickupTime     TIME                                                    NOT NULL,
+    releaseTime    TIME                                                    NOT NULL,
+    vehicleID      CHAR(36)                                                NOT NULL,
+    status         ENUM ('pending', 'confirmed', 'cancelled', 'completed') NOT NULL             DEFAULT 'pending',
+    distance       DECIMAL(10, 2)                                          NOT NULL,
+    fare           DECIMAL(10, 2)                                          NOT NULL,
+    discount       DECIMAL(10, 2)                                          NOT NULL,
+    tax            DECIMAL(10, 2)                                          NOT NULL,
+    netTotal       DECIMAL(10, 2)                                          NOT NULL,
+    userId         CHAR(36)                                                NULL,
+    createdAt      DATETIME                                                                     DEFAULT CURRENT_TIMESTAMP,
+    updatedAt      DATETIME                                                                     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (customerId) REFERENCES customers (id) ON DELETE CASCADE,
     FOREIGN KEY (vehicleID) REFERENCES vehicles (id) ON DELETE CASCADE,
     FOREIGN KEY (userId) REFERENCES users (id) ON DELETE CASCADE
 );
-
 
 
 DELIMITER //
@@ -107,20 +106,27 @@ CREATE PROCEDURE GetAvailableVehicles(
 )
 BEGIN
     CREATE TEMPORARY TABLE IF NOT EXISTS temp_available_vehicles AS
-    SELECT
-        v.id, v.licensePlate, v.driverId, v.model, v.brand, v.capacity, v.color, v.pricePerKm,
-        d.name AS driverName, d.mobileNo AS driverMobile, d.licenseNo AS driverLicense
+    SELECT v.id,
+           v.licensePlate,
+           v.driverId,
+           v.model,
+           v.brand,
+           v.capacity,
+           v.color,
+           v.pricePerKm,
+           d.name      AS driverName,
+           d.mobileNo  AS driverMobile,
+           d.licenseNo AS driverLicense
     FROM vehicles v
              LEFT JOIN drivers d ON v.driverId = d.id
     WHERE v.status = 'available'
       AND v.deletedAt IS NULL
-      AND NOT EXISTS (
-        SELECT 1 FROM bookings b
-        WHERE b.vehicleId = v.id
-          AND DATE(b.bookingDate) = DATE(p_bookingDate) -- Compare only date part
-          AND b.status NOT IN ('cancelled', 'failed')
-          AND (p_pickupTime < b.releaseTime AND p_releaseTime > b.pickupTime)
-    );
+      AND NOT EXISTS (SELECT 1
+                      FROM bookings b
+                      WHERE b.vehicleId = v.id
+                        AND DATE(b.bookingDate) = DATE(p_bookingDate) -- Compare only date part
+                        AND b.status NOT IN ('cancelled', 'failed')
+                        AND (p_pickupTime < b.releaseTime AND p_releaseTime > b.pickupTime));
 
     SELECT * FROM temp_available_vehicles;
 

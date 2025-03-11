@@ -23,4 +23,6 @@ public interface VehicleDriverService extends CrudService<VehicleDriverDTO> {
     VehicleDTO findVehicleByVehicleId(Object... args) throws MegaCityCabException, SQLException;
     DriverDTO findDriverByDriverId(Object... args) throws MegaCityCabException, SQLException;
     List<VehicleDriverDTO> getAvailableVehicles(LocalDate bookingDate, LocalTime pickupTime, LocalTime releaseTime) throws SQLException;
+    List<DriverDTO> getAllDrivers(Map<String, String> searchParams) throws MegaCityCabException, SQLException;
+    List<VehicleDriverDTO> getVehicleDriver() throws MegaCityCabException, SQLException;
 }

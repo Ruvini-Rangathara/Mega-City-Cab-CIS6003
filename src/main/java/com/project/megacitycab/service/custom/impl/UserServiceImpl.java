@@ -66,18 +66,18 @@ public class UserServiceImpl implements UserService {
         }
 
         String newPassword;
-        String newSalt;
+        String salt;
 
         if (entity.getPassword() != null && !entity.getPassword().isEmpty()) {
             // Generate new salt and hash for password update
-            newSalt = PasswordUtils.generateSalt();
-            newPassword = PasswordUtils.hashPassword(entity.getPassword(), newSalt);
+            salt = entity.getSalt();
+            newPassword = PasswordUtils.hashPassword(entity.getPassword(), salt);
         } else {
             newPassword = originalUser.getPassword();
-            newSalt = originalUser.getSalt();
+            salt = originalUser.getSalt();
         }
 
-        UserDTO updatedUser = new UserDTO.UserDTOBuilder().id(entity.getId()).name(entity.getName()).email(entity.getEmail()).password(newPassword).salt(newSalt).role(entity.getRole() != null ? entity.getRole() : originalUser.getRole()).createdAt(originalUser.getCreatedAt()).updatedAt(new Date()).deletedAt(originalUser.getDeletedAt()).build();
+        UserDTO updatedUser = new UserDTO.UserDTOBuilder().id(entity.getId()).name(entity.getName()).email(entity.getEmail()).password(newPassword).salt(salt).role(entity.getRole() != null ? entity.getRole() : originalUser.getRole()).createdAt(originalUser.getCreatedAt()).updatedAt(new Date()).deletedAt(originalUser.getDeletedAt()).build();
 
         boolean isUpdated = userDAO.update(connection, UserConverter.toEntity(updatedUser));
         if (!isUpdated) {

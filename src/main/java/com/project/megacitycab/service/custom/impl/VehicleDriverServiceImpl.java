@@ -329,6 +329,38 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
     }
 
     @Override
+    public List<DriverDTO> getAllDrivers(Map<String, String> searchParams) throws MegaCityCabException, SQLException {
+        try {
+            List<Driver> list = driverDAO.getAll(connection, searchParams);
+            return DriverConverter.toDTOList(list);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting all drivers", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
+    public List<VehicleDriverDTO> getVehicleDriver() throws MegaCityCabException, SQLException {
+        try {
+            List<VehicleDriverDTO> vehicleDriverDTOS = new ArrayList<>();
+            List<Vehicle> vehicles = vehicleDAO.getAll(connection, null);
+
+            for (Vehicle vehicle : vehicles) {
+                Driver driver = driverDAO.searchById(connection, vehicle.getDriverId());
+                VehicleDTO vehicleDTO = VehicleConverter.toDTO(vehicle);
+                DriverDTO driverDTO = DriverConverter.toDTO(driver);
+                vehicleDriverDTOS.add(new VehicleDriverDTO.VehicleDriverDTOBuilder().vehicle(vehicleDTO).driver(driverDTO).build());
+            }
+
+            return vehicleDriverDTOS;
+
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error getting all vehicle-drivers", e);
+            throw new MegaCityCabException(MegaCityCabExceptionType.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @Override
     public String getLastInsertedId(Connection connection) throws SQLException, ClassNotFoundException {
         return vehicleDAO.getLastInsertedId(connection);
 

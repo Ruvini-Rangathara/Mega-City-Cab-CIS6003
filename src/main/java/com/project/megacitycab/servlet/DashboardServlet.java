@@ -5,6 +5,7 @@ import com.project.megacitycab.service.ServiceFactory;
 import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.BookingService;
 import com.project.megacitycab.service.custom.CustomerService;
+import com.project.megacitycab.util.EmailUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -52,7 +53,6 @@ public class DashboardServlet extends HttpServlet {
             request.setAttribute("recentBookings", recentBookings);
             request.setAttribute("totalExpenses", totalExpenses);
 
-
             // Forward to dashboard.jsp
             request.getRequestDispatcher("/dashboard.jsp").forward(request, response);
         } catch (Exception e) {
@@ -64,6 +64,34 @@ public class DashboardServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doGet(request, response); // Handle POST requests the same as GET for now
+        String action = request.getParameter("action");
+
+        if ("sendEmail".equals(action)) {
+            try {
+                // Fetch data again for email (or store in session if preferred)
+                double totalRevenue = bookingService.getTotalRevenue();
+                double totalVehicleEarnings = bookingService.getTotalVehicleEarnings();
+                double totalDriverEarnings = bookingService.getTotalDriverEarnings();
+                long totalCustomers = bookingService.getTotalCustomers();
+                long totalBookings = bookingService.getTotalBookings();
+                double totalExpenses = bookingService.getTotalExpenses();
+
+
+                // Print demo email to terminal
+                String recipientEmail = "admin@megacitycab.com";
+                String recipientName = "Administrator";
+                EmailUtil.printDashboardEmail(recipientEmail, recipientName, totalRevenue, totalVehicleEarnings,
+                        totalDriverEarnings, totalCustomers, totalBookings, totalExpenses);
+
+                // Set success message
+                response.sendRedirect(request.getContextPath() + "/dashboard?success=Email+preview+sent+to+terminal");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect(request.getContextPath() + "/dashboard?error=Failed+to+send+email+preview");
+            }
+        } else {
+            // If no specific action, treat as GET
+            doGet(request, response);
+        }
     }
 }

@@ -7,6 +7,7 @@ import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.BookingService;
 import com.project.megacitycab.service.custom.CustomerService;
 import com.project.megacitycab.service.custom.VehicleDriverService;
+import com.project.megacitycab.util.EmailUtil;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -167,7 +168,14 @@ public class BookingServlet extends HttpServlet {
             BookingDTO booking = buildBookingDTOFromRequest(request, null);
             boolean success = bookingService.add(booking);
 
+            CustomerDTO customer = customerService.searchById(booking.getCustomerId());
+
             if (success) {
+                // Print booking confirmation email to terminal
+                String recipientEmail = customer != null && customer.getEmail() != null ? customer.getEmail() : "customer@megacitycab.com";
+                String recipientName = customer != null && customer.getName() != null ? customer.getName() : "Customer";
+                EmailUtil.printBookingConfirmationEmail(recipientEmail, recipientName, booking);
+
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?success=Booking created successfully");
             } else {
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?action=newForm&error=Failed to create booking");
@@ -184,7 +192,13 @@ public class BookingServlet extends HttpServlet {
             BookingDTO booking = buildBookingDTOFromRequest(request, bookingId);
             boolean success = bookingService.update(booking);
 
+            CustomerDTO customer = customerService.searchById(booking.getCustomerId());
+
             if (success) {
+                String recipientEmail = customer != null && customer.getEmail() != null ? customer.getEmail() : "customer@megacitycab.com";
+                String recipientName = customer != null && customer.getName() != null ? customer.getName() : "Customer";
+                EmailUtil.printBookingConfirmationEmail(recipientEmail, recipientName, booking);
+
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?success=Booking updated successfully");
             } else {
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?action=view&id=" + bookingId + "&error=Failed to update booking");

@@ -5,6 +5,7 @@ import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.service.ServiceFactory;
 import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.UserService;
+import com.project.megacitycab.util.EmailUtil;
 import com.project.megacitycab.util.security.PasswordUtils;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -126,6 +127,12 @@ public class AuthServlet extends HttpServlet {
             UserDTO userDTO = new UserDTO.UserDTOBuilder().name(request.getParameter("name")).email(request.getParameter("email")).password(request.getParameter("password")).role(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.user).build();
 
             userService.add(userDTO);
+
+            // Send generic email
+            String recipientEmail = userDTO.getEmail();
+            String recipientName = userDTO.getName();
+            String emailBody = "Welcome to Mega City Cab!\n\n" + "Your account has been successfully registered with the following details:\n" + "  Name:  " + userDTO.getName() + "\n" + "  Email: " + userDTO.getEmail() + "\n" + "You can now log in using your email and password.\n";
+            EmailUtil.printGenericEmail(recipientEmail, "Welcome to Mega City Cab", emailBody, recipientName);
 
             // Redirect to the login page after successful registration
             response.sendRedirect(request.getContextPath() + "/auth/register?success=true");

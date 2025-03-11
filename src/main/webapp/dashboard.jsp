@@ -321,6 +321,14 @@
           <a href="#">Transfer Money</a>
           <a href="#">Link Accounts</a>
         </div>
+
+        <form action="${pageContext.request.contextPath}/dashboard" method="post" class="mt-3">
+          <input type="hidden" name="action" value="sendEmail">
+          <button type="submit" class="btn btn-primary">
+            <i class="bi bi-envelope"></i> Send Email
+          </button>
+        </form>
+
       </div>
       <div class="col-md-6">
         <div class="standing-orders">

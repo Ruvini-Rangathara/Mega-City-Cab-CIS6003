@@ -11,7 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Management - Mega City Cab Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
+          rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
         ::-webkit-scrollbar {
@@ -21,6 +22,7 @@
         * {
             scrollbar-width: none;
         }
+
         :root {
             --primary-color: #fca311;
             --secondary-color: #6c757d;
@@ -141,11 +143,11 @@
 
         /* Booking Management Styles */
         .top-section {
-            margin-top: 2rem;
+            margin-top: 1rem;
             background-color: white;
             border-radius: 1rem;
             padding: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
         }
 
@@ -272,6 +274,69 @@
         .vehicle-model {
             color: #6c757d;
         }
+
+        /* Pagination styling */
+        .pagination-container {
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .pagination-info {
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+
+        .pagination .page-link {
+            color: var(--primary-color);
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: #6c757d;
+            pointer-events: none;
+            background-color: #fff;
+            border-color: #dee2e6;
+        }
+
+        .pagination .page-link:focus {
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .pagination .page-link:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
+
+        /* Items per page selector styling */
+        .items-per-page-container {
+            margin-bottom: 1rem;
+        }
+
+        .items-per-page-container label {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .items-per-page-container .form-select {
+            border-color: #dee2e6;
+        }
+
+        .items-per-page-container .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .table-container {
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -334,7 +399,8 @@
                 %>
             </div>
             <div class="user-details">
-                <div class="user-name"><%=currentUser%></div>
+                <div class="user-name"><%=currentUser%>
+                </div>
                 <div class="user-role">Administrator</div>
             </div>
         </div>
@@ -400,9 +466,12 @@
                         <select class="form-select" id="searchStatus" name="searchStatus">
                             <option value="">All Status</option>
                             <option value="pending" ${searchStatus eq 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="confirmed" ${searchStatus eq 'confirmed' ? 'selected' : ''}>Confirmed</option>
-                            <option value="cancelled" ${searchStatus eq 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                            <option value="completed" ${searchStatus eq 'completed' ? 'selected' : ''}>Completed</option>
+                            <option value="confirmed" ${searchStatus eq 'confirmed' ? 'selected' : ''}>Confirmed
+                            </option>
+                            <option value="cancelled" ${searchStatus eq 'cancelled' ? 'selected' : ''}>Cancelled
+                            </option>
+                            <option value="completed" ${searchStatus eq 'completed' ? 'selected' : ''}>Completed
+                            </option>
                         </select>
                         <label for="searchStatus">Status</label>
                     </div>
@@ -422,96 +491,107 @@
     <!-- Booking List -->
     <div class="card">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Customer</th>
-                        <th>Date</th>
-                        <th>Vehicle Schedule</th>
-                        <th>Route</th>
-                        <th>Vehicle</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <%
-                        List<BookingDTO> bookings = (List<BookingDTO>) request.getAttribute("bookings");
-                        Map<String, CustomerDTO> customerMap = (Map<String, CustomerDTO>) request.getAttribute("customerMap");
-                        Map<String, VehicleDTO> vehicleMap = (Map<String, VehicleDTO>) request.getAttribute("vehicleMap");
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-hover booking-table">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Vehicle Schedule</th>
+                            <th>Route</th>
+                            <th>Vehicle</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <%
+                            List<BookingDTO> bookings = (List<BookingDTO>) request.getAttribute("bookings");
+                            Map<String, CustomerDTO> customerMap = (Map<String, CustomerDTO>) request.getAttribute("customerMap");
+                            Map<String, VehicleDTO> vehicleMap = (Map<String, VehicleDTO>) request.getAttribute("vehicleMap");
 
-                        if (bookings != null && !bookings.isEmpty()) {
-                            int count = 1;
-                            for (BookingDTO booking : bookings) {
-                                CustomerDTO customer = customerMap != null ? customerMap.get(booking.getId()) : null;
-                                VehicleDTO vehicle = vehicleMap != null ? vehicleMap.get(booking.getId()) : null;
-                    %>
-                    <tr>
-                        <td><%= count++ %></td>
-                        <td>
-                            <div class="customer-info">
-                                <% if (customer != null) { %>
-                                <div class="customer-name"><%= customer.getName() %></div>
-                                <div class="customer-mobile"><i class="bi bi-telephone"></i> <%= customer.getMobileNo() %></div>
-                                <% } else { %>
-                                <span class="text-muted">ID: <%= booking.getCustomerId() %></span>
-                                <% } %>
-                            </div>
-                        </td>
-                        <td><%= booking.getBookingDate() %></td>
-                        <td>
-                            <div class="time-info">
-                                <span class="time-label"><i class="bi bi-clock"></i> Pickup:</span> <%= booking.getPickupTime() %><br>
-                                <span class="time-label"><i class="bi bi-clock-history"></i> Release:</span> <%= booking.getReleaseTime() %>
-                            </div>
-                        </td>
-                        <td>
-                            From: <%= booking.getPickupLocation() %><br>
-                            To: <%= booking.getDestination() %>
-                        </td>
-                        <td>
-                            <div class="vehicle-info">
-                                <% if (vehicle != null) { %>
-                                <div class="vehicle-brand"><%= vehicle.getBrand() %></div>
-                                <div class="vehicle-model"><%= vehicle.getModel() %></div>
-                                <% } else { %>
-                                <span class="text-muted">ID: <%= booking.getVehicleId() %></span>
-                                <% } %>
-                            </div>
-                        </td>
-                        <td>
-                            Net Total: Rs. <%= booking.getNetTotal() %><br>
-                            <small class="text-muted">Distance: <%= booking.getDistance() %> km</small>
-                        </td>
-                        <td>
+                            if (bookings != null && !bookings.isEmpty()) {
+                                int count = 1;
+                                for (BookingDTO booking : bookings) {
+                                    CustomerDTO customer = customerMap != null ? customerMap.get(booking.getId()) : null;
+                                    VehicleDTO vehicle = vehicleMap != null ? vehicleMap.get(booking.getId()) : null;
+                        %>
+                        <tr>
+                            <td><%= count++ %>
+                            </td>
+                            <td>
+                                <div class="customer-info">
+                                    <% if (customer != null) { %>
+                                    <div class="customer-name"><%= customer.getName() %>
+                                    </div>
+                                    <div class="customer-mobile"><i
+                                            class="bi bi-telephone"></i> <%= customer.getMobileNo() %>
+                                    </div>
+                                    <% } else { %>
+                                    <span class="text-muted">ID: <%= booking.getCustomerId() %></span>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td><%= booking.getBookingDate() %>
+                            </td>
+                            <td>
+                                <div class="time-info">
+                                    <span class="time-label"><i
+                                            class="bi bi-clock"></i> Pickup:</span> <%= booking.getPickupTime() %><br>
+                                    <span class="time-label"><i
+                                            class="bi bi-clock-history"></i> Release:</span> <%= booking.getReleaseTime() %>
+                                </div>
+                            </td>
+                            <td>
+                                From: <%= booking.getPickupLocation() %><br>
+                                To: <%= booking.getDestination() %>
+                            </td>
+                            <td>
+                                <div class="vehicle-info">
+                                    <% if (vehicle != null) { %>
+                                    <div class="vehicle-brand"><%= vehicle.getBrand() %>
+                                    </div>
+                                    <div class="vehicle-model"><%= vehicle.getModel() %>
+                                    </div>
+                                    <% } else { %>
+                                    <span class="text-muted">ID: <%= booking.getVehicleId() %></span>
+                                    <% } %>
+                                </div>
+                            </td>
+                            <td>
+                                Net Total: Rs. <%= booking.getNetTotal() %><br>
+                                <small class="text-muted">Distance: <%= booking.getDistance() %> km</small>
+                            </td>
+                            <td>
                             <span class="status-<%= booking.getStatus().toString().toLowerCase() %>">
                                 <%= booking.getStatus() %>
                             </span>
-                        </td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <a href="${pageContext.request.contextPath}/booking-servlet?action=view&id=<%= booking.getId() %>"
-                                   class="btn btn-view btn-sm">
-                                    <i class="bi bi-eye-fill"></i>
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                    <%
-                        }
-                    } else {
-                    %>
-                    <tr>
-                        <td colspan="9" class="text-center">No bookings found</td>
-                    </tr>
-                    <%
-                        }
-                    %>
-                    </tbody>
-                </table>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="${pageContext.request.contextPath}/booking-servlet?action=view&id=<%= booking.getId() %>"
+                                       class="btn btn-view btn-sm">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        <%
+                            }
+                        } else {
+                        %>
+                        <tr>
+                            <td colspan="9" class="text-center">No bookings found</td>
+                        </tr>
+                        <%
+                            }
+                        %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -522,7 +602,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const successMessage = document.getElementById("successMessage");
         const errorMessage = document.getElementById("errorMessage");
 
@@ -552,7 +632,7 @@
 </script>
 <script>
     // Dynamic navigation highlighting
-    document.addEventListener("DOMContentLoaded", function() {
+    document.addEventListener("DOMContentLoaded", function () {
         const currentPath = window.location.pathname;
         const navLinks = document.querySelectorAll('.sidebar-nav li a');
 
@@ -563,6 +643,197 @@
                 link.parentElement.classList.add('active');
             }
         });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Pagination configuration
+        let itemsPerPage = 6; // Default items per page
+        let currentPage = 1;
+
+        const tableBody = document.querySelector('.booking-table tbody');
+        if (!tableBody) return; // Exit if table doesn't exist
+
+        const tableRows = Array.from(tableBody.querySelectorAll('tr'));
+        let totalPages = Math.ceil(tableRows.length / itemsPerPage);
+
+        // Function to display rows for current page
+        function displayTableRows() {
+            // Hide all rows first
+            tableRows.forEach(row => {
+                row.style.display = 'none';
+            });
+
+            // Calculate which rows to show
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, tableRows.length);
+
+            // Show only rows for current page
+            for (let i = startIndex; i < endIndex; i++) {
+                tableRows[i].style.display = '';
+            }
+
+            // Update pagination info text
+            document.getElementById('pagination-info').textContent =
+                `Showing ${startIndex + 1} to ${endIndex} of ${tableRows.length} bookings`;
+
+            // Update active state on pagination buttons
+            document.querySelectorAll('.page-item').forEach((item, index) => {
+                if (index === 0) { // Previous button
+                    item.classList.toggle('disabled', currentPage === 1);
+                } else if (index === document.querySelectorAll('.page-item').length - 1) { // Next button
+                    item.classList.toggle('disabled', currentPage === totalPages);
+                } else { // Page number buttons
+                    const pageNum = parseInt(item.querySelector('.page-link').textContent);
+                    item.classList.toggle('active', pageNum === currentPage);
+                }
+            });
+        }
+
+        // Create pagination elements
+        function createPagination() {
+            // Create container for pagination
+            const paginationContainer = document.createElement('div');
+            paginationContainer.className = 'pagination-container d-flex justify-content-between align-items-center mt-3';
+
+            // Info text showing current range and total
+            const paginationInfo = document.createElement('div');
+            paginationInfo.id = 'pagination-info';
+            paginationInfo.className = 'pagination-info';
+
+            // Create pagination nav
+            const paginationNav = document.createElement('nav');
+            paginationNav.setAttribute('aria-label', 'Booking table navigation');
+
+            const paginationList = document.createElement('ul');
+            paginationList.className = 'pagination pagination-sm mb-0';
+
+            // Previous button
+            const prevItem = document.createElement('li');
+            prevItem.className = 'page-item disabled';
+            const prevLink = document.createElement('a');
+            prevLink.className = 'page-link';
+            prevLink.href = '#';
+            prevLink.setAttribute('aria-label', 'Previous');
+            prevLink.innerHTML = '<span aria-hidden="true">«</span>';
+            prevItem.appendChild(prevLink);
+            paginationList.appendChild(prevItem);
+
+            // Page number buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageItem = document.createElement('li');
+                pageItem.className = 'page-item' + (i === 1 ? ' active' : '');
+                const pageLink = document.createElement('a');
+                pageLink.className = 'page-link';
+                pageLink.href = '#';
+                pageLink.textContent = i;
+                pageItem.appendChild(pageLink);
+                paginationList.appendChild(pageItem);
+            }
+
+            // Next button
+            const nextItem = document.createElement('li');
+            nextItem.className = 'page-item' + (totalPages === 1 ? ' disabled' : '');
+            const nextLink = document.createElement('a');
+            nextLink.className = 'page-link';
+            nextLink.href = '#';
+            nextLink.setAttribute('aria-label', 'Next');
+            nextLink.innerHTML = '<span aria-hidden="true">»</span>';
+            nextItem.appendChild(nextLink);
+            paginationList.appendChild(nextItem);
+
+            paginationNav.appendChild(paginationList);
+            paginationContainer.appendChild(paginationInfo);
+            paginationContainer.appendChild(paginationNav);
+
+            // Add pagination to page
+            const tableContainer = document.querySelector('.table-container');
+            tableContainer.appendChild(paginationContainer);
+
+            // Add event listeners to pagination controls
+            prevLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    displayTableRows();
+                }
+            });
+
+            nextLink.addEventListener('click', function (e) {
+                e.preventDefault();
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displayTableRows();
+                }
+            });
+
+            // Add event listeners to page numbers
+            document.querySelectorAll('.page-item:not(:first-child):not(:last-child) .page-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    currentPage = parseInt(this.textContent);
+                    displayTableRows();
+                });
+            });
+        }
+
+        // Create items per page selector
+        function createItemsPerPageSelector() {
+            const tableContainer = document.querySelector('.table-container');
+            if (!tableContainer) return;
+
+            // Create container
+            const selectorContainer = document.createElement('div');
+            selectorContainer.className = 'items-per-page-container d-flex align-items-center justify-content-end mb-3';
+
+            // Create label
+            const label = document.createElement('label');
+            label.className = 'me-2 text-nowrap';
+            label.setAttribute('for', 'itemsPerPage');
+            label.textContent = 'Show entries:';
+
+            // Create select
+            const select = document.createElement('select');
+            select.className = 'form-select form-select-sm w-auto';
+            select.id = 'itemsPerPage';
+
+            // Add options
+            [5, 10, 25, 50].forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                if (value === itemsPerPage) option.selected = true;
+                select.appendChild(option);
+            });
+
+            // Assemble
+            selectorContainer.appendChild(label);
+            selectorContainer.appendChild(select);
+
+            // Insert at the top of the table container
+            const firstChild = tableContainer.firstChild;
+            tableContainer.insertBefore(selectorContainer, firstChild);
+
+            // Add event listener
+            select.addEventListener('change', function () {
+                itemsPerPage = parseInt(this.value);
+                totalPages = Math.ceil(tableRows.length / itemsPerPage);
+                currentPage = 1;
+                // Remove existing pagination and recreate
+                const existingPagination = document.querySelector('.pagination-container');
+                if (existingPagination) existingPagination.remove();
+                createPagination();
+                displayTableRows();
+            });
+        }
+
+        // Only create pagination and selector if we have data
+        if (tableRows.length > 0) {
+            createItemsPerPageSelector();
+            createPagination();
+            displayTableRows();
+        }
     });
 </script>
 </body>

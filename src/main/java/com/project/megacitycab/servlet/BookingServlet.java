@@ -2,12 +2,12 @@ package com.project.megacitycab.servlet;
 
 import com.project.megacitycab.constant.BookingStatus;
 import com.project.megacitycab.dto.*;
+import com.project.megacitycab.service.ServiceFactory;
+import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.BookingService;
 import com.project.megacitycab.service.custom.CustomerService;
 import com.project.megacitycab.service.custom.VehicleDriverService;
-import com.project.megacitycab.service.custom.impl.BookingServiceImpl;
-import com.project.megacitycab.service.custom.impl.CustomerServiceImpl;
-import com.project.megacitycab.service.custom.impl.VehicleDriverServiceImpl;
+import com.project.megacitycab.util.EmailUtil;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -32,9 +32,9 @@ public class BookingServlet extends HttpServlet {
     private VehicleDriverService vehicleDriverService;
 
     public void init() {
-        bookingService = new BookingServiceImpl();
-        customerService = new CustomerServiceImpl();
-        vehicleDriverService = new VehicleDriverServiceImpl();
+        bookingService = ServiceFactory.getInstance().getService(ServiceType.BOOKING_SERVICE_IMPL);
+        customerService = ServiceFactory.getInstance().getService(ServiceType.CUSTOMER_SERVICE_IMPL);
+        vehicleDriverService = ServiceFactory.getInstance().getService(ServiceType.VEHICLE_DRIVER_SERVICE_IMPL);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -168,7 +168,14 @@ public class BookingServlet extends HttpServlet {
             BookingDTO booking = buildBookingDTOFromRequest(request, null);
             boolean success = bookingService.add(booking);
 
+            CustomerDTO customer = customerService.searchById(booking.getCustomerId());
+
             if (success) {
+                // Print booking confirmation email to terminal
+                String recipientEmail = customer != null && customer.getEmail() != null ? customer.getEmail() : "customer@megacitycab.com";
+                String recipientName = customer != null && customer.getName() != null ? customer.getName() : "Customer";
+                EmailUtil.printBookingConfirmationEmail(recipientEmail, recipientName, booking);
+
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?success=Booking created successfully");
             } else {
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?action=newForm&error=Failed to create booking");
@@ -185,7 +192,13 @@ public class BookingServlet extends HttpServlet {
             BookingDTO booking = buildBookingDTOFromRequest(request, bookingId);
             boolean success = bookingService.update(booking);
 
+            CustomerDTO customer = customerService.searchById(booking.getCustomerId());
+
             if (success) {
+                String recipientEmail = customer != null && customer.getEmail() != null ? customer.getEmail() : "customer@megacitycab.com";
+                String recipientName = customer != null && customer.getName() != null ? customer.getName() : "Customer";
+                EmailUtil.printBookingConfirmationEmail(recipientEmail, recipientName, booking);
+
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?success=Booking updated successfully");
             } else {
                 response.sendRedirect(request.getContextPath() + "/booking-servlet?action=view&id=" + bookingId + "&error=Failed to update booking");

@@ -1,6 +1,8 @@
 package com.project.megacitycab.servlet;
 
 import com.project.megacitycab.dto.CustomerDTO;
+import com.project.megacitycab.service.ServiceFactory;
+import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.CustomerService;
 import com.project.megacitycab.service.custom.impl.CustomerServiceImpl;
 import com.project.megacitycab.util.SendResponse;
@@ -26,7 +28,7 @@ public class CustomerServlet extends HttpServlet {
 
     @Override
     public void init() {
-        customerService = new CustomerServiceImpl();
+        customerService = ServiceFactory.getInstance().getService(ServiceType.CUSTOMER_SERVICE_IMPL);
     }
 
     @Override

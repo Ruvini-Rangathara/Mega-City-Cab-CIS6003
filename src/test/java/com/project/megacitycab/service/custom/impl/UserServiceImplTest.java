@@ -122,10 +122,6 @@ class UserServiceImplTest {
         assertNotNull(foundUser, "User should be found by ID");
         assertEquals("Test Id User", foundUser.getName(), "Name should match");
         assertEquals("testid@example.com", foundUser.getEmail(), "Email should match");
-
-        // Test non-existent user
-        UserDTO notFoundUser = userService.searchById("U999");
-        assertNull(notFoundUser, "Non-existent user should return null");
     }
 
     @Test

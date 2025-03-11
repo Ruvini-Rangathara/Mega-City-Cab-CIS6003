@@ -5,10 +5,13 @@ import com.project.megacitycab.dto.UserDTO;
 import com.project.megacitycab.service.custom.UserService;
 import com.project.megacitycab.service.custom.impl.UserServiceImpl;
 import com.project.megacitycab.util.SendResponse;
+import com.project.megacitycab.util.security.PasswordUtils;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -48,21 +51,10 @@ public class UserServlet extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String action = request.getParameter("action");
-
-        switch (action) {
-            case "search":
-                searchUser(request, response);
-                break;
-            case "getAll":
-                getAllUsers(request, response);
-                break;
-            default:
-                logger.log(Level.SEVERE, "Error : Invalid Action");
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Invalid Action");
-        }
-
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        // Forward to JSP page
+        request.getRequestDispatcher("/settings.jsp")
+                .forward(request, response);
     }
 
     private void addUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -70,30 +62,50 @@ public class UserServlet extends HttpServlet {
 
     private void updateUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         logger.log(Level.INFO, "Updating user");
+        HttpSession session = request.getSession();
         try {
-            if (request.getParameter("email") == null || request.getParameter("password") == null) {
-                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Email and password are required");
+            String email = request.getParameter("email");
+            String currentPassword = request.getParameter("currentPassword");
+            String newPassword = request.getParameter("newPassword");
+
+            if (email == null || currentPassword == null || newPassword == null) {
+                SendResponse.send(response, HttpServletResponse.SC_BAD_REQUEST, "Email, current password, and new password are required");
                 return;
             }
 
-            UserDTO userDTO = new UserDTO.UserDTOBuilder().id(request.getParameter("id")).name(request.getParameter("name")).email(request.getParameter("email")).password(request.getParameter("password")).role(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.user).build();
+            UserDTO existingUser = userService.searchByEmail(email);
+            if (existingUser == null) {
+                SendResponse.send(response, HttpServletResponse.SC_NOT_FOUND, "User not found");
+                return;
+            }
+
+            // Build updated UserDTO
+            UserDTO userDTO = new UserDTO.UserDTOBuilder()
+                    .id(existingUser.getId())
+                    .name(existingUser.getName())
+                    .email(email)
+                    .password(newPassword) // Assuming password is hashed in UserService
+                    .role(request.getParameter("role") != null ? Role.valueOf(request.getParameter("role")) : Role.user)
+                    .salt(existingUser.getSalt())
+                    .build();
 
             boolean isUpdated = userService.update(userDTO);
 
             if (isUpdated) {
-                SendResponse.send(response, HttpServletResponse.SC_OK, "User updated successfully");
-                return;  // Stop execution after successful update
+                session.setAttribute("success", "User successfully updated");
+                response.sendRedirect(request.getContextPath() + "/user-servlet");
+                return;
             }
 
-            // Only reach this if update failed
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Failed to update user");
+            session.setAttribute("error", "Failed to update user");
+            response.sendRedirect(request.getContextPath() + "/user-servlet");
 
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error updating user: " + e.getMessage());
-            SendResponse.send(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
+            session.setAttribute("error", "Error updating user: " + e.getMessage());
+            response.sendRedirect(request.getContextPath() + "/user-servlet");
         }
     }
-
     private void deleteUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
         logger.log(Level.INFO, "Deleting user");
         try {

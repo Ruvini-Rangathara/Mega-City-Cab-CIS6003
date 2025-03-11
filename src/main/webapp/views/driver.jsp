@@ -1,19 +1,22 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: ruvini
+  Date: 2025-03-08
+  Time: 23.19
+  To change this template use File | Settings | File Templates.
+--%>
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="com.project.megacitycab.dto.BookingDTO" %>
-<%@ page import="com.project.megacitycab.dto.CustomerDTO" %>
-<%@ page import="com.project.megacitycab.dto.VehicleDTO" %>
+<%@ page import="com.project.megacitycab.dto.DriverDTO" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Management - Mega City Cab Service</title>
+    <title>Driver Management - Mega City Cab Service</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.11.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/css/select2.min.css" rel="stylesheet">
     <style>
         ::-webkit-scrollbar {
             display: none;
@@ -34,11 +37,10 @@
         body {
             background-color: var(--background-color);
             min-height: 100vh;
-            padding-top: 40px;
+            padding-top: 60px;
             margin-left: 250px;
         }
 
-        /* Sidebar Styles */
         .sidebar {
             position: fixed;
             top: 0;
@@ -82,10 +84,6 @@
             gap: 0.75rem;
         }
 
-        .sidebar-nav li a i {
-            font-size: 1.25rem;
-        }
-
         .sidebar-nav li.active {
             background-color: rgba(252, 163, 17, 0.2);
         }
@@ -93,6 +91,13 @@
         .sidebar-nav li.active a {
             color: var(--primary-color);
         }
+
+        .sidebar-divider {
+            height: 1px;
+            background-color: rgba(0, 0, 0, 0.1);
+            margin: 30px 0;
+        }
+
 
         .sidebar-footer {
             position: absolute;
@@ -138,7 +143,6 @@
             border: none;
         }
 
-
         .user-details {
             margin-left: 10px;
         }
@@ -154,20 +158,20 @@
             color: var(--secondary-color);
         }
 
-        .sidebar-divider {
-            height: 1px;
-            background-color: rgba(0, 0, 0, 0.1);
-            margin: 30px 0;
-        }
 
-        /* Booking Management Styles */
         .top-section {
-            margin-top: 1rem;
+            /*margin-top: 0.7rem;*/
             background-color: white;
             border-radius: 1rem;
             padding: 1.5rem;
             margin-bottom: 1rem;
             box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
+            border-radius: 1rem;
         }
 
         .section-header {
@@ -184,68 +188,13 @@
             margin: 0;
         }
 
-        .card {
-            border: none;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08);
-            border-radius: 1rem;
-        }
-
         .btn-primary {
             background-color: var(--primary-color);
             border-color: var(--primary-color);
         }
 
-        .btn-primary:hover {
-            background-color: #e59100;
-            border-color: #e59100;
-        }
-
-        .status-pending {
-            color: #fd7e14;
-            background-color: #fff3cd;
-            border-radius: 0.25rem;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .status-confirmed {
-            color: #198754;
-            background-color: #d1e7dd;
-            border-radius: 0.25rem;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .status-cancelled {
-            color: #dc3545;
-            background-color: #f8d7da;
-            border-radius: 0.25rem;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .status-completed {
-            color: #0dcaf0;
-            background-color: #cff4fc;
-            border-radius: 0.25rem;
-            padding: 0.25rem 0.5rem;
-        }
-
-        .btn-view {
-            background-color: #ffeb99;
-            border-color: #ffeb99;
-            color: #000;
-        }
-
-        .btn-view:hover {
-            background-color: #ffe066;
-            border-color: #ffe066;
-            color: #000;
-        }
-
         .table-responsive {
             border-radius: 0.5rem;
-        }
-
-        .table {
-            margin-bottom: 0;
         }
 
         .table thead th {
@@ -253,45 +202,8 @@
             border-bottom: 2px solid #dee2e6;
         }
 
-        #successMessage, #errorMessage {
-            margin-top: 2rem;
-        }
-
         .alert {
             border-radius: 0.5rem;
-        }
-
-        .time-info {
-            font-size: 0.85rem;
-        }
-
-        .time-label {
-            font-weight: 500;
-            color: #495057;
-        }
-
-        .customer-info {
-            font-size: 0.9rem;
-        }
-
-        .customer-name {
-            font-weight: 500;
-        }
-
-        .customer-mobile {
-            color: #6c757d;
-        }
-
-        .vehicle-info {
-            font-size: 0.9rem;
-        }
-
-        .vehicle-brand {
-            font-weight: 500;
-        }
-
-        .vehicle-model {
-            color: #6c757d;
         }
 
         /* Pagination styling */
@@ -369,7 +281,7 @@
                 Dashboard
             </a>
         </li>
-        <li class="active">
+        <li>
             <a href="${pageContext.request.contextPath}/booking-servlet">
                 <i class="bi bi-calendar-check"></i>
                 Bookings
@@ -381,7 +293,7 @@
                 Vehicles
             </a>
         </li>
-        <li>
+        <li class="active">
             <a href="${pageContext.request.contextPath}/driver-servlet">
                 <i class="bi bi-person-badge"></i>
                 Drivers
@@ -428,71 +340,49 @@
 
 <!-- Main Content -->
 <div class="container">
-    <!-- Alert Messages -->
-    <%
-        String success = request.getParameter("success");
-        String error = request.getParameter("error");
-        String errorMessage = (String) request.getAttribute("errorMessage");
-    %>
-    <% if (success != null && !success.isEmpty()) { %>
-    <div id="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
-        <%= success %>
+    <!-- Error Message -->
+    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show d-none" role="alert">
+        ${requestScope.error}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-    <% } %>
-    <% if (error != null && !error.isEmpty()) { %>
-    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <%= error %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <% } else if (errorMessage != null && !errorMessage.isEmpty()) { %>
-    <div id="errorMessage" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <%= errorMessage %>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    <% } %>
 
-    <!-- Top Section -->
+    <!-- Top Section with Search -->
     <div class="top-section">
         <div class="section-header">
             <h2 class="section-title">
-                <i class="bi bi-calendar-check-fill me-2"></i>Booking Management
+                <i class="bi bi-person-badge-fill me-2"></i>Driver Management
             </h2>
-            <a href="${pageContext.request.contextPath}/booking-servlet?action=newForm" class="btn btn-primary">
-                <i class="bi bi-plus-circle me-2"></i>New Booking
-            </a>
         </div>
 
         <!-- Search Form -->
-        <form id="searchForm" action="${pageContext.request.contextPath}/booking-servlet" method="get">
+        <form id="searchForm" action="${pageContext.request.contextPath}/driver-servlet" method="get">
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-floating">
-                        <input type="date" class="form-control" id="searchDate" name="searchDate"
-                               value="${searchDate}">
-                        <label for="searchDate">Booking Date</label>
+                        <input type="text" class="form-control" id="searchLicenseNo" name="searchLicenseNo"
+                               value="${param.searchLicenseNo}" placeholder="License No">
+                        <label for="searchLicenseNo">License No</label>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-floating">
-                        <input type="text" class="form-control" id="searchCustomer" name="searchCustomer"
-                               value="${searchCustomer}" placeholder="Customer Name or Mobile">
-                        <label for="searchCustomer">Customer Name or Mobile</label>
+                        <input type="text" class="form-control" id="searchName" name="searchName"
+                               value="${param.searchName}" placeholder="Name">
+                        <label for="searchName">Name</label>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-floating">
-                        <select class="form-select" id="searchStatus" name="searchStatus">
-                            <option value="">All Status</option>
-                            <option value="pending" ${searchStatus eq 'pending' ? 'selected' : ''}>Pending</option>
-                            <option value="confirmed" ${searchStatus eq 'confirmed' ? 'selected' : ''}>Confirmed
-                            </option>
-                            <option value="cancelled" ${searchStatus eq 'cancelled' ? 'selected' : ''}>Cancelled
-                            </option>
-                            <option value="completed" ${searchStatus eq 'completed' ? 'selected' : ''}>Completed
-                            </option>
-                        </select>
-                        <label for="searchStatus">Status</label>
+                        <input type="text" class="form-control" id="searchEmail" name="searchEmail"
+                               value="${param.searchEmail}" placeholder="Email">
+                        <label for="searchEmail">Email</label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-floating">
+                        <input type="text" class="form-control" id="searchMobile" name="searchMobile"
+                               value="${param.searchMobile}" placeholder="Mobile">
+                        <label for="searchMobile">Mobile</label>
                     </div>
                 </div>
             </div>
@@ -507,95 +397,37 @@
         </form>
     </div>
 
-    <!-- Booking List -->
+    <!-- Driver Table -->
     <div class="card">
         <div class="card-body">
             <div class="table-container">
                 <div class="table-responsive">
-                    <table class="table table-hover booking-table">
+                    <table class="table table-hover driver-table">
                         <thead>
                         <tr>
-                            <th>#</th>
-                            <th>Customer</th>
-                            <th>Date</th>
-                            <th>Vehicle Schedule</th>
-                            <th>Route</th>
-                            <th>Vehicle</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Actions</th>
+                            <th>License No</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Experience</th>
+                            <th>Mobile</th>
                         </tr>
                         </thead>
                         <tbody>
                         <%
-                            List<BookingDTO> bookings = (List<BookingDTO>) request.getAttribute("bookings");
-                            Map<String, CustomerDTO> customerMap = (Map<String, CustomerDTO>) request.getAttribute("customerMap");
-                            Map<String, VehicleDTO> vehicleMap = (Map<String, VehicleDTO>) request.getAttribute("vehicleMap");
-
-                            if (bookings != null && !bookings.isEmpty()) {
-                                int count = 1;
-                                for (BookingDTO booking : bookings) {
-                                    CustomerDTO customer = customerMap != null ? customerMap.get(booking.getId()) : null;
-                                    VehicleDTO vehicle = vehicleMap != null ? vehicleMap.get(booking.getId()) : null;
+                            List<DriverDTO> drivers = (List<DriverDTO>) request.getAttribute("drivers");
+                            if (drivers != null && !drivers.isEmpty()) {
+                                for (DriverDTO driver : drivers) {
                         %>
                         <tr>
-                            <td><%= count++ %>
+                            <td><%= driver.getLicenseNo() %>
                             </td>
-                            <td>
-                                <div class="customer-info">
-                                    <% if (customer != null) { %>
-                                    <div class="customer-name"><%= customer.getName() %>
-                                    </div>
-                                    <div class="customer-mobile"><i
-                                            class="bi bi-telephone"></i> <%= customer.getMobileNo() %>
-                                    </div>
-                                    <% } else { %>
-                                    <span class="text-muted">ID: <%= booking.getCustomerId() %></span>
-                                    <% } %>
-                                </div>
+                            <td><%= driver.getName() %>
                             </td>
-                            <td><%= booking.getBookingDate() %>
+                            <td><%= driver.getEmail() %>
                             </td>
-                            <td>
-                                <div class="time-info">
-                                    <span class="time-label"><i
-                                            class="bi bi-clock"></i> Pickup:</span> <%= booking.getPickupTime() %><br>
-                                    <span class="time-label"><i
-                                            class="bi bi-clock-history"></i> Release:</span> <%= booking.getReleaseTime() %>
-                                </div>
+                            <td><%= driver.getExperience() + " years" %>
                             </td>
-                            <td>
-                                From: <%= booking.getPickupLocation() %><br>
-                                To: <%= booking.getDestination() %>
-                            </td>
-                            <td>
-                                <div class="vehicle-info">
-                                    <% if (vehicle != null) { %>
-                                    <div class="vehicle-brand"><%= vehicle.getBrand() %>
-                                    </div>
-                                    <div class="vehicle-model"><%= vehicle.getModel() %>
-                                    </div>
-                                    <% } else { %>
-                                    <span class="text-muted">ID: <%= booking.getVehicleId() %></span>
-                                    <% } %>
-                                </div>
-                            </td>
-                            <td>
-                                Net Total: Rs. <%= booking.getNetTotal() %><br>
-                                <small class="text-muted">Distance: <%= booking.getDistance() %> km</small>
-                            </td>
-                            <td>
-                            <span class="status-<%= booking.getStatus().toString().toLowerCase() %>">
-                                <%= booking.getStatus() %>
-                            </span>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <a href="${pageContext.request.contextPath}/booking-servlet?action=view&id=<%= booking.getId() %>"
-                                       class="btn btn-view btn-sm">
-                                        <i class="bi bi-eye-fill"></i>
-                                    </a>
-                                </div>
+                            <td><%= driver.getMobileNo() %>
                             </td>
                         </tr>
                         <%
@@ -603,7 +435,7 @@
                         } else {
                         %>
                         <tr>
-                            <td colspan="9" class="text-center">No bookings found</td>
+                            <td colspan="5" class="text-center">No drivers found</td>
                         </tr>
                         <%
                             }
@@ -644,59 +476,32 @@
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.1.0-rc.0/js/select2.min.js"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const successMessage = document.getElementById("successMessage");
+        // Show error message if it exists
         const errorMessage = document.getElementById("errorMessage");
-
-        if (successMessage) {
-            successMessage.classList.remove("d-none");
-            setTimeout(() => {
-                const bsAlert = new bootstrap.Alert(successMessage);
-                bsAlert.close();
-            }, 5000);
-        }
-
-        if (errorMessage) {
+        if (errorMessage.textContent.trim()) {
             errorMessage.classList.remove("d-none");
-            setTimeout(() => {
-                const bsAlert = new bootstrap.Alert(errorMessage);
-                bsAlert.close();
-            }, 5000);
+            setTimeout(() => errorMessage.classList.add("d-none"), 5000);
         }
     });
 
     function clearSearch() {
-        document.getElementById('searchDate').value = '';
-        document.getElementById('searchCustomer').value = '';
-        document.getElementById('searchStatus').value = '';
+        document.getElementById('searchLicenseNo').value = '';
+        document.getElementById('searchName').value = '';
+        document.getElementById('searchEmail').value = '';
+        document.getElementById('searchMobile').value = '';
         document.getElementById('searchForm').submit();
     }
-</script>
-<script>
-    // Dynamic navigation highlighting
-    document.addEventListener("DOMContentLoaded", function () {
-        const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('.sidebar-nav li a');
-
-        navLinks.forEach(link => {
-            const href = link.getAttribute('href');
-            // Check if the current path matches or contains the href
-            if (currentPath === href || currentPath.includes(href.split('/').pop())) {
-                link.parentElement.classList.add('active');
-            }
-        });
-    });
 </script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Pagination configuration
-        let itemsPerPage = 6; // Default items per page
+        let itemsPerPage = 9; // Default items per page
         let currentPage = 1;
 
-        const tableBody = document.querySelector('.booking-table tbody');
+        const tableBody = document.querySelector('.driver-table tbody');
         if (!tableBody) return; // Exit if table doesn't exist
 
         const tableRows = Array.from(tableBody.querySelectorAll('tr'));
@@ -720,7 +525,7 @@
 
             // Update pagination info text
             document.getElementById('pagination-info').textContent =
-                `Showing ${startIndex + 1} to ${endIndex} of ${tableRows.length} bookings`;
+                `Showing ${startIndex + 1} to ${endIndex} of ${tableRows.length} drivers`;
 
             // Update active state on pagination buttons
             document.querySelectorAll('.page-item').forEach((item, index) => {
@@ -748,7 +553,7 @@
 
             // Create pagination nav
             const paginationNav = document.createElement('nav');
-            paginationNav.setAttribute('aria-label', 'Booking table navigation');
+            paginationNav.setAttribute('aria-label', 'Driver table navigation');
 
             const paginationList = document.createElement('ul');
             paginationList.className = 'pagination pagination-sm mb-0';
@@ -843,7 +648,7 @@
             select.id = 'itemsPerPage';
 
             // Add options
-            [5, 10, 25, 50].forEach(value => {
+            [10, 25, 50].forEach(value => {
                 const option = document.createElement('option');
                 option.value = value;
                 option.textContent = value;

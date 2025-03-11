@@ -4,6 +4,8 @@ import com.project.megacitycab.constant.VehicleStatus;
 import com.project.megacitycab.dto.DriverDTO;
 import com.project.megacitycab.dto.VehicleDTO;
 import com.project.megacitycab.dto.VehicleDriverDTO;
+import com.project.megacitycab.service.ServiceFactory;
+import com.project.megacitycab.service.ServiceType;
 import com.project.megacitycab.service.custom.VehicleDriverService;
 import com.project.megacitycab.service.custom.impl.VehicleDriverServiceImpl;
 import com.project.megacitycab.util.SendResponse;
@@ -27,7 +29,7 @@ public class VehicleDriverServlet extends HttpServlet {
 
     @Override
     public void init() {
-        vehicleDriverService = new VehicleDriverServiceImpl();
+        vehicleDriverService = ServiceFactory.getInstance().getService(ServiceType.VEHICLE_DRIVER_SERVICE_IMPL);
     }
 
     @Override

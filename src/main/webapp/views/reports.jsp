@@ -406,7 +406,7 @@
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/settings">
+            <a href="${pageContext.request.contextPath}/settings.jsp">
                 <i class="bi bi-gear"></i>
                 Settings
             </a>
@@ -779,20 +779,19 @@
         }
     }
 
-    // Filter functions (placeholder - to be implemented with server-side logic)
     function filterCustomerReports() {
-        toggleCustomDates('customerDuration', 'customerStartDate', 'customerEndDate');
-        alert('Filtering customer reports... (Implement server-side logic)');
+        const timeFilter = document.getElementById('customerDuration').value;
+        window.location.href = "${pageContext.request.contextPath}/report-servlet?type=customer&timeFilter=" + timeFilter;
     }
 
     function filterVehicleDriverReports() {
-        toggleCustomDates('vehicleDriverDuration', 'vehicleDriverStartDate', 'vehicleDriverEndDate');
-        alert('Filtering vehicle driver reports... (Implement server-side logic)');
+        const timeFilter = document.getElementById('vehicleDriverDuration').value;
+        window.location.href = "${pageContext.request.contextPath}/report-servlet?type=vehicleDriver&timeFilter=" + timeFilter;
     }
 
     function filterBookingReports() {
-        toggleCustomDates('bookingDuration', 'bookingStartDate', 'bookingEndDate');
-        alert('Filtering booking reports... (Implement server-side logic)');
+        const timeFilter = document.getElementById('bookingDuration').value;
+        window.location.href = "${pageContext.request.contextPath}/report-servlet?type=booking&timeFilter=" + timeFilter;
     }
 
     // Print functions for each table
@@ -862,6 +861,17 @@
     document.getElementById('booking-tab').addEventListener('click', function () {
         const timeFilter = document.getElementById('bookingDuration').value; // Get selected time filter
         window.location.href = "${pageContext.request.contextPath}/report-servlet?type=booking&timeFilter=" + timeFilter;
+    });
+</script>
+
+<script>
+    // Add this to your existing script section
+    document.addEventListener('DOMContentLoaded', function() {
+        // If no type parameter is in the URL, redirect to customer reports
+        const urlParams = new URLSearchParams(window.location.search);
+        if (!urlParams.has('type')) {
+            window.location.href = "${pageContext.request.contextPath}/report-servlet?type=customer&timeFilter=all";
+        }
     });
 </script>
 </body>

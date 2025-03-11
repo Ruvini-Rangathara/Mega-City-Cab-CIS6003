@@ -313,7 +313,7 @@
             </a>
         </li>
         <li>
-            <a href="${pageContext.request.contextPath}/settings">
+            <a href="${pageContext.request.contextPath}/settings.jsp">
                 <i class="bi bi-gear"></i>
                 Settings
             </a>

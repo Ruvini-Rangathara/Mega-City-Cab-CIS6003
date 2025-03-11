@@ -220,7 +220,7 @@
     }
 
     .standing-orders {
-      background-color: mediumseagreen;
+      background-color: #28a745;
       color: white;
       border-radius: 1rem;
       padding: 1rem;
@@ -280,7 +280,7 @@
       </a>
     </li>
     <li>
-      <a href="${pageContext.request.contextPath}/settings">
+      <a href="${pageContext.request.contextPath}/settings.jsp">
         <i class="bi bi-gear"></i>
         Settings
       </a>

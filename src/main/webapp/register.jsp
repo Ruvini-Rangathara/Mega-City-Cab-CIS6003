@@ -175,7 +175,12 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <div style="position: relative;">
+                    <input type="password" id="password" name="password" required>
+                    <button type="button" id="togglePassword" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer;">
+                        Show
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="register-button">Create Account</button>
@@ -199,5 +204,20 @@
 </div>
 
 <footer>&copy; <%= new java.util.Date().getYear() + 1900 %> MegaCity Cab Service. All rights reserved.</footer>
+
+<script>
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const passwordInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePassword');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleBtn.textContent = 'Hide';
+        } else {
+            passwordInput.type = 'password';
+            toggleBtn.textContent = 'Show';
+        }
+    });
+</script>
 </body>
 </html>

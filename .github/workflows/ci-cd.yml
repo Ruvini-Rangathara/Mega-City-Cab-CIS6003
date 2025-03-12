@@ -58,10 +58,10 @@ jobs:
             exit 1
           fi
 
-  # Run unit tests for UserDaoImpl
-  test-user-dao:
+  # Run all DAO and Service tests
+  run-all-tests:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     services:
       mysql:
@@ -103,8 +103,19 @@ jobs:
             echo "Error: schema.sql not found in src/test/resources"
             exit 1
           fi
-      - name: Run UserDaoImplTest
-        run: mvn clean test -Dtest=UserDaoImplTest
+
+      # Run DAO Implementation Tests
+      - name: Run DAO Implementation Tests
+        run: |
+          echo "Running DAO Implementation Tests..."
+          mvn test -Dtest=BookingDaoImplTest,CustomerDaoImplTest,DriverDaoImplTest,UserDaoImplTest,VehicleDaoImplTest
+
+      # Run Service Implementation Tests
+      - name: Run Service Implementation Tests
+        run: |
+          echo "Running Service Implementation Tests..."
+          mvn test -Dtest=BookingServiceImplTest,CustomerServiceImplTest,UserServiceImplTest,VehicleDriverServiceImplTest
+
       - name: Check Test Results
         if: always()
         run: |
@@ -126,7 +137,7 @@ jobs:
   # Build the project
   build:
     runs-on: ubuntu-latest
-    needs: test-user-dao
+    needs: run-all-tests
     if: github.event_name == 'pull_request' || github.event_name == 'push'
     steps:
       - uses: actions/checkout@v3

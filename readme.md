@@ -218,8 +218,6 @@ For questions or support, reach out at [ruvinisubhasinghe200009@gmail.com](mailt
 
 ### Screenshots
 
-### Screenshots
-
 <table style="width: 100%; border-collapse: collapse;">
   <tr>
     <td style="padding: 10px; text-align: center;"><img src="src/main/webapp/assets/ui/Welcome-Page.png" alt="Welcome Screen" style="max-width: 100%; height: auto;"></td>

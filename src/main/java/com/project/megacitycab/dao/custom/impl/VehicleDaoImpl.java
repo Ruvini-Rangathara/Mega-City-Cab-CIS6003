@@ -58,22 +58,26 @@ public class VehicleDaoImpl implements VehicleDAO {
 
         StringBuilder sql = new StringBuilder("SELECT * FROM vehicles WHERE deletedAt IS NULL");
 
-        if (searchParams != null) {
-            if (searchParams.containsKey("licensePlate")) {
+        if (searchParams != null && !searchParams.isEmpty()) {
+            if (searchParams.containsKey("licensePlate") && searchParams.get("licensePlate") != null && !searchParams.get("licensePlate").trim().isEmpty()) {
                 sql.append(" AND licensePlate LIKE ?");
-                params.add("%" + searchParams.get("licensePlate") + "%");
+                params.add("%" + searchParams.get("licensePlate").trim() + "%");
             }
-            if (searchParams.containsKey("model")) {
+            if (searchParams.containsKey("model") && searchParams.get("model") != null && !searchParams.get("model").trim().isEmpty()) {
                 sql.append(" AND model LIKE ?");
-                params.add("%" + searchParams.get("model") + "%");
+                params.add("%" + searchParams.get("model").trim() + "%");
             }
-            if (searchParams.containsKey("brand")) {
+            if (searchParams.containsKey("brand") && searchParams.get("brand") != null && !searchParams.get("brand").trim().isEmpty()) {
                 sql.append(" AND brand LIKE ?");
-                params.add("%" + searchParams.get("brand") + "%");
+                params.add("%" + searchParams.get("brand").trim() + "%");
             }
-            if (searchParams.containsKey("status")) {
+            if (searchParams.containsKey("status") && searchParams.get("status") != null && !searchParams.get("status").trim().isEmpty()) {
                 sql.append(" AND status = ?");
-                params.add(searchParams.get("status"));
+                params.add(searchParams.get("status").trim());
+            }
+            if (searchParams.containsKey("driverId") && searchParams.get("driverId") != null && !searchParams.get("driverId").trim().isEmpty()) {
+                sql.append(" AND driverId = ?");
+                params.add(searchParams.get("driverId").trim());
             }
         }
 
@@ -82,7 +86,20 @@ public class VehicleDaoImpl implements VehicleDAO {
         ResultSet result = CrudUtil.execute(connection, sql.toString(), params.toArray());
 
         while (result.next()) {
-            Vehicle vehicle = new Vehicle.VehicleBuilder().id(result.getString("id")).licensePlate(result.getString("licensePlate")).driverId(result.getString("driverId")).model(result.getString("model")).brand(result.getString("brand")).capacity(result.getInt("capacity")).color(result.getString("color")).pricePerKm(result.getDouble("pricePerKm")).status(VehicleStatus.valueOf(result.getString("status"))).createdAt(result.getString("createdAt")).updatedAt(result.getString("updatedAt")).deletedAt(result.getString("deletedAt")).build();
+            Vehicle vehicle = new Vehicle.VehicleBuilder()
+                    .id(result.getString("id"))
+                    .licensePlate(result.getString("licensePlate"))
+                    .driverId(result.getString("driverId"))
+                    .model(result.getString("model"))
+                    .brand(result.getString("brand"))
+                    .capacity(result.getInt("capacity"))
+                    .color(result.getString("color"))
+                    .pricePerKm(result.getDouble("pricePerKm"))
+                    .status(VehicleStatus.valueOf(result.getString("status")))
+                    .createdAt(result.getString("createdAt"))
+                    .updatedAt(result.getString("updatedAt"))
+                    .deletedAt(result.getString("deletedAt"))
+                    .build();
             vehicles.add(vehicle);
         }
 

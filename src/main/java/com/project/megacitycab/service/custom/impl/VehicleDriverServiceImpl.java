@@ -170,21 +170,93 @@ public class VehicleDriverServiceImpl implements VehicleDriverService {
     @Override
     public List<VehicleDriverDTO> getAll(Map<String, String> searchParams) throws MegaCityCabException {
         try {
-            Map<String, String> cleanParams = new HashMap<>();
+            Map<String, String> vehicleParams = new HashMap<>();
+            Map<String, String> driverParams = new HashMap<>();
+
+            // Clean and separate parameters for vehicle and driver searches
             if (searchParams != null) {
                 searchParams.forEach((key, value) -> {
                     if (value != null && !value.trim().isEmpty()) {
-                        cleanParams.put(key, value.trim());
+                        // Separate vehicle and driver parameters based on their field names
+                        if (key.equals("licensePlate") || key.equals("brand") || key.equals("model") ||
+                                key.equals("color") || key.equals("status") || key.equals("driverId")) {
+                            vehicleParams.put(key, value.trim());
+                        }
+
+                        if (key.equals("driverName") || key.equals("licenseNo") ||
+                                key.equals("driverEmail")) {
+                            // Map to the corresponding driver field names
+                            String driverKey = key;
+                            if (key.equals("driverName")) driverKey = "name";
+                            if (key.equals("driverEmail")) driverKey = "email";
+
+                            driverParams.put(driverKey, value.trim());
+                        }
                     }
                 });
             }
 
             List<VehicleDriverDTO> result = new ArrayList<>();
-            List<VehicleDTO> vehicles = VehicleConverter.toDTOList(vehicleDAO.getAll(connection, cleanParams));
 
-            for (VehicleDTO vehicle : vehicles) {
-                DriverDTO driver = DriverConverter.toDTO(driverDAO.searchById(connection, vehicle.getDriverId()));
-                result.add(new VehicleDriverDTO.VehicleDriverDTOBuilder().driver(driver).vehicle(vehicle).build());
+            // Priority: If vehicle params exist, use ONLY vehicle params
+            // If no vehicle params but driver params exist, use driver params
+            if (!vehicleParams.isEmpty()) {
+                // Use only vehicle params for search
+                List<VehicleDTO> vehicles = VehicleConverter.toDTOList(
+                        vehicleDAO.getAll(connection, vehicleParams));
+
+                for (VehicleDTO vehicle : vehicles) {
+                    if (vehicle.getDriverId() != null && !vehicle.getDriverId().isEmpty()) {
+                        DriverDTO driver = DriverConverter.toDTO(
+                                driverDAO.searchById(connection, vehicle.getDriverId()));
+
+                        if (driver != null) {
+                            result.add(new VehicleDriverDTO.VehicleDriverDTOBuilder()
+                                    .driver(driver)
+                                    .vehicle(vehicle)
+                                    .build());
+                        }
+                    }
+                }
+            }
+            // Only if NO vehicle params exist, we use driver params
+            else if (!driverParams.isEmpty()) {
+                List<DriverDTO> drivers = DriverConverter.toDTOList(driverDAO.getAll(connection, driverParams));
+
+                for (DriverDTO driver : drivers) {
+                    // Get all vehicles for this driver
+                    Map<String, String> vParams = new HashMap<>();
+                    vParams.put("driverId", driver.getId());
+
+                    List<VehicleDTO> driverVehicles = VehicleConverter.toDTOList(
+                            vehicleDAO.getAll(connection, vParams));
+
+                    for (VehicleDTO vehicle : driverVehicles) {
+                        result.add(new VehicleDriverDTO.VehicleDriverDTOBuilder()
+                                .driver(driver)
+                                .vehicle(vehicle)
+                                .build());
+                    }
+                }
+            }
+            // If no search params at all, get all vehicles with their drivers
+            else {
+                List<VehicleDTO> vehicles = VehicleConverter.toDTOList(
+                        vehicleDAO.getAll(connection, vehicleParams));
+
+                for (VehicleDTO vehicle : vehicles) {
+                    if (vehicle.getDriverId() != null && !vehicle.getDriverId().isEmpty()) {
+                        DriverDTO driver = DriverConverter.toDTO(
+                                driverDAO.searchById(connection, vehicle.getDriverId()));
+
+                        if (driver != null) {
+                            result.add(new VehicleDriverDTO.VehicleDriverDTOBuilder()
+                                    .driver(driver)
+                                    .vehicle(vehicle)
+                                    .build());
+                        }
+                    }
+                }
             }
 
             return result;

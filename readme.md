@@ -175,6 +175,16 @@ This streamlined pipeline ensures high-quality code delivery with minimal manual
 - **Booking**: Email with booking details.
 - **Dashboard**: Send email to admin with dashboard summary if needed (demo only).
 
+<table style="width: 100%; border-collapse: collapse;">
+  <tr>
+    <td style="padding: 10px; text-align: center;"><img src="src/main/webapp/assets/ui/Registration-Successful-Email.png" alt="registration-successful-email" style="max-width: 100%; height: auto;"></td>
+    <td style="padding: 10px; text-align: center;"><img src="src/main/webapp/assets/ui/Dashboard-Summary-Email.png" alt="dashboard-summary-email" style="max-width: 100%; height: auto;"></td>
+  </tr>
+  <tr>
+    <td style="padding: 10px; text-align: center;"><img src="src/main/webapp/assets/ui/Booking-Details-Email.png" alt="booking-details-email" style="max-width: 100%; height: auto;"></td>
+  </tr>
+</table>
+
 ---
 
 ## 🔒 Security
@@ -215,8 +225,6 @@ These measures create a secure, resilient environment tailored to the needs of a
 For questions or support, reach out at [ruvinisubhasinghe200009@gmail.com](mailto:ruvinisubhasinghe200009@gmail.com).
 
 ---
-
-### Screenshots
 
 ### Screenshots
 

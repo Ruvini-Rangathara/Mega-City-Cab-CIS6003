@@ -3,7 +3,7 @@ USE
 
 -- Insert Users (10 records)
 INSERT INTO users (name, email, passwordHash, salt, role, createdAt)
-VALUES ('John Doe', 'john.doe@megacitycab.com', SHA2(CONCAT('admin123', 'salt1'), 256), 'salt1', 'admin',
+VALUES ('John Doe', 'admin@gmail.com', SHA2(CONCAT('12345678', 'salt1'), 256), 'salt1', 'admin',
         '2025-02-10 09:00:00'),
        ('Alice Johnson', 'alice.j@megacitycab.com', SHA2(CONCAT('user123', 'salt2'), 256), 'salt2', 'user',
         '2025-02-12 10:00:00'),

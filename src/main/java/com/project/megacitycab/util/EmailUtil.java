@@ -43,12 +43,12 @@ public class EmailUtil {
 
         // Key Metrics section
         System.out.println(ANSI_BLUE + "Key Metrics:" + ANSI_RESET);
-        System.out.println(ANSI_CYAN + "  Total Revenue:          $" + DECIMAL_FORMAT.format(totalRevenue) + ANSI_RESET);
-        System.out.println(ANSI_CYAN + "  Total Vehicle Earnings: $" + DECIMAL_FORMAT.format(totalVehicleEarnings) + ANSI_RESET);
-        System.out.println(ANSI_CYAN + "  Total Driver Earnings:  $" + DECIMAL_FORMAT.format(totalDriverEarnings) + ANSI_RESET);
+        System.out.println(ANSI_CYAN + "  Total Revenue:          LKR " + DECIMAL_FORMAT.format(totalRevenue) + ANSI_RESET);
+        System.out.println(ANSI_CYAN + "  Total Vehicle Earnings: LKR " + DECIMAL_FORMAT.format(totalVehicleEarnings) + ANSI_RESET);
+        System.out.println(ANSI_CYAN + "  Total Driver Earnings:  LKR " + DECIMAL_FORMAT.format(totalDriverEarnings) + ANSI_RESET);
         System.out.println(ANSI_CYAN + "  Total Customers:        " + totalCustomers + ANSI_RESET);
         System.out.println(ANSI_CYAN + "  Total Bookings:         " + totalBookings + ANSI_RESET);
-        System.out.println(ANSI_CYAN + "  Total Expenses:         $" + DECIMAL_FORMAT.format(totalExpenses) + ANSI_RESET);
+        System.out.println(ANSI_CYAN + "  Total Expenses:         LKR " + DECIMAL_FORMAT.format(totalExpenses) + ANSI_RESET);
         System.out.println();
 
         // Footer
